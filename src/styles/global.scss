@@ -1,0 +1,73 @@
+@import './_flex';
+@import './_size';
+@import './_color';
+@import './t-design.scss';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family-regular;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--td-text-color-primary);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+// layout
+#layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.root {
+  position: absolute;
+  display: flex;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
+
+  .content-box {
+    flex: 1;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--td-bg-color-page);
+    .main-box {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  #main-container {
+    padding: 0 20px;
+    overflow-y: auto;
+  }
+}
+
+.wp-100 {
+  width: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.ellipsis {
+  @include ellipsis();
+}
