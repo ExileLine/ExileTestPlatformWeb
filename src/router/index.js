@@ -12,6 +12,10 @@ const routes = [
     children: pageRoutes.sort((a, b) => a?.meta?.sort - b.meta.sort)
   },
   {
+    path: '/project',
+    component: () => import('@/views/project/index.vue')
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index.vue')
   },

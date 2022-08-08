@@ -1,3 +1,4 @@
+import { filter } from 'lodash'
 import router from '@/router'
 import { setStorage, getStorage } from '@/utils/store'
 
@@ -14,12 +15,15 @@ export default {
 
   mutations: {
     delTag(state, path) {
-      state.currentTags = state.currentTags.filter(({ fullPath }) => fullPath !== path)
+      state.currentTags = state.currentTags.filter(
+        ({ fullPath, meta }) => fullPath !== path && meta.title
+      )
       setStorage('tags', state.currentTags)
     },
     setCurrentTags(state, data) {
-      state.currentTags = data
-      setStorage('tags', data)
+      const tags = filter(data, 'meta.title')
+      state.currentTags = tags
+      setStorage('tags', tags)
     },
     setAskingPath(state, data) {
       state.askingPath = data

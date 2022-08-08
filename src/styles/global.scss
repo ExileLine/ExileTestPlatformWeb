@@ -68,6 +68,13 @@ body,
   visibility: hidden;
 }
 
+.relative {
+  position: relative;
+}
+.pointer {
+  cursor: pointer;
+}
+
 .ellipsis {
   @include ellipsis();
 }

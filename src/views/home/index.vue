@@ -1,5 +1,5 @@
 <template>
-  <t-card shadow>Home</t-card>
+  <page-container shadow>Home</page-container>
 </template>
 
 <script setup></script>

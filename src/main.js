@@ -8,6 +8,7 @@ import store from './store'
 import './permission'
 import '@style/global.scss'
 import CommonForm from '@comp/CommonForm/index.vue'
+import PageContainer from '@comp/PageContainer/index.vue'
 
 const app = createApp(App)
 
@@ -24,4 +25,5 @@ app
   .provide('message', app.config.globalProperties.message)
   .provide('dialog', app.config.globalProperties.dialog)
   .component('CommonForm', CommonForm)
+  .component('PageContainer', PageContainer)
   .mount('#app')

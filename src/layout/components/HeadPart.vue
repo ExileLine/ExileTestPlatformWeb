@@ -2,15 +2,14 @@
   <div class="header justify-end align-center">
     <div class="logo align-center">
       <div
-        class="hidden"
         :class="{
           'w-190': !collapsed,
           'w-40': collapsed
         }"
       >
-        <img src="@/assets/logo.png" alt="嘴炮信息" class="w-150" />
+        Exile
       </div>
-      <div class="ml-10 fs-22 cursor" @click="toggleCollapse">
+      <div v-if="!isProject" class="ml-10 fs-22 cursor" @click="toggleCollapse">
         <t-icon
           :name="`${collapsed ? 'format-vertical-align-left' : 'format-vertical-align-right'}`"
         />
@@ -143,6 +142,11 @@ export default {
           }
         }
       ]
+    }
+  },
+  computed: {
+    isProject() {
+      return this.$route.path === '/project'
     }
   },
   methods: {
