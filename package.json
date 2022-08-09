@@ -16,6 +16,7 @@
     "*.**": "prettier --check --ignore-unknown"
   },
   "dependencies": {
+    "@vue/shared": "^3.2.37",
     "@vueuse/core": "^9.1.0",
     "axios": "^0.27.2",
     "dayjs": "^1.11.4",

@@ -4,6 +4,7 @@ specifiers:
   '@commitlint/cli': ^16.2.1
   '@vitejs/plugin-vue': ^3.0.0
   '@vitejs/plugin-vue-jsx': ^2.0.0
+  '@vue/shared': ^3.2.37
   '@vueuse/core': ^9.1.0
   axios: ^0.27.2
   commitizen: ^4.2.4
@@ -28,6 +29,7 @@ specifiers:
   vuex: ^4.0.2
 
 dependencies:
+  '@vue/shared': registry.npmmirror.com/@vue/shared/3.2.37
   '@vueuse/core': registry.npmmirror.com/@vueuse/core/9.1.0_vue@3.2.37
   axios: registry.npmmirror.com/axios/0.27.2
   dayjs: registry.npmmirror.com/dayjs/1.11.4

@@ -16,6 +16,12 @@
         />
       </div>
     </div>
+
+    <t-tooltip placement="bottom" content="刷新">
+      <t-button theme="default" shape="square" variant="text" @click="refresh">
+        <t-icon name="refresh" />
+      </t-button>
+    </t-tooltip>
     <t-tooltip placement="bottom" content="代码仓库">
       <t-button theme="default" shape="square" variant="text">
         <t-icon name="logo-github" />
@@ -151,6 +157,9 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      location.reload()
+    },
     toggleCollapse() {
       this.$emit('update:collapsed', !this.collapsed)
     },
