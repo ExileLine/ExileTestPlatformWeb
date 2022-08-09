@@ -4,10 +4,12 @@ import { setStorage, getStorage } from '@/utils/store'
 
 const tags = getStorage('tags') || []
 const theme = getStorage('theme') || 'light'
+const project_id = getStorage('project_id') || ''
 export default {
   namespaced: true,
   state: {
     theme,
+    project_id,
     currentTags: [...tags], //当前打开的tag
     askingPath: '', // 当前问询是否要关闭页面
     needClosePath: '' //需要关闭的页面
@@ -43,6 +45,10 @@ export default {
     setTheme(state, theme) {
       state.theme = theme
       setStorage('theme', theme)
+    },
+    setProjectId(state, project_id) {
+      state.project_id = project_id
+      setStorage('project_id', project_id)
     }
   }
 }

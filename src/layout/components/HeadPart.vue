@@ -6,6 +6,7 @@
           'w-190': !collapsed,
           'w-40': collapsed
         }"
+        @click="$router.push('/project')"
       >
         Exile
       </div>

@@ -7,7 +7,7 @@ export const pageRoutes = flatten(keys(rts).map(key => rts[key].default))
 const routes = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/dashboard',
     component: Layout,
     children: pageRoutes.sort((a, b) => a?.meta?.sort - b.meta.sort)
   },
@@ -21,7 +21,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)',
-    redirect: '/home'
+    redirect: '/dashboard'
   }
 ]
 

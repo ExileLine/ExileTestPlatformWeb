@@ -6,9 +6,17 @@
         <div class="main-box">
           <div id="project-search-container" class="plr-30 ptb-20">
             <div class="flex-between">
-              <t-input-adornment :append="renderSearchIcon">
-                <t-input clearable placeholder="请输入项目名称" size="large" />
-              </t-input-adornment>
+              <t-form class="flex-1" @submit="search">
+                <t-input-adornment :append="renderSearchIcon">
+                  <t-input
+                    v-model="project_name"
+                    clearable
+                    placeholder="请输入项目名称"
+                    size="large"
+                    @clear="clearProject"
+                  />
+                </t-input-adornment>
+              </t-form>
               <div class="justify-end">
                 <t-button
                   shape="round"
@@ -22,7 +30,12 @@
               </div>
             </div>
           </div>
-          <div class="p-20">
+          <div
+            v-infinite-scroll="fetchProjectList"
+            :infinite-scroll-disabled="loading"
+            id="main-container"
+            class="mt-20"
+          >
             <t-row :gutter="20">
               <t-col
                 v-bind="colSpan"
@@ -30,7 +43,7 @@
                 :key="project.id"
                 class="mb-20 pointer"
               >
-                <t-card shadow>
+                <t-card shadow @click="gotoHome(project)">
                   <div class="flex relative">
                     <t-avatar :image="projectIcon" size="70px" />
                     <div class="flex-1 ml-20 w-0">
@@ -67,8 +80,11 @@
                 </t-card>
               </t-col>
             </t-row>
-
-            <t-divider>已经到底了</t-divider>
+            <div v-if="!projectList.length && finished" class="flex-col-center">
+              <svg-icon icon="no-data" width="20em" height="20em" />
+              <div>暂无项目</div>
+            </div>
+            <t-divider v-else>已经到底了</t-divider>
           </div>
         </div>
       </div>
@@ -77,38 +93,27 @@
 </template>
 
 <script setup lang="jsx">
-import { map, range } from 'lodash'
-// search
+import { nextTick, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import { LoadingPlugin } from 'tdesign-vue-next'
+
+// search、add图标
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
 import HeadPart from '@/layout/components/HeadPart.vue'
 import projectIcon from '@/assets/project-icon.png'
-const projectList = map(range(10), id => ({
-  id,
-  create_time: '2022-06-27 14:02:18',
-  create_timestamp: 1656309738,
-  creator: 'shell',
-  creator_id: 999999,
-  is_deleted: 0,
-  modifier: null,
-  modifier_id: null,
-  project_name:
-    '初始化项目脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成',
-  remark:
-    '脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成脚本生成',
-  status: 1,
-  update_time: '2022-06-27 14:02:18',
-  update_timestamp: null
-}))
+import { post } from '@util/request'
 
+const router = useRouter()
+const store = useStore()
+
+const projectList = ref([])
 const colSpan = {
   xxl: 2,
   xl: 3,
   sm: 4,
   xs: 12
 }
-
-const renderSearchIcon = () => <SearchIcon onClick={() => console.log(123)} />
-const renderAddBtnIcon = () => <AddIcon />
 
 const projectDropdownOptions = [
   {
@@ -120,13 +125,62 @@ const projectDropdownOptions = [
     icon: 'play-circle'
   }
 ]
+
+const gotoHome = project => {
+  store.commit('app/setProjectId', project.id)
+  router.push('/')
+}
+
+const page = ref(1)
+const size = 20
+const project_name = ref('')
+const loading = ref(false)
+const finished = ref(false)
+const fetchProjectList = async () => {
+  if (finished.value) return
+  loading.value = true
+  try {
+    const { records, total } = await post(
+      '/api/project_page',
+      {
+        project_name: project_name.value,
+        page: page.value,
+        size
+      },
+      {
+        loading: false
+      }
+    )
+    page.value++
+    projectList.value.push(...records)
+    if (page.value > Math.ceil(total / size)) {
+      finished.value = true
+    }
+  } catch (error) {
+    console.log(error)
+  }
+  loading.value = false
+}
+
+fetchProjectList()
+
+const search = () => {
+  page.value = 1
+  finished.value = false
+  projectList.value = []
+  fetchProjectList()
+}
+const clearProject = () => {
+  nextTick(() => search())
+}
+const renderSearchIcon = () => <SearchIcon onClick={() => search()} />
+const renderAddBtnIcon = () => <AddIcon />
 </script>
 
 <style lang="scss" scoped>
 #project-search-container {
   box-shadow: rgb(0 0 0 / 12%) 0px 2px 4px, rgb(0 0 0 / 4%) 0px 0px 6px;
   background-color: var(--td-bg-color-container);
-
   ::v-deep(.t-input-adornment) {
     flex: 1;
     max-width: 500px;
@@ -141,6 +195,13 @@ const projectDropdownOptions = [
     .t-input-adornment__append {
       border-left: 1px solid var(--td-border-level-2-color);
       cursor: pointer;
+      padding: 0;
+      .t-icon {
+        font-size: 20px;
+        padding: 0 12px;
+        width: 100%;
+        height: 100%;
+      }
     }
     .t-input--focused {
       border: none;
