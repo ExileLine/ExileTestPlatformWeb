@@ -10,6 +10,7 @@ export default {
   state: {
     theme,
     project_id,
+    isMobile: false,
     currentTags: [...tags], //当前打开的tag
     askingPath: '', // 当前问询是否要关闭页面
     needClosePath: '' //需要关闭的页面
@@ -41,7 +42,6 @@ export default {
     clearNowTag(state, fullPath) {
       state.needClosePath = fullPath ?? router.currentRoute.value.fullPath
     },
-
     setTheme(state, theme) {
       state.theme = theme
       setStorage('theme', theme)
@@ -49,6 +49,10 @@ export default {
     setProjectId(state, project_id) {
       state.project_id = project_id
       setStorage('project_id', project_id)
+    },
+    setMobile(state, isMobile) {
+      state.isMobile = isMobile
+      setStorage('theme', isMobile)
     }
   }
 }

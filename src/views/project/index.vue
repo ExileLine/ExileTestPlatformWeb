@@ -61,7 +61,9 @@
                     </div>
 
                     <t-dropdown :options="projectDropdownOptions" trigger="click">
-                      <t-icon name="setting" size="30px" class="setting-icon" />
+                      <div class="setting-icon" @click.stop>
+                        <t-icon name="setting" size="30px" />
+                      </div>
                       <template #dropdown>
                         <t-dropdown-menu>
                           <t-dropdown-item
@@ -96,7 +98,6 @@
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { LoadingPlugin } from 'tdesign-vue-next'
 
 // search、add图标
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
@@ -207,9 +208,7 @@ const renderAddBtnIcon = () => <AddIcon />
       border: none;
       box-shadow: none;
     }
-    .t-input {
-      transition: none;
-    }
+   
   }
   ::v-deep(.t-button) {
     transition: none;

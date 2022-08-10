@@ -55,7 +55,7 @@ body,
   }
 
   #main-container {
-    padding: 0 20px;
+    padding: 0 20px 20px;
     overflow-y: auto;
   }
 }
@@ -77,4 +77,8 @@ body,
 
 .ellipsis {
   @include ellipsis();
+}
+
+.overflow-x {
+  overflow-x: auto;
 }

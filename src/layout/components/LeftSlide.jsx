@@ -94,6 +94,7 @@ export default defineComponent({
     const autoCollapsed = () => {
       const isCompact = window.innerWidth <= MIN_POINT
       emit('update:collapsed', isCompact)
+      store.commit('app/setMobile', isCompact)
     }
 
     onMounted(() => {

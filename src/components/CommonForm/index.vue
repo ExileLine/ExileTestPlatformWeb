@@ -35,6 +35,7 @@
           :field="field"
           :list-info="listInfo"
           :is="field.component || 't-input'"
+          @clear="clear"
         />
         <span v-if="field.suffix" :class="field.suffixClass">{{ field.suffix }}</span>
       </template>
@@ -72,7 +73,8 @@
 import { ref } from 'vue'
 const props = defineProps({
   labelWidth: {
-    type: String
+    type: String,
+    default: 'auto'
   },
   // 表单数据
   data: {
@@ -111,7 +113,7 @@ const props = defineProps({
     type: Boolean
   }
 })
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel', 'clear'])
 
 const formRef = ref()
 function getProps({ component, label, extraProps }) {
@@ -135,6 +137,9 @@ async function confirm() {
 function cancel() {
   formRef.value.reset()
   emit('cancel')
+}
+function clear(...rest) {
+  emit('cancel', ...rest)
 }
 </script>
 

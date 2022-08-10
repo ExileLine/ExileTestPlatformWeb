@@ -10,7 +10,9 @@ import store from './store'
 import './permission'
 import '@style/global.scss'
 import CommonForm from '@comp/CommonForm/index.vue'
+import CommonPagination from '@comp/CommonPagination/index.vue'
 import PageContainer from '@comp/PageContainer/index.vue'
+import BaseTable from '@comp/BaseTable/index.vue'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import svgIcon from '@/components/SvgIcon/index.vue'
 
@@ -31,6 +33,8 @@ app
   .provide('message', app.config.globalProperties.message)
   .provide('dialog', app.config.globalProperties.dialog)
   .component('CommonForm', CommonForm)
+  .component('CommonPagination', CommonPagination)
   .component('PageContainer', PageContainer)
+  .component('BaseTable', BaseTable)
   .component('svgIcon', svgIcon)
   .mount('#app')

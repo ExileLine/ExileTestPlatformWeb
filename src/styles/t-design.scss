@@ -218,3 +218,13 @@
 .t-menu::-webkit-scrollbar {
   display: block;
 }
+
+.t-form {
+  .t-input {
+    min-width: 200px;
+  }
+}
+
+.t-input {
+  transition: none;
+}
