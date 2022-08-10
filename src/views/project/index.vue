@@ -82,11 +82,20 @@
                 </t-card>
               </t-col>
             </t-row>
-            <div v-if="!projectList.length && finished" class="flex-col-center">
-              <svg-icon icon="no-data" width="20em" height="20em" />
-              <div>暂无项目</div>
-            </div>
-            <t-divider v-else>已经到底了</t-divider>
+            <template v-if="error">
+              <div class="flex-center">
+                <t-button variant="text" @click=";(error = false), fetchProjectList">
+                  请求失败，点击重新加载
+                </t-button>
+              </div>
+            </template>
+            <template v-else>
+              <div v-if="!projectList.length && finished" class="flex-col-center">
+                <svg-icon icon="no-data" width="20em" height="20em" />
+                <div>暂无项目</div>
+              </div>
+              <t-divider v-else>已经到底了</t-divider>
+            </template>
           </div>
         </div>
       </div>
@@ -137,8 +146,9 @@ const size = 20
 const project_name = ref('')
 const loading = ref(false)
 const finished = ref(false)
+const error = ref(false)
 const fetchProjectList = async () => {
-  if (finished.value) return
+  if (finished.value || error.value) return
   loading.value = true
   try {
     const { records, total } = await post(
@@ -157,8 +167,9 @@ const fetchProjectList = async () => {
     if (page.value > Math.ceil(total / size)) {
       finished.value = true
     }
-  } catch (error) {
-    console.log(error)
+  } catch (e) {
+    console.log(e)
+    error.value = true
   }
   loading.value = false
 }
@@ -203,6 +214,9 @@ const renderAddBtnIcon = () => <AddIcon />
         width: 100%;
         height: 100%;
       }
+    }
+    .t-input {
+      min-width: 150px;
     }
     .t-input--focused {
       border: none;

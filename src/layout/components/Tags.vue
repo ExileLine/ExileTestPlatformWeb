@@ -1,6 +1,6 @@
 <template>
   <div class="flex-between h-38 bg-white">
-    <div class="flex-1 pl-10 align-center overflow-x">
+    <div class="flex-1 pl-10 align-center overflow-x narrow-scrollbar">
       <t-tag
         v-for="(tag, index) in tagList"
         closable

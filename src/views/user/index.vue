@@ -14,7 +14,10 @@
 </template>
 
 <script setup lang="jsx">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useStore } from 'vuex'
+const store = useStore()
+const isMobile = computed(() => store.getters.isMobile)
 const formModel = ref({})
 const fieldList = [
   {
@@ -30,7 +33,46 @@ const fieldList = [
     value: 'phone'
   }
 ]
-const columns = [
+
+const actionOptionList = [
+  {
+    content: '编辑',
+    value: 'edit'
+  },
+  {
+    content: '禁用',
+    value: 'error-circle'
+  },
+  {
+    content: '删除',
+    value: 'delete'
+  }
+]
+
+const renderAction = () => {
+  if (isMobile.value) {
+    return (
+      <t-dropdown options={actionOptionList}>
+        <t-button variant="outline">更多...</t-button>
+      </t-dropdown>
+    )
+  }
+  return (
+    <div>
+      <t-button theme="primary" variant="text">
+        <t-icon name="edit" />
+      </t-button>
+      <t-button theme="warning" variant="text">
+        <t-icon name="error-circle" />
+      </t-button>
+      <t-button theme="danger" variant="text">
+        <t-icon name="delete" />
+      </t-button>
+    </div>
+  )
+}
+
+const columns = computed(() => [
   {
     colKey: 'id',
     title: 'ID',
@@ -82,24 +124,11 @@ const columns = [
   {
     colKey: 'action',
     title: '操作',
-    width: 220,
+    width: isMobile.value ? 120 : 210,
     fixed: 'right',
-    render: (h, { type }) =>
-      type !== 'title' && (
-        <div>
-          <t-button theme="primary" variant="text">
-            <t-icon name="edit" />
-          </t-button>
-          <t-button theme="warning" variant="text">
-            <t-icon name="error-circle" />
-          </t-button>
-          <t-button theme="danger" variant="text">
-            <t-icon name="delete" />
-          </t-button>
-        </div>
-      )
+    render: (h, { type }) => type !== 'title' && renderAction()
   }
-]
+])
 </script>
 
 <style lang="scss" scoped></style>

@@ -1,6 +1,6 @@
 <template>
   <div id="base-table" class="hp-100">
-    <div class="justify-between">
+    <div class="justify-between flex-wrap">
       <common-form
         layout="inline"
         :data="formModel"
@@ -10,7 +10,9 @@
         @cancel="getData = true"
         @confirm="getData = true"
       />
-      <slot name="formActions"></slot>
+      <div class="mb-20">
+        <slot name="formActions"></slot>
+      </div>
     </div>
     <div ref="tableRef">
       <t-table bordered :data="tableData" :columns="_column" :height="height">
