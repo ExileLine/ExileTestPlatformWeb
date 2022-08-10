@@ -52,7 +52,6 @@ export default {
     },
     setMobile(state, isMobile) {
       state.isMobile = isMobile
-      setStorage('theme', isMobile)
     }
   }
 }

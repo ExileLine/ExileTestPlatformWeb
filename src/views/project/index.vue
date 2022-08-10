@@ -34,7 +34,7 @@
             v-infinite-scroll="fetchProjectList"
             :infinite-scroll-disabled="loading"
             id="main-container"
-            class="mt-20"
+            class="mt-20 narrow-scrollbar"
           >
             <t-row :gutter="20">
               <t-col
@@ -208,7 +208,6 @@ const renderAddBtnIcon = () => <AddIcon />
       border: none;
       box-shadow: none;
     }
-   
   }
   ::v-deep(.t-button) {
     transition: none;

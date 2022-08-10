@@ -10,7 +10,7 @@
       >
         Exile
       </div>
-      <div v-if="!isProject" class="ml-10 fs-22 cursor" @click="toggleCollapse">
+      <div v-if="!isProject && !isMobile" class="ml-10 fs-22 cursor" @click="toggleCollapse">
         <t-icon
           :name="`${collapsed ? 'format-vertical-align-left' : 'format-vertical-align-right'}`"
         />
@@ -159,6 +159,9 @@ export default {
   computed: {
     isProject() {
       return this.$route.path === '/project'
+    },
+    isMobile() {
+      return this.$store.getters.isMobile
     }
   },
   methods: {

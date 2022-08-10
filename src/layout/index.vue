@@ -7,12 +7,12 @@
         <tags></tags>
         <div class="main-box" ref="childrens">
           <breadcrumb v-if="!$route.meta.hiddenTitle" />
-          <div id="main-container">
+          <div id="main-container" class="narrow-scrollbar">
             <router-view />
             <slot></slot>
           </div>
         </div>
-        <footer class="flex-center copyright">
+        <footer class="copyright plr-20">
           Copyright @ 2020-2022 ExileLine. All Rights Reserved
         </footer>
       </div>
@@ -25,12 +25,15 @@ import Breadcrumb from './components/Breadcrumb.vue'
 import HeadPart from './components/HeadPart.vue'
 import LeftSlide from './components/LeftSlide'
 import Tags from './components/Tags.vue'
-const collapsed = ref(false)
+import { MIN_POINT } from '@/config/global'
+const collapsed = ref(window.innerWidth <= MIN_POINT)
 </script>
 
 <style>
 .copyright {
+  text-align: center;
   color: var(--td-text-color-placeholder);
-  line-height: 40px;
+  height: 40px;
+  line-height: 1.5;
 }
 </style>

@@ -2,8 +2,8 @@
   <t-row :gutter="20">
     <t-col :xl="7" class="mb-20">
       <t-card :bordered="false">
-        <div class="flex wp-100 chart-container">
-          <div class="hp-100">
+        <t-row :gutter="20" class="wp-100">
+          <t-col class="hp-100" :md="3" :xs="12">
             <h3>仪表盘</h3>
             <p>执行周期统计</p>
             <h3>
@@ -20,11 +20,11 @@
               </template>
               当天报表
             </t-button>
-          </div>
-          <div class="flex-1-hidden hp-100">
-            <div ref="lineRef" class="wp-100 hp-100"></div>
-          </div>
-        </div>
+          </t-col>
+          <t-col class="flex-1-hidden hp-100" :md="9" :xs="12">
+            <div ref="lineRef" class="wp-100 hp-100 chart-container"></div>
+          </t-col>
+        </t-row>
       </t-card>
     </t-col>
     <t-col :xl="5" class="mb-20">

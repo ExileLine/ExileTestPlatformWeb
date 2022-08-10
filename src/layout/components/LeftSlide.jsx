@@ -7,8 +7,7 @@ import MenuContent from './MenuContent'
 import AssetLogo from '@/assets/assets-t-logo.svg?component'
 import AssetLogoFull from '@/assets/assets-logo-full.svg?component'
 import { getActive, pageRoutes } from '@/router'
-
-const MIN_POINT = 992 - 1
+import { MIN_POINT } from '@/config/global'
 
 const useComputed = props => {
   const active = computed(() => getActive())
