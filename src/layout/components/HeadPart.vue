@@ -23,7 +23,7 @@
       </t-button>
     </t-tooltip>
     <t-tooltip placement="bottom" content="代码仓库">
-      <t-button theme="default" shape="square" variant="text">
+      <t-button theme="default" shape="square" variant="text" @click="gotoGithub">
         <t-icon name="logo-github" />
       </t-button>
     </t-tooltip>
@@ -41,7 +41,7 @@
               个人中心
             </div>
           </t-dropdown-item>
-          <t-dropdown-item>
+          <t-dropdown-item @click="resetPwdVisible = true">
             <div class="align-center">
               <t-icon name="lock-off" class="mr-10" />
               重置密码
@@ -66,7 +66,7 @@
       </t-button>
     </t-dropdown>
     <theme-tabs class="mlr-10" />
-    <t-dialog v-model="resetPwdVisible" title="重置密码" width="400px" @close="close">
+    <t-dialog v-model:visible="resetPwdVisible" :footer="false" header="重置密码" @close="close">
       <common-form
         dialog
         ref="resetPwdForm"
@@ -75,9 +75,9 @@
         :field-list="resetPwdFieldList"
         label-width="6em"
         confirm-text="确定"
-        reset-text="取消"
-        @submit="resetPwd"
-        @reset="resetPwdVisible = false"
+        cancel-text="取消"
+        @confirm="resetPwd"
+        @cancel="resetPwdVisible = false"
       />
     </t-dialog>
   </div>
@@ -101,11 +101,13 @@ export default {
       type: 'password',
       showPassword: true
     }
-    const validatePwd = (rule, value, callback) => {
+    const validatePwd = value => {
       if (value !== this.resetPwdForm.new_password) {
-        callback(new Error('两次输入密码不一致!'))
-      } else {
-        callback()
+        return { result: false, message: '两次输入密码不一致', type: 'error' }
+      }
+      return {
+        result: true,
+        type: 'success'
       }
     }
     return {
@@ -128,6 +130,7 @@ export default {
           value: 'old_password',
           label: '旧密码',
           component: 't-input',
+          type: 'password',
           extraProps: {
             ...commonProps
           }
@@ -136,6 +139,7 @@ export default {
           value: 'new_password',
           label: '新密码',
           component: 't-input',
+          type: 'password',
           extraProps: {
             ...commonProps
           }
@@ -144,6 +148,7 @@ export default {
           value: 'raw_password',
           label: '确认密码',
           component: 't-input',
+          type: 'password',
           extraProps: {
             ...commonProps
           }
@@ -160,11 +165,14 @@ export default {
     refresh() {
       location.reload()
     },
+    gotoGithub() {
+      window.open('https://github.com/ExileLine', '_blank')
+    },
     toggleCollapse() {
       this.$emit('update:collapsed', !this.collapsed)
     },
     close() {
-      this.$refs.resetPwdForm.reset()
+      this.$refs.resetPwdForm.cancel()
     },
     async resetPwd() {
       await fetchResetPwd({

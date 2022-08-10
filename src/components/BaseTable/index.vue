@@ -1,14 +1,17 @@
 <template>
   <div id="base-table" class="hp-100">
-    <common-form
-      layout="inline"
-      :data="formModel"
-      :rules="rules"
-      :field-list="fieldList"
-      class="mb-20"
-      @cancel="getData = true"
-      @confirm="getData = true"
-    />
+    <div class="justify-between">
+      <common-form
+        layout="inline"
+        :data="formModel"
+        :rules="rules"
+        :field-list="fieldList"
+        class="mb-20"
+        @cancel="getData = true"
+        @confirm="getData = true"
+      />
+      <slot name="formActions"></slot>
+    </div>
     <div ref="tableRef">
       <t-table bordered :data="tableData" :columns="_column" :height="height">
         <!-- <template #empty>
@@ -72,7 +75,8 @@ const setTableHeight = () => {
   const { height: bodyHeight } = document.body.getBoundingClientRect()
   const { top } = tableRef.value.getBoundingClientRect()
   const { height: paginationHeight } = paginationRef.value.getBoundingClientRect()
-  height.value = bodyHeight - top - paginationHeight - 20 * 3
+  // 40来自copyright
+  height.value = bodyHeight - top - paginationHeight - 20 * 2 - 40
 }
 const resize = throttle(setTableHeight, 1000 / 60)
 onMounted(() => {

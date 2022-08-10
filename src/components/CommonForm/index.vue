@@ -47,13 +47,14 @@
       </t-form-item>
     </template>
     <template v-else>
-      <t-form-item :label-width="actionAlign.indexOf('center') > -1 ? '0' : undefined">
-        <div class="flex form-action wp-100" :class="{ 'dialog-actions': dialog }">
+      <t-form-item :label-width="dialog ? '0' : undefined">
+        <div class="flex form-action wp-100">
           <div
             class="wp-100"
             :class="{
               'row-reverse': actionAlign.indexOf('right') > -1,
-              'justify-center': actionAlign.indexOf('center') > -1
+              'justify-center': actionAlign.indexOf('center') > -1,
+              'dialog-actions': dialog
             }"
           >
             <t-button type="submit" class="ml-10">
@@ -130,6 +131,7 @@ async function validate() {
 }
 async function confirm() {
   const validateResult = await validate()
+  console.log(validateResult)
   if (validateResult === true) {
     emit('confirm')
   }
@@ -141,6 +143,10 @@ function cancel() {
 function clear(...rest) {
   emit('cancel', ...rest)
 }
+
+defineExpose({
+  cancel
+})
 </script>
 
 <style lang="scss">
@@ -156,6 +162,9 @@ function clear(...rest) {
 }
 .dialog-actions {
   width: 100%;
-  justify-content: flex-end;
+  display: flex;
+  margin-bottom: -20px;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
 }
 </style>

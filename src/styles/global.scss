@@ -47,7 +47,7 @@ body,
     background: var(--td-bg-color-page);
     .main-box {
       position: relative;
-      height: 100%;
+      flex: 1;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -55,7 +55,8 @@ body,
   }
 
   #main-container {
-    padding: 0 20px 20px;
+    flex: 1;
+    padding: 0 20px;
     overflow-y: auto;
   }
 }

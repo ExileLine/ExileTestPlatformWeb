@@ -12,6 +12,9 @@
             <slot></slot>
           </div>
         </div>
+        <footer class="flex-center copyright">
+          Copyright @ 2020-2022 ExileLine. All Rights Reserved
+        </footer>
       </div>
     </div>
   </div>
@@ -24,3 +27,10 @@ import LeftSlide from './components/LeftSlide'
 import Tags from './components/Tags.vue'
 const collapsed = ref(false)
 </script>
+
+<style>
+.copyright {
+  color: var(--td-text-color-placeholder);
+  line-height: 40px;
+}
+</style>

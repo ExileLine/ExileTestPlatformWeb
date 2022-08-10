@@ -1,5 +1,5 @@
 <template>
-  <t-card shadow>
+  <t-card :bordered="false" shadow>
     <slot />
   </t-card>
 </template>

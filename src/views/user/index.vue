@@ -5,7 +5,11 @@
       :field-list="fieldList"
       :columns="columns"
       url="/api/user_page"
-    />
+    >
+      <template #formActions>
+        <t-button theme="primary">新增</t-button>
+      </template>
+    </base-table>
   </page-container>
 </template>
 
