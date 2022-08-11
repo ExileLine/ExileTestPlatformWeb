@@ -15,7 +15,7 @@ const setLoading = () => {
     globalLoading = LoadingPlugin({
       fullscreen: true,
       attach: 'body',
-      preventScrollThrough: false
+      preventScrollThrough: false,
     })
   }
 }
@@ -32,7 +32,7 @@ const deleteLoading = () => {
 const service = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost:7878/',
   // withCredentials: true,
-  timeout: 10000
+  timeout: 10000,
 })
 
 // Toast提示，根据不同的ui库来
@@ -96,13 +96,13 @@ export function put(url, ...config) {
 export function del(url, data, config) {
   return service.delete(url, {
     data,
-    ...config
+    ...config,
   })
 }
 export function get(url, params, config) {
   return service.get(url, {
     params,
-    ...config
+    ...config,
   })
 }
 

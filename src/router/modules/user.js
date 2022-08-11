@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 100,
       icon: 'usergroup',
-      title: '用户管理'
+      title: '用户管理',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'userList',
         path: 'index',
         meta: {
-          title: '用户列表'
+          title: '用户列表',
         },
-        component: () => import('@view/user/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/user/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

@@ -8,7 +8,7 @@
         :key="tag.fullPath"
         :title="tag.meta ? tag.meta.title : ''"
         :disable-transitions="true"
-        class="mr-10 cursor"
+        class="mr-10 pointer"
         @click="changeRouter(index)"
         @close="canIClose(index)"
       >
@@ -28,172 +28,158 @@
     </t-dropdown>
   </div>
 </template>
-<script>
-export default {
-  data() {
-    return {
-      tagList: [],
-      lastRoute: { fullPath: '/' },
-      currentPath: this.$route.path,
-      needAskUrls: [] // 关闭前需要问询的页面路径 不是全路径
+<script setup>
+import { ref, reactive, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
+import { useStore } from 'vuex'
+
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+
+const tagList = ref([])
+const lastRoute = ref({ fullPath: '/' })
+const needAskUrls = reactive([])
+const nowPath = computed(() => route.fullPath)
+
+function setTags(route) {
+  if (!tagList.value.some(item => item.fullPath === route.fullPath) && route.path !== '/') {
+    tagList.value.push({
+      path: route.path,
+      fullPath: route.fullPath,
+      query: route.query,
+      meta: route.meta || {},
+    })
+  }
+  if (tagList.value.length > 12) {
+    tagList.value.shift()
+  }
+  store.commit('app/setCurrentTags', tagList.value)
+}
+function canIClose(index) {
+  const current = tagList.value[index]
+  if (needAskUrls.includes(current.path)) {
+    //需要问询后关闭
+    const fullPath = current.fullPath
+    if (route.fullPath !== fullPath) {
+      router.push(fullPath)
     }
-  },
-  watch: {
-    $route: function (n, o) {
-      this.lastRoute = o
-      if (n !== o) {
-        this.$nextTick(() => {
-          this.setTags(n)
-        }, 0)
-        //console.log(n);
-      }
-    },
-    '$store.state.app.currentTags': {
-      handler: function (n) {
-        this.tagList = [...n]
-      },
-      deep: true
-    },
-    '$store.state.app.needClosePath': function (n) {
-      if (n) {
-        this.$store.commit('app/clearNowTag', '')
-        this.closeRouter(n)
-      }
-    }
-  },
-  computed: {
-    nowPath() {
-      return this.$route.fullPath
-    }
-  },
-  mounted() {
-    if (this.$store.state.app?.currentTags?.length == 0) {
-      this.setTags(this.$route)
-    } else {
-      this.tagList = this.$store.state.app.currentTags
-    }
-    window.addEventListener('popstate', this.goBack, false)
-  },
-  unmounted() {
-    window.removeEventListener('popstate', this.goBack, false)
-  },
-  methods: {
-    setTags(route) {
-      if (
-        !this.tagList.some(item => item.fullPath === this.$route.fullPath) &&
-        this.$route.path !== '/'
-      ) {
-        // let index = this.tagList.findIndex(
-        //   item => item.path === this.$route.path
-        // );
-        this.tagList.push({
-          path: route.path,
-          fullPath: route.fullPath,
-          query: route.query,
-          meta: route.meta || {}
-        })
-        // if (index > -1) {
-        //   this.tagList.splice(index, 1, route);
-        // } else {
-        //   this.tagList.push(route);
-        // }
-      }
-      if (this.tagList.length > 12) {
-        this.tagList.shift()
-      }
-      this.$store.commit('app/setCurrentTags', this.tagList)
-    },
-    canIClose(index) {
-      if (this.needAskUrls.includes(this.tagList[index].path)) {
-        //需要问询后关闭
-        const fullPath = this.tagList[index].fullPath
-        if (this.$route.fullPath !== fullPath) {
-          this.$router.push(fullPath)
-        }
-        this.$nextTick(() => {
-          this.$store.commit('app/setAskingPath', fullPath)
-        })
-      } else {
-        // 直接关闭
-        this.handleClose(index)
-      }
-    },
-    handleClose(index) {
-      setTimeout(() => {
-        const closePath = this.tagList[index].fullPath
-        // 当只有一个tag的时候，并且这个tag就是首页，那么就不需要删除
-        const needDelete = !(closePath === '/home/index' && this.tagList.length === 1)
-        if (closePath === this.$route.fullPath) {
-          if (index > 0) {
-            this.$router.push(this.tagList[index - 1].fullPath)
-          } else {
-            if (this.tagList.length > 1) {
-              this.$router.push(this.tagList[index + 1].fullPath)
-            } else {
-              if (needDelete) {
-                this.$router.push('/')
-              }
-            }
-          }
-        }
-        if (needDelete) {
-          this.tagList = this.tagList.filter((e, i) => i !== index)
-          this.$store.commit('app/setCurrentTags', this.tagList)
-        }
-      }, 0)
-    },
-    changeRouter(index) {
-      const router = this.tagList[index]
-      if (router.fullPath === this.$route.fullPath) return
-      // console.log(this.tagList)
-      this.$router.push(router)
-    },
-    closeRouter(fullPath) {
-      //关闭指定路由
-      let path = this.lastRoute.fullPath
-      if (fullPath) {
-        path = fullPath
-      }
-      let index = this.tagList.findIndex(item => item.fullPath === path)
-      if (index > -1) {
-        this.handleClose(index)
-      }
-    },
-    goBack() {
-      console.log('返回', this.lastRoute)
-      this.closeRouter()
-    },
-    // 关闭全部标签
-    closeAll() {
-      const indexArr = []
-      this.tagList.map((e, i) => (this.needAskUrls.includes(e.path) ? indexArr.push(i) : ''))
-      if (indexArr.length > 0) {
-        this.canIClose(indexArr[0])
-        return
-      }
-      this.tagList = []
-      this.$store.commit('app/setCurrentTags', this.tagList)
-      this.$router.push('/')
-    },
-    // 关闭其他标签
-    closeOther() {
-      const indexArr = []
-      this.tagList.map((e, i) =>
-        this.needAskUrls.includes(e.path) && e.fullPath !== this.$route.path ? indexArr.push(i) : ''
-      )
-      if (indexArr.length > 0) {
-        this.canIClose(indexArr[0])
-        return
-      }
-      const curItem = this.tagList.filter(item => {
-        return item.path === this.$route.fullPath
-      })
-      this.tagList = curItem
-      this.$store.commit('app/setCurrentTags', this.tagList)
-    },
-    handleTags(command) {
-      command.value === 'other' ? this.closeOther() : this.closeAll()
-    }
+    nextTick(() => {
+      store.commit('app/setAskingPath', fullPath)
+    })
+  } else {
+    // 直接关闭
+    handleClose(index)
   }
 }
+function handleClose(index) {
+  const closePath = tagList.value[index].fullPath
+  // 当只有一个tag的时候，并且这个tag就是首页，那么就不需要删除
+  const needDelete = !(closePath === '/home/index' && tagList.value.length === 1)
+  if (closePath === route.fullPath) {
+    if (index > 0) {
+      router.push(tagList.value[index - 1].fullPath)
+    } else {
+      if (tagList.value.length > 1) {
+        router.push(tagList.value[index + 1].fullPath)
+      } else {
+        if (needDelete) {
+          router.push('/')
+        }
+      }
+    }
+  }
+  if (needDelete) {
+    tagList.value = tagList.value.filter((e, i) => i !== index)
+    store.commit('app/setCurrentTags', tagList.value)
+  }
+}
+function changeRouter(index) {
+  const currenRouter = tagList.value[index]
+  if (!currenRouter || currenRouter.fullPath === nowPath.value) return
+  router.push(currenRouter)
+}
+function closeRouter(fullPath) {
+  //关闭指定路由
+  let path = lastRoute.value.fullPath
+  if (fullPath) {
+    path = fullPath
+  }
+  let index = tagList.value.findIndex(item => item.fullPath === path)
+  if (index > -1) {
+    handleClose(index)
+  }
+}
+function goBack() {
+  closeRouter()
+}
+// 关闭全部标签
+function closeAll() {
+  const indexArr = []
+  tagList.value.map((e, i) => (needAskUrls.includes(e.path) ? indexArr.push(i) : ''))
+  if (indexArr.length > 0) {
+    canIClose(indexArr[0])
+    return
+  }
+  tagList.value = []
+  store.commit('app/setCurrentTags', tagList.value)
+  router.push('/')
+}
+// 关闭其他标签
+function closeOther() {
+  const indexArr = []
+  tagList.value.map((e, i) =>
+    needAskUrls.includes(e.path) && e.fullPath !== route.path ? indexArr.push(i) : ''
+  )
+  if (indexArr.length > 0) {
+    canIClose(indexArr[0])
+    return
+  }
+  const curItem = tagList.value.filter(item => {
+    return item.path === route.fullPath
+  })
+  tagList.value = curItem
+  store.commit('app/setCurrentTags', tagList.value)
+}
+function handleTags(command) {
+  command.value === 'other' ? closeOther() : closeAll()
+}
+onBeforeRouteUpdate((to, from) => {
+  if (to.fullPath !== from.fullPath) {
+    lastRoute.value = from
+    nextTick(() => {
+      setTags(to)
+    })
+  }
+})
+watch(
+  () => store.state.app.currentTags,
+  n => {
+    tagList.value = [...n]
+  },
+  {
+    deep: true,
+  }
+)
+watch(
+  () => store.state.app.needClosePath,
+  n => {
+    if (n) {
+      store.commit('app/clearNowTag', '')
+      closeRouter(n)
+    }
+  }
+)
+
+onMounted(() => {
+  if (store.state.app?.currentTags?.length == 0) {
+    setTags(route)
+  } else {
+    tagList.value = store.state.app.currentTags
+  }
+  window.addEventListener('popstate', goBack, false)
+})
+onUnmounted(() => {
+  window.removeEventListener('popstate', goBack, false)
+})
 </script>

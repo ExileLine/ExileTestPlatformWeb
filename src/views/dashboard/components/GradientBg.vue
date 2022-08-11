@@ -11,7 +11,7 @@ const props = defineProps({
   /** 渐变开始的颜色 */
   startColor: String,
   /** 渐变结束的颜色 */
-  endColor: String
+  endColor: String,
 })
 const gradientStyle = computed(
   () => `linear-gradient(to bottom right, ${props.startColor}, ${props.endColor})`

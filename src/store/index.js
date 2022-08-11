@@ -12,5 +12,5 @@ const modules = keys(modulesFiles).reduce((modules, modulePath) => {
 
 export default createStore({
   modules,
-  getters
+  getters,
 })

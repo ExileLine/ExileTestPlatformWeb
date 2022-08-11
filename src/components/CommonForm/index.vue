@@ -54,7 +54,7 @@
             :class="{
               'row-reverse': actionAlign.indexOf('right') > -1,
               'justify-center': actionAlign.indexOf('center') > -1,
-              'dialog-actions': dialog
+              'dialog-actions': dialog,
             }"
           >
             <t-button type="submit" class="ml-10">
@@ -75,44 +75,44 @@ import { ref } from 'vue'
 const props = defineProps({
   labelWidth: {
     type: String,
-    default: 'auto'
+    default: 'auto',
   },
   // 表单数据
   data: {
-    type: Object
+    type: Object,
   },
   // 相关字段
   fieldList: {
-    type: Array
+    type: Array,
   },
   // 验证规则
   rules: {
-    type: Object
+    type: Object,
   },
   // 相关的列表
   listInfo: {
-    type: Object
+    type: Object,
   },
   // 确认的文集
   confirmText: {
     type: String,
-    default: '查询'
+    default: '查询',
   },
   // 重置的文字
   cancelText: {
     type: String,
-    default: '重置'
+    default: '重置',
   },
   actionAlign: {
     type: String,
-    default: 'left'
+    default: 'left',
   },
   dialog: {
-    type: Boolean
+    type: Boolean,
   },
   hiddenCancel: {
-    type: Boolean
-  }
+    type: Boolean,
+  },
 })
 const emit = defineEmits(['confirm', 'cancel', 'clear'])
 
@@ -145,7 +145,7 @@ function clear(...rest) {
 }
 
 defineExpose({
-  cancel
+  cancel,
 })
 </script>
 

@@ -10,7 +10,7 @@
       v-bind="{
         layout: 'total, sizes, prev, pager, next, jumper',
         'page-size-options': [1, 5, 10, 20, 30, 50, 100],
-        ...otherProps
+        ...otherProps,
       }"
       show-jumper
       :current="page"
@@ -29,38 +29,38 @@ const props = defineProps({
   url: String,
   params: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   doRequest: {
     type: Boolean,
-    default: false // post
+    default: false, // post
   }, //true的时候主动更新数据
   list: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   type: {
     type: String,
-    default: 'post' // post
+    default: 'post', // post
   },
   noPaging: {
     //不分页设置未true
     type: Boolean,
-    defalut: false
+    defalut: false,
   },
   unLoad: {
     //是否初始不加载
     type: Boolean,
-    defalut: false
+    defalut: false,
   },
   otherProps: {
     type: Object,
-    default: () => {}
+    default: () => {},
   },
   pageSize: {
     type: Number,
-    default: 20 // post
-  }
+    default: 20, // post
+  },
 })
 const emit = defineEmits(['confirm', 'update:list'])
 const store = useStore()
@@ -74,7 +74,7 @@ function getList() {
   const params = {
     page: page.value,
     size: size.value,
-    ...props.params
+    ...props.params,
   }
   transParams(params)
   request[props.type.toLocaleLowerCase()](props.url, params).then(res => {
@@ -95,7 +95,7 @@ const handleCurrentChange = p => {
 
 const jumperDisabled = computed(() => ({
   prev: page.value === 1,
-  next: page.value > Math.ceil(total / size)
+  next: page.value > Math.ceil(total / size),
 }))
 
 const handleJumperChange = ({ trigger }) => {
@@ -122,7 +122,7 @@ watch(
     size.value = n || 20
   },
   {
-    immediate: true
+    immediate: true,
   }
 )
 watch(
@@ -131,7 +131,7 @@ watch(
     page.value = 1
   },
   {
-    deep: true
+    deep: true,
   }
 )
 

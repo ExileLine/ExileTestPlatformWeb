@@ -8,7 +8,7 @@ import {
   ScatterChart,
   PictorialBarChart,
   RadarChart,
-  GaugeChart
+  GaugeChart,
 } from 'echarts/charts'
 import {
   TitleComponent,
@@ -17,7 +17,7 @@ import {
   GridComponent,
   DatasetComponent,
   TransformComponent,
-  ToolboxComponent
+  ToolboxComponent,
 } from 'echarts/components'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -40,7 +40,7 @@ echarts.use([
   GaugeChart,
   LabelLayout,
   UniversalTransition,
-  CanvasRenderer
+  CanvasRenderer,
 ])
 
 /**
@@ -129,6 +129,6 @@ export function useEcharts(options, renderFun) {
   })
 
   return {
-    domRef
+    domRef,
   }
 }

@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 1300,
       icon: 'round',
-      title: '定时任务'
+      title: '定时任务',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'scheduleList',
         path: 'index',
         meta: {
-          title: '任务列表'
+          title: '任务列表',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

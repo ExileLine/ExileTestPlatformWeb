@@ -23,7 +23,7 @@ const cardData = [
     value: 1000000,
     unit: '',
     colors: ['#ec4786', '#b955a4'],
-    icon: 'chart'
+    icon: 'chart',
   },
   {
     id: 'execute_count',
@@ -31,7 +31,7 @@ const cardData = [
     value: 234567.89,
     unit: '',
     colors: ['#865ec0', '#5144b4'],
-    icon: 'chart-bar'
+    icon: 'chart-bar',
   },
   {
     id: 'success',
@@ -39,7 +39,7 @@ const cardData = [
     value: 666666,
     unit: '',
     colors: ['#56cdf3', '#719de3'],
-    icon: 'chart-bubble'
+    icon: 'chart-bubble',
   },
   {
     id: 'fail',
@@ -47,7 +47,7 @@ const cardData = [
     value: 999999,
     unit: '',
     colors: ['#fcbc25', '#f68057'],
-    icon: 'chart-pie'
+    icon: 'chart-pie',
   },
 
   //
@@ -57,7 +57,7 @@ const cardData = [
     value: 1000000,
     unit: '',
     colors: ['#ec4786', '#b955a4'],
-    icon: 'chart'
+    icon: 'chart',
   },
   {
     id: 'execute_count1',
@@ -65,7 +65,7 @@ const cardData = [
     value: 234567.89,
     unit: '',
     colors: ['#865ec0', '#5144b4'],
-    icon: 'chart-bar'
+    icon: 'chart-bar',
   },
   {
     id: 'success1',
@@ -73,7 +73,7 @@ const cardData = [
     value: 666666,
     unit: '',
     colors: ['#56cdf3', '#719de3'],
-    icon: 'chart-bubble'
+    icon: 'chart-bubble',
   },
   {
     id: 'fail1',
@@ -81,7 +81,7 @@ const cardData = [
     value: 999999,
     unit: '',
     colors: ['#fcbc25', '#f68057'],
-    icon: 'chart-pie'
-  }
+    icon: 'chart-pie',
+  },
 ]
 </script>

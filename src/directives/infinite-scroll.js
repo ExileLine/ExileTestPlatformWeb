@@ -10,20 +10,20 @@ export const DEFAULT_DISTANCE = 0
 const attributes = {
   delay: {
     type: Number,
-    default: DEFAULT_DELAY
+    default: DEFAULT_DELAY,
   },
   distance: {
     type: Number,
-    default: DEFAULT_DISTANCE
+    default: DEFAULT_DISTANCE,
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   immediate: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 }
 
 const getScrollOptions = (el, instance) => {
@@ -112,7 +112,7 @@ const InfiniteScroll = {
       delay,
       cb,
       onScroll,
-      lastScrollTop: containerEl.scrollTop
+      lastScrollTop: containerEl.scrollTop,
     }
 
     if (immediate) {
@@ -138,7 +138,7 @@ const InfiniteScroll = {
     if (containerEl.clientHeight && observer) {
       checkFull(el, cb)
     }
-  }
+  },
 }
 
 export default InfiniteScroll

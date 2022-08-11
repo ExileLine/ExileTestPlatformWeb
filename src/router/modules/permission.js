@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 200,
       icon: 'secured',
-      title: '权限管理'
+      title: '权限管理',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'permissionList',
         path: 'index',
         meta: {
-          title: '权限配置'
+          title: '权限配置',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

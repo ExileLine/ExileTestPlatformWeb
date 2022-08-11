@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 600,
       icon: 'link',
-      title: '性能测试'
+      title: '性能测试',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'PressureCaseList',
         path: 'case',
         meta: {
-          title: '用例列表'
+          title: '用例列表',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

@@ -221,7 +221,11 @@
 
 .t-form {
   .t-input {
-    min-width: 180px;
+    min-width: 200px;
+
+    @media (max-width: 540px) {
+      min-width: 100px;
+    }
   }
 }
 

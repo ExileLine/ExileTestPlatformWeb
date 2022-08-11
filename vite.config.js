@@ -22,34 +22,34 @@ export default defineConfig(configEnv => {
         '@util': resolve('src/utils'),
         '@hook': resolve('src/hooks'),
         '@style': resolve('src/styles'),
-        '@comp': resolve('src/components')
-      }
+        '@comp': resolve('src/components'),
+      },
     },
     plugins: setupVitePlugins(viteEnv),
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/styles/variables";`
-        }
-      }
+          additionalData: `@import "@/styles/variables";`,
+        },
+      },
     },
     server: {
       host: '0.0.0.0',
       port: 3200,
-      open: true
+      open: true,
     },
     preview: {
-      port: 5050
+      port: 5050,
     },
     optimizeDeps: {
-      include: ['tdesign-vue-next']
+      include: ['tdesign-vue-next'],
     },
     build: {
       reportCompressedSize: false,
       sourcemap: false,
       commonjsOptions: {
-        ignoreTryCatch: false
-      }
-    }
+        ignoreTryCatch: false,
+      },
+    },
   }
 })

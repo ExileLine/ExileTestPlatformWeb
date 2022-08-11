@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 400,
       icon: 'logo-codepen',
-      title: '接口测试'
+      title: '接口测试',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,20 +14,20 @@ const router = [
         name: 'apiCaseList',
         path: 'case',
         meta: {
-          title: '用例列表'
+          title: '用例列表',
         },
-        component: () => import('@view/apiCase/index.vue')
+        component: () => import('@view/apiCase/index.vue'),
       },
       {
         name: 'apiSceneList',
         path: 'scene',
         meta: {
-          title: '场景列表'
+          title: '场景列表',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

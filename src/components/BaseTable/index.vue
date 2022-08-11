@@ -42,26 +42,26 @@ import { throttle, map } from 'lodash'
 const props = defineProps({
   // form数据
   formModel: {
-    type: Object
+    type: Object,
   },
   // 相关字段
   fieldList: {
-    type: Array
+    type: Array,
   },
   // 验证规则
   rules: {
-    type: Object
+    type: Object,
   },
   // 相关的列表
   listInfo: {
-    type: Object
+    type: Object,
   },
   columns: {
-    type: Array
+    type: Array,
   },
   url: {
-    type: String
-  }
+    type: String,
+  },
 })
 
 const tableData = ref([])

@@ -4,16 +4,14 @@
       <div
         :class="{
           'w-190': !collapsed,
-          'w-40': collapsed
+          'w-40': collapsed,
         }"
         @click="$router.push('/project')"
       >
         Exile
       </div>
       <div v-if="!isProject && !isMobile" class="ml-10 fs-22 cursor" @click="toggleCollapse">
-        <t-icon
-          :name="`${collapsed ? 'format-vertical-align-left' : 'format-vertical-align-right'}`"
-        />
+        <t-icon :name="`${collapsed ? 'menu-fold' : 'menu-unfold'}`" />
       </div>
     </div>
 
@@ -69,7 +67,7 @@
     <t-dialog v-model:visible="resetPwdVisible" :footer="false" header="重置密码" @close="close">
       <common-form
         dialog
-        ref="resetPwdForm"
+        ref="resetPwdFormRef"
         :rules="resetPwdRules"
         :data="resetPwdForm"
         :field-list="resetPwdFieldList"
@@ -82,111 +80,105 @@
     </t-dialog>
   </div>
 </template>
-<script>
+<script setup>
+import { ref, reactive, computed, inject } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import ThemeTabs from './ThemeTabs.vue'
 import { validateRequired } from '@comp/validate'
 import { fetchResetPwd } from '@/api/user'
-export default {
-  components: {
-    ThemeTabs
+
+const route = useRoute()
+const store = useStore()
+const message = inject('message')
+
+const props = defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    collapsed: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    const commonProps = {
-      type: 'password',
-      showPassword: true
-    }
-    const validatePwd = value => {
-      if (value !== this.resetPwdForm.new_password) {
-        return { result: false, message: '两次输入密码不一致', type: 'error' }
-      }
-      return {
-        result: true,
-        type: 'success'
-      }
-    }
-    return {
-      resetPwdVisible: false,
-      resetPwdForm: {
-        old_password: '',
-        new_password: '',
-        raw_password: ''
-      },
-      resetPwdRules: {
-        old_password: [validateRequired('请输入旧密码')],
-        new_password: [validateRequired('请输入新密码')],
-        raw_password: [
-          validateRequired('请再次输入密码'),
-          { validator: validatePwd, trigger: 'blur' }
-        ]
-      },
-      resetPwdFieldList: [
-        {
-          value: 'old_password',
-          label: '旧密码',
-          component: 't-input',
-          type: 'password',
-          extraProps: {
-            ...commonProps
-          }
-        },
-        {
-          value: 'new_password',
-          label: '新密码',
-          component: 't-input',
-          type: 'password',
-          extraProps: {
-            ...commonProps
-          }
-        },
-        {
-          value: 'raw_password',
-          label: '确认密码',
-          component: 't-input',
-          type: 'password',
-          extraProps: {
-            ...commonProps
-          }
-        }
-      ]
-    }
-  },
-  computed: {
-    isProject() {
-      return this.$route.path === '/project'
-    },
-    isMobile() {
-      return this.$store.getters.isMobile
-    }
-  },
-  methods: {
-    refresh() {
-      location.reload()
-    },
-    gotoGithub() {
-      window.open('https://github.com/ExileLine', '_blank')
-    },
-    toggleCollapse() {
-      this.$emit('update:collapsed', !this.collapsed)
-    },
-    close() {
-      this.$refs.resetPwdForm.cancel()
-    },
-    async resetPwd() {
-      await fetchResetPwd({
-        ...this.resetPwdForm,
-        user_id: this.$store.getters.info.id
-      })
-      this.close()
-      this.resetPwdVisible = false
-      this.$message.success('重置密码成功')
-    }
+})
+
+const emit = defineEmits(['update:collapsed'])
+
+const resetPwdFormRef = ref()
+const commonProps = {
+  type: 'password',
+  showPassword: true,
+}
+const resetPwdVisible = ref(false)
+const resetPwdForm = reactive({
+  old_password: '',
+  new_password: '',
+  raw_password: '',
+})
+const validatePwd = value => {
+  if (value !== resetPwdForm.new_password) {
+    return { result: false, message: '两次输入密码不一致', type: 'error' }
   }
+  return {
+    result: true,
+    type: 'success',
+  }
+}
+const resetPwdRules = {
+  old_password: [validateRequired('请输入旧密码')],
+  new_password: [validateRequired('请输入新密码')],
+  raw_password: [validateRequired('请再次输入密码'), { validator: validatePwd, trigger: 'blur' }],
+}
+const resetPwdFieldList = [
+  {
+    value: 'old_password',
+    label: '旧密码',
+    component: 't-input',
+    type: 'password',
+    extraProps: {
+      ...commonProps,
+    },
+  },
+  {
+    value: 'new_password',
+    label: '新密码',
+    component: 't-input',
+    type: 'password',
+    extraProps: {
+      ...commonProps,
+    },
+  },
+  {
+    value: 'raw_password',
+    label: '确认密码',
+    component: 't-input',
+    type: 'password',
+    extraProps: {
+      ...commonProps,
+    },
+  },
+]
+
+const isProject = computed(() => route.path === '/project')
+const isMobile = computed(() => store.getters.isMobile)
+
+function refresh() {
+  location.reload()
+}
+function gotoGithub() {
+  window.open('https://github.com/ExileLine', '_blank')
+}
+function toggleCollapse() {
+  emit('update:collapsed', !props.collapsed)
+}
+function close() {
+  resetPwdFormRef.value.cancel()
+}
+async function resetPwd() {
+  await fetchResetPwd({
+    ...resetPwdForm,
+    user_id: store.getters.info.id,
+  })
+  close()
+  resetPwdVisible.value = false
+  message.success('重置密码成功')
 }
 </script>
 <style lang="scss">

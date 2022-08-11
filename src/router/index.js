@@ -9,25 +9,25 @@ const routes = [
     path: '/',
     redirect: '/dashboard',
     component: Layout,
-    children: pageRoutes.sort((a, b) => a?.meta?.sort - b.meta.sort)
+    children: pageRoutes.sort((a, b) => a?.meta?.sort - b.meta.sort),
   },
   {
     path: '/project',
-    component: () => import('@/views/project/index.vue')
+    component: () => import('@/views/project/index.vue'),
   },
   {
     path: '/login',
-    component: () => import('@/views/login/index.vue')
+    component: () => import('@/views/login/index.vue'),
   },
   {
     path: '/:pathMatch(.*)',
-    redirect: '/dashboard'
-  }
+    redirect: '/dashboard',
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 })
 
 export const getActive = (maxLevel = 2) => {

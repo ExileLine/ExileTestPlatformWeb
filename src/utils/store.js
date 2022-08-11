@@ -1,47 +1,47 @@
-const tokenKey = "token";
-const localStorage = window.localStorage;
+const tokenKey = 'token'
+const localStorage = window.localStorage
 
 export function getToken() {
-  return getStorage(tokenKey);
+  return getStorage(tokenKey)
 }
 
 export function setToken(data) {
-  return setStorage(tokenKey, data);
+  return setStorage(tokenKey, data)
 }
 
 export function removeToken() {
-  return removeStorage(tokenKey);
+  return removeStorage(tokenKey)
 }
 
 export function getStorage(key) {
-  if (typeof key !== "string") {
-    return undefined;
+  if (typeof key !== 'string') {
+    return undefined
   }
   try {
-    return JSON.parse(localStorage.getItem(key));
+    return JSON.parse(localStorage.getItem(key))
   } catch (err) {
-    return;
+    return
   }
 }
 
 export function setStorage(key, data) {
-  return localStorage.setItem(key, JSON.stringify(data));
+  return localStorage.setItem(key, JSON.stringify(data))
 }
 
 export function removeStorage(key) {
-  return localStorage.removeItem(key);
+  return localStorage.removeItem(key)
 }
 
 export function getAllStorage() {
-  const all = {};
+  const all = {}
   for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const val = getStorage(key);
-    all[key] = val;
+    const key = localStorage.key(i)
+    const val = getStorage(key)
+    all[key] = val
   }
-  return all;
+  return all
 }
 
 export function clearStorage() {
-  return localStorage.clear();
+  return localStorage.clear()
 }

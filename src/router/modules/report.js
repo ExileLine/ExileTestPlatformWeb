@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 1100,
       icon: 'file',
-      title: '测试报告'
+      title: '测试报告',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'reportList',
         path: 'index',
         meta: {
-          title: '报告列表'
+          title: '报告列表',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

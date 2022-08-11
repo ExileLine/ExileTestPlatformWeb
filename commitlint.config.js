@@ -14,7 +14,7 @@
  */
 module.exports = {
   // extends: ['@commitlint/config-conventional'],
-  extends: ["cz"],
+  extends: ['cz'],
   // cz 方式需要配合插件
   // yarn add commitlint-config-cz @commitlint/cli -D
   rules: {
@@ -23,21 +23,17 @@ module.exports = {
     // applicable: always:启用 | never：不启用
     // value: 可用值
     // commit type类型
-    "body-leading-blank": [1, "always"],
-    "footer-leading-blank": [1, "always"],
-    "header-max-length": [2, "always", 80],
-    "scope-case": [2, "always", "lower-case"],
-    "scope-empty": [0, "never"],
-    "subject-case": [
-      2,
-      "never",
-      ["sentence-case", "start-case", "pascal-case", "upper-case"],
-    ],
-    "subject-empty": [0, "never"],
-    "subject-full-stop": [2, "never", "."],
-    "type-case": [2, "always", "lower-case"],
-    "type-empty": [2, "never"],
+    'body-leading-blank': [1, 'always'],
+    'footer-leading-blank': [1, 'always'],
+    'header-max-length': [2, 'always', 80],
+    'scope-case': [2, 'always', 'lower-case'],
+    'scope-empty': [0, 'never'],
+    'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']],
+    'subject-empty': [0, 'never'],
+    'subject-full-stop': [2, 'never', '.'],
+    'type-case': [2, 'always', 'lower-case'],
+    'type-empty': [2, 'never'],
     // The scope-enum :  defined in the cz-config
     // The 'type-enum':  defined in the cz-config
   },
-};
+}

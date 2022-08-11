@@ -45,18 +45,18 @@ const lineOptions = ref({
     axisPointer: {
       type: 'cross',
       label: {
-        backgroundColor: '#6a7985'
-      }
-    }
+        backgroundColor: '#6a7985',
+      },
+    },
   },
   legend: {
-    data: ['成功', '失败']
+    data: ['成功', '失败'],
   },
   grid: {
     left: '3%',
     right: '4%',
     bottom: '3%',
-    containLabel: true
+    containLabel: true,
   },
   xAxis: [
     {
@@ -72,14 +72,14 @@ const lineOptions = ref({
         '18:00',
         '20:00',
         '22:00',
-        '24:00'
-      ]
-    }
+        '24:00',
+      ],
+    },
   ],
   yAxis: [
     {
-      type: 'value'
-    }
+      type: 'value',
+    },
   ],
   series: [
     {
@@ -98,19 +98,19 @@ const lineOptions = ref({
           colorStops: [
             {
               offset: 0.25,
-              color: '#8e9dff'
+              color: '#8e9dff',
             },
             {
               offset: 1,
-              color: '#fff'
-            }
-          ]
-        }
+              color: '#fff',
+            },
+          ],
+        },
       },
       emphasis: {
-        focus: 'series'
+        focus: 'series',
       },
-      data: [4623, 6145, 6268, 6411, 1890, 4251, 2978, 3880, 3606, 4311]
+      data: [4623, 6145, 6268, 6411, 1890, 4251, 2978, 3880, 3606, 4311],
     },
     {
       color: '#26deca',
@@ -128,35 +128,35 @@ const lineOptions = ref({
           colorStops: [
             {
               offset: 0.25,
-              color: '#26deca'
+              color: '#26deca',
             },
             {
               offset: 1,
-              color: '#fff'
-            }
-          ]
-        }
+              color: '#fff',
+            },
+          ],
+        },
       },
       emphasis: {
-        focus: 'series'
+        focus: 'series',
       },
-      data: [2208, 2016, 2916, 4512, 8281, 2008, 1963, 2367, 2956, 678]
-    }
-  ]
+      data: [2208, 2016, 2916, 4512, 8281, 2008, 1963, 2367, 2956, 678],
+    },
+  ],
 })
 
 const { domRef: lineRef } = useEcharts(lineOptions)
 console.log(lineRef)
 const pieOptions = ref({
   tooltip: {
-    trigger: 'item'
+    trigger: 'item',
   },
   legend: {
     bottom: '1%',
     left: 'center',
     itemStyle: {
-      borderWidth: 0
-    }
+      borderWidth: 0,
+    },
   },
   series: [
     {
@@ -168,29 +168,29 @@ const pieOptions = ref({
       itemStyle: {
         borderRadius: 10,
         borderColor: '#fff',
-        borderWidth: 1
+        borderWidth: 1,
       },
       label: {
         show: false,
-        position: 'center'
+        position: 'center',
       },
       emphasis: {
         label: {
           show: true,
-          fontSize: '12'
-        }
+          fontSize: '12',
+        },
       },
       labelLine: {
-        show: false
+        show: false,
       },
       data: [
         { value: 20, name: '成功' },
         { value: 10, name: '失败' },
         { value: 30, name: '错误' },
-        { value: 23, name: '跳过' }
-      ]
-    }
-  ]
+        { value: 23, name: '跳过' },
+      ],
+    },
+  ],
 })
 
 const { domRef: pieRef } = useEcharts(pieOptions)

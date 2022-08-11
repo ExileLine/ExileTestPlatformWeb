@@ -13,7 +13,7 @@ export default {
     isMobile: false,
     currentTags: [...tags], //当前打开的tag
     askingPath: '', // 当前问询是否要关闭页面
-    needClosePath: '' //需要关闭的页面
+    needClosePath: '', //需要关闭的页面
   },
 
   mutations: {
@@ -52,6 +52,6 @@ export default {
     },
     setMobile(state, isMobile) {
       state.isMobile = isMobile
-    }
-  }
+    },
+  },
 }

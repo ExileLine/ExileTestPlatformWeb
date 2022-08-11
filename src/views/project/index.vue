@@ -122,18 +122,18 @@ const colSpan = {
   xxl: 2,
   xl: 3,
   sm: 4,
-  xs: 12
+  xs: 12,
 }
 
 const projectDropdownOptions = [
   {
     name: '编辑',
-    icon: 'edit-1'
+    icon: 'edit-1',
   },
   {
     name: '执行',
-    icon: 'play-circle'
-  }
+    icon: 'play-circle',
+  },
 ]
 
 const gotoHome = project => {
@@ -156,10 +156,10 @@ const fetchProjectList = async () => {
       {
         project_name: project_name.value,
         page: page.value,
-        size
+        size,
       },
       {
-        loading: false
+        loading: false,
       }
     )
     page.value++

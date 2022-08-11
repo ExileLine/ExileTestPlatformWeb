@@ -10,58 +10,58 @@ const props = defineProps({
   /** 初始值 */
   startValue: {
     type: Number,
-    default: 0
+    default: 0,
   },
   /** 结束值 */
   endValue: {
     type: Number,
-    default: 2021
+    default: 2021,
   },
   /** 动画时长 */
   duration: {
     type: Number,
-    default: 1500
+    default: 1500,
   },
   /** 自动动画 */
   autoplay: {
     type: Boolean,
-    default: true
+    default: true,
   },
   /** 进制 */
   decimals: {
     type: Number,
-    default: 0
+    default: 0,
   },
   /** 前缀 */
   prefix: {
     type: String,
-    default: ''
+    default: '',
   },
   /** 后缀 */
   suffix: {
     type: String,
-    default: ''
+    default: '',
   },
   /** 分割符号 */
   separator: {
     type: String,
-    default: ''
+    default: '',
   },
   /** 小数点 */
   decimal: {
     type: String,
-    default: ''
+    default: '',
   },
   /** 使用缓冲动画函数 */
   useEasing: {
     type: Boolean,
-    default: true
+    default: true,
   },
   /** 缓冲动画函数类型 */
   transition: {
     type: String,
-    default: 'linear'
-  }
+    default: 'linear',
+  },
 })
 const emit = defineEmits(['on-started', 'on-finished'])
 const source = ref(props.startValue)
@@ -74,7 +74,7 @@ function run() {
     duration: props.duration,
     onStarted: () => emit('on-started'),
     onFinished: () => emit('on-finished'),
-    ...(props.useEasing ? { transition: TransitionPresets[props.transition] } : {})
+    ...(props.useEasing ? { transition: TransitionPresets[props.transition] } : {}),
   })
 }
 function start() {

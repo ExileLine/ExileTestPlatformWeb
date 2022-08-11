@@ -10,18 +10,18 @@ const props = defineProps({
   /** 前缀 */
   prefix: {
     type: String,
-    default: 'icon'
+    default: 'icon',
   },
   /** 图标名称(图片的文件名) */
   icon: String,
   width: {
     type: String,
-    default: '1em'
+    default: '1em',
   },
   height: {
     type: String,
-    default: '1em'
-  }
+    default: '1em',
+  },
 })
 const symbolId = computed(() => `#${props.prefix}-${props.icon}`)
 </script>

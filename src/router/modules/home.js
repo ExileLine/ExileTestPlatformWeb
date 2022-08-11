@@ -5,10 +5,10 @@ const router = [
     meta: {
       sort: 0,
       icon: 'dashboard',
-      title: '仪表盘'
+      title: '仪表盘',
     },
-    component: () => import('@view/dashboard/index.vue')
-  }
+    component: () => import('@view/dashboard/index.vue'),
+  },
 ]
 
 export default router

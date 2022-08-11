@@ -46,8 +46,8 @@ const fieldList = [
     label: '账号',
     value: 'username',
     extraProps: {
-      prefixIcon: () => <UserIcon />
-    }
+      prefixIcon: () => <UserIcon />,
+    },
   },
   {
     label: '密码',
@@ -55,9 +55,9 @@ const fieldList = [
     type: 'password',
     extraProps: {
       type: 'password',
-      prefixIcon: () => <LockOnIcon />
-    }
-  }
+      prefixIcon: () => <LockOnIcon />,
+    },
+  },
 ]
 const getTouristAccount = () => {
   if (!isTouristHidden.value) return

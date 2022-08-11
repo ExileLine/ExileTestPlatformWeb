@@ -6,7 +6,7 @@ const router = [
     meta: {
       sort: 700,
       icon: 'hourglass',
-      title: '变量管理'
+      title: '变量管理',
     },
     component: () => import('@/layout/BlankLayout.vue'),
     children: [
@@ -14,12 +14,12 @@ const router = [
         name: 'variableList',
         path: 'index',
         meta: {
-          title: '变量列表'
+          title: '变量列表',
         },
-        component: () => import('@view/about/index.vue')
-      }
-    ]
-  }
+        component: () => import('@view/about/index.vue'),
+      },
+    ],
+  },
 ]
 
 export default router

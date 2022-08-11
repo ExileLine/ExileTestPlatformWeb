@@ -13,7 +13,10 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.**": "prettier --check --ignore-unknown"
+    "*.**": [
+      "prettier --check --ignore-unknown",
+      "git add ."
+    ]
   },
   "dependencies": {
     "@vue/shared": "^3.2.37",

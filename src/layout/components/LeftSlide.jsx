@@ -17,8 +17,8 @@ const useComputed = props => {
     return [
       `${prefix}-sidebar-layout`,
       {
-        [`${prefix}-sidebar-compact`]: isCompact
-      }
+        [`${prefix}-sidebar-compact`]: isCompact,
+      },
     ]
   })
 
@@ -29,8 +29,8 @@ const useComputed = props => {
       {
         [`${prefix}-side-nav-no-logo`]: !showLogo,
         [`${prefix}-side-nav-no-fixed`]: !isFixed,
-        [`${prefix}-side-nav-mix-fixed`]: layout === 'mix' && isFixed
-      }
+        [`${prefix}-side-nav-mix-fixed`]: layout === 'mix' && isFixed,
+      },
     ]
   })
 
@@ -44,7 +44,7 @@ const useComputed = props => {
     sideNavCls,
     menuCls,
     layoutCls,
-    menu: pageRoutes
+    menu: pageRoutes,
   }
 }
 
@@ -53,33 +53,33 @@ export default defineComponent({
   components: {
     AssetLogoFull,
     AssetLogo,
-    MenuContent
+    MenuContent,
   },
   props: {
     collapsed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showLogo: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isFixed: {
       type: Boolean,
-      default: true
+      default: true,
     },
     layout: {
       type: String,
-      default: ''
+      default: '',
     },
     headerHeight: {
       type: String,
-      default: '64px'
+      default: '64px',
     },
     isCompact: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   setup(props, { emit }) {
     const router = useRouter()
@@ -113,7 +113,7 @@ export default defineComponent({
       ...useComputed(props),
       autoCollapsed,
       changeCollapsed,
-      goHome
+      goHome,
     }
   },
   render() {
@@ -129,7 +129,7 @@ export default defineComponent({
               <span class="version-container">
                 {!this.collapsed && pgk.name} {pgk.version}
               </span>
-            )
+            ),
           }}
         >
           <menu-content navData={this.menu} />
@@ -137,5 +137,5 @@ export default defineComponent({
         <div class={`${prefix}-side-nav-placeholder${this.collapsed ? '-hidden' : ''}`}></div>
       </div>
     )
-  }
+  },
 })
