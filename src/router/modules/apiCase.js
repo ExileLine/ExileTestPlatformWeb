@@ -26,6 +26,15 @@ const router = [
         },
         component: () => import('@view/about/index.vue'),
       },
+      {
+        name: 'addCase',
+        path: 'add',
+        meta: {
+          title: '添加接口用例',
+          hidden: true,
+        },
+        component: () => import('@view/api-case/add.vue'),
+      },
     ],
   },
 ]

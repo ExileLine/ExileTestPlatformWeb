@@ -39,6 +39,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { throttle, map, concat, filter } from 'lodash'
+import { renderAction } from '@/composables/renderTableAction'
 
 const props = defineProps({
   // form数据
@@ -76,39 +77,18 @@ const tableData = ref([])
 const getData = ref(false)
 const height = ref(500)
 
-const renderAction = () => {
-  const { actionOptionList } = props
-  if (isMobile.value) {
-    return (
-      <t-dropdown options={props.actionOptionList}>
-        <t-button variant="outline">更多...</t-button>
-      </t-dropdown>
-    )
-  }
-  return (
-    <div>
-      {actionOptionList.map(i => (
-        <t-tooltip content={i.content}>
-          <t-button theme={i.theme} variant="text" onClick={() => i.onClick()}>
-            <t-icon name={i.value} />
-          </t-button>
-        </t-tooltip>
-      ))}
-    </div>
-  )
-}
-
 const _column = computed(() => {
-  const length = props.actionOptionList?.length
+  const { actionOptionList, columns } = props
+  const length = actionOptionList?.length
   return filter(
     concat(
-      map(props.columns, i => ({ ...i, align: i.align || 'center' })),
+      map(columns, i => ({ ...i, align: i.align || 'center' })),
       length && {
         colKey: 'action',
         title: '操作',
         width: isMobile.value ? 120 : length * 70,
         fixed: 'right',
-        render: (h, { type }) => type !== 'title' && renderAction(),
+        render: (h, { type }) => type !== 'title' && renderAction(actionOptionList),
       }
     )
   )

@@ -12,7 +12,7 @@
             <slot></slot>
           </div>
         </div>
-        <footer class="copyright plr-20">
+        <footer class="copyright plr-20 flex-center">
           Copyright @ 2020-2022 ExileLine. All Rights Reserved
         </footer>
       </div>

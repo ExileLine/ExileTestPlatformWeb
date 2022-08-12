@@ -7,20 +7,9 @@
     clearable
     :multiple="multiple"
     :value-key="valueKey"
+    :options="options"
     :remote-method="getList"
-  >
-    <template v-if="multiple">
-      <t-option v-for="item in options" :value="item" :label="item[labelKey]" :key="item.value" />
-    </template>
-    <template v-else>
-      <t-option
-        v-for="item in options"
-        :value="item[valueKey]"
-        :label="item[labelKey]"
-        :key="item.value"
-      />
-    </template>
-  </t-select>
+  />
 </template>
 <script setup>
 import { ref } from 'vue'
@@ -61,8 +50,8 @@ async function getList(value = '') {
   })
   options.value = map(records, item => ({
     ...item,
-    [labelKey]: item[props.labelKey],
-    [valueKey]: item[props.valueKey],
+    label: item[props.labelKey],
+    value: item[props.valueKey],
   }))
 }
 

@@ -9,7 +9,7 @@
       url="/api/case_page"
     >
       <template #formActions>
-        <t-button theme="primary">新增</t-button>
+        <t-button theme="primary" @click="$router.push('/api-case/add')">新增</t-button>
       </template>
     </base-table>
   </page-container>
