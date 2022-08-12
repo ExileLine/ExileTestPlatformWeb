@@ -28,6 +28,10 @@ export default {
       state.currentTags = tags
       setStorage('tags', tags)
     },
+    clearTag(state) {
+      state.currentTags = []
+      setStorage('tags', [])
+    },
     setAskingPath(state, data) {
       state.askingPath = data
     },

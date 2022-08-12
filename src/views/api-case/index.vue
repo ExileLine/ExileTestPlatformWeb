@@ -1,9 +1,11 @@
 <template>
   <page-container>
     <base-table
+      ref="baseTableRef"
       :form-model="formModel"
       :field-list="fieldList"
       :columns="columns"
+      :action-option-list="actionOptionList"
       url="/api/case_page"
     >
       <template #formActions>
@@ -16,9 +18,18 @@
 <script setup lang="jsx">
 import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
+import { find } from 'lodash'
+import { requestMethodList, caseStatusList } from '@/config/variables'
 const store = useStore()
 const isMobile = computed(() => store.getters.isMobile)
+
+const baseTableRef = ref()
 const formModel = ref({})
+const selectChange = {
+  change: () => {
+    baseTableRef.value.getData = true
+  },
+}
 const fieldList = [
   {
     label: '用例名称',
@@ -30,63 +41,84 @@ const fieldList = [
   },
   {
     label: '请求方式',
+    component: 't-select',
+    list: requestMethodList,
     value: 'request_method',
+    on: selectChange,
   },
   {
     label: '用例状态',
     value: 'case_status',
+    component: 't-select',
+    list: caseStatusList,
+    on: selectChange,
   },
   {
     label: '版本迭代',
     value: 'version_id',
+    component: 'remote-select',
+    extraProps: {
+      url: '/api/project_version_page',
+      labelKey: 'version_name',
+    },
+    on: selectChange,
   },
   {
     label: '模块',
     value: 'module_id',
+    component: 'remote-select',
+    extraProps: {
+      url: '/api/module_app_page',
+      labelKey: 'module_name',
+    },
+    on: selectChange,
   },
   {
     label: '创建者',
-    value: 'creator',
+    value: 'creator_id',
+    component: 'remote-select',
+    extraProps: {
+      url: '/api/user_page',
+      labelKey: 'username',
+    },
+    on: selectChange,
   },
 ]
 
 const actionOptionList = [
   {
-    content: '编辑',
-    value: 'edit',
+    content: '执行',
+    value: 'play-circle',
+    theme: 'success',
+    onClick() {},
   },
   {
-    content: '禁用',
-    value: 'error-circle',
+    content: '编辑',
+    value: 'edit',
+    theme: 'primary',
+    onClick() {
+      console.log('编辑')
+    },
+  },
+  {
+    content: '日志',
+    value: 'file',
+    theme: 'warning',
+    onClick() {},
+  },
+  {
+    content: '复制',
+    value: 'file-copy',
+    theme: 'info',
+    onClick() {},
   },
   {
     content: '删除',
     value: 'delete',
+    theme: 'danger',
+    onClick() {},
   },
 ]
-
-const renderAction = () => {
-  if (isMobile.value) {
-    return (
-      <t-dropdown options={actionOptionList}>
-        <t-button variant="outline">更多...</t-button>
-      </t-dropdown>
-    )
-  }
-  return (
-    <div>
-      <t-button theme="primary" variant="text">
-        <t-icon name="edit" />
-      </t-button>
-      <t-button theme="warning" variant="text">
-        <t-icon name="error-circle" />
-      </t-button>
-      <t-button theme="danger" variant="text">
-        <t-icon name="delete" />
-      </t-button>
-    </div>
-  )
-}
 
 const columns = computed(() => [
   {
@@ -106,6 +138,15 @@ const columns = computed(() => [
     title: '请求方式',
     ellipsis: true,
     width: 120,
+    render: (h, { row, type }) =>
+      type !== 'title' && (
+        <t-tag
+          theme={find(requestMethodList, { value: row.request_method })?.theme}
+          variant="light"
+        >
+          {row.request_method}
+        </t-tag>
+      ),
   },
   {
     colKey: 'request_base_url',
@@ -130,6 +171,18 @@ const columns = computed(() => [
     title: '用例状态',
     ellipsis: true,
     width: 120,
+    render: (h, { row, type }) => {
+      if (type !== 'title') {
+        const status = find(caseStatusList, { value: row.case_status })
+        return (
+          status && (
+            <t-tag theme={status?.theme} variant="light">
+              {status.label}
+            </t-tag>
+          )
+        )
+      }
+    },
   },
   {
     colKey: 'creator',
@@ -160,13 +213,6 @@ const columns = computed(() => [
     title: '备注',
     ellipsis: true,
     width: 180,
-  },
-  {
-    colKey: 'action',
-    title: '操作',
-    width: isMobile.value ? 120 : 210,
-    fixed: 'right',
-    render: (h, { type }) => type !== 'title' && renderAction(),
   },
 ])
 </script>

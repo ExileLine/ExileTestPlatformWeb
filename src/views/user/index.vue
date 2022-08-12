@@ -4,6 +4,7 @@
       :form-model="formModel"
       :field-list="fieldList"
       :columns="columns"
+      :action-option-list="actionOptionList"
       url="/api/user_page"
     >
       <template #formActions>
@@ -38,39 +39,24 @@ const actionOptionList = [
   {
     content: '编辑',
     value: 'edit',
+    theme: 'primary',
+    onClick() {
+      console.log('编辑')
+    },
   },
   {
     content: '禁用',
     value: 'error-circle',
+    theme: 'warning',
+    onClick() {},
   },
   {
     content: '删除',
     value: 'delete',
+    theme: 'danger',
+    onClick() {},
   },
 ]
-
-const renderAction = () => {
-  if (isMobile.value) {
-    return (
-      <t-dropdown options={actionOptionList}>
-        <t-button variant="outline">更多...</t-button>
-      </t-dropdown>
-    )
-  }
-  return (
-    <div>
-      <t-button theme="primary" variant="text">
-        <t-icon name="edit" />
-      </t-button>
-      <t-button theme="warning" variant="text">
-        <t-icon name="error-circle" />
-      </t-button>
-      <t-button theme="danger" variant="text">
-        <t-icon name="delete" />
-      </t-button>
-    </div>
-  )
-}
 
 const columns = computed(() => [
   {
@@ -120,13 +106,6 @@ const columns = computed(() => [
     title: '备注',
     ellipsis: true,
     width: 180,
-  },
-  {
-    colKey: 'action',
-    title: '操作',
-    width: isMobile.value ? 120 : 210,
-    fixed: 'right',
-    render: (h, { type }) => type !== 'title' && renderAction(),
   },
 ])
 </script>

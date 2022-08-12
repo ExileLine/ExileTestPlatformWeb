@@ -1,12 +1,12 @@
 <template>
   <div class="header justify-end align-center">
-    <div class="logo align-center">
+    <div class="logo align-center pointer">
       <div
         :class="{
           'w-190': !collapsed,
           'w-40': collapsed,
         }"
-        @click="$router.push('/project')"
+        @click="gotoProject"
       >
         Exile
       </div>
@@ -82,13 +82,14 @@
 </template>
 <script setup>
 import { ref, reactive, computed, inject } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import ThemeTabs from './ThemeTabs.vue'
 import { validateRequired } from '@comp/validate'
 import { fetchResetPwd } from '@/api/user'
 
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
 const message = inject('message')
 
@@ -179,6 +180,11 @@ async function resetPwd() {
   close()
   resetPwdVisible.value = false
   message.success('重置密码成功')
+}
+
+const gotoProject = () => {
+  store.commit('app/clearTag')
+  router.push('/project')
 }
 </script>
 <style lang="scss">

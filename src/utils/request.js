@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { assign } from 'lodash'
 import store from '@/store'
 import router from '@/router'
 import { LoadingPlugin, MessagePlugin } from 'tdesign-vue-next'
@@ -33,6 +34,9 @@ const service = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost:7878/',
   // withCredentials: true,
   timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 })
 
 // Toast提示，根据不同的ui库来
@@ -46,13 +50,16 @@ const errorHandler = error => {
 
 service.interceptors.request.use(
   config => {
-    const { loading } = config
+    const { loading, params, data } = config
+    const project_id = store.getters.project_id
     if (typeof loading === 'undefined' || loading === true) {
       setLoading()
     }
     if (store.getters.token) {
       config.headers.token = getToken()
     }
+    params && assign(params, { project_id })
+    data && assign(data, { project_id })
     // config.cancelToken = store.getters.source.token
     return config
   },

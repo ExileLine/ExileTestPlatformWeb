@@ -10,9 +10,9 @@
         @cancel="getData = true"
         @confirm="getData = true"
       />
-      <div class="mb-20">
-        <slot name="formActions"></slot>
-      </div>
+    </div>
+    <div class="mb-20 justify-end">
+      <slot name="formActions"></slot>
     </div>
     <div ref="tableRef">
       <t-table bordered :data="tableData" :columns="_column" :height="height">
@@ -35,9 +35,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { throttle, map } from 'lodash'
+import { useStore } from 'vuex'
+import { throttle, map, concat, filter } from 'lodash'
 
 const props = defineProps({
   // form数据
@@ -62,13 +63,56 @@ const props = defineProps({
   url: {
     type: String,
   },
+  actionOptionList: {
+    type: Array,
+  },
 })
 
+const store = useStore()
+const isMobile = computed(() => store.getters.isMobile)
+
 const tableData = ref([])
+
 const getData = ref(false)
 const height = ref(500)
 
-const _column = computed(() => map(props.columns, i => ({ ...i, align: i.align || 'center' })))
+const renderAction = () => {
+  const { actionOptionList } = props
+  if (isMobile.value) {
+    return (
+      <t-dropdown options={props.actionOptionList}>
+        <t-button variant="outline">更多...</t-button>
+      </t-dropdown>
+    )
+  }
+  return (
+    <div>
+      {actionOptionList.map(i => (
+        <t-tooltip content={i.content}>
+          <t-button theme={i.theme} variant="text" onClick={() => i.onClick()}>
+            <t-icon name={i.value} />
+          </t-button>
+        </t-tooltip>
+      ))}
+    </div>
+  )
+}
+
+const _column = computed(() => {
+  const length = props.actionOptionList?.length
+  return filter(
+    concat(
+      map(props.columns, i => ({ ...i, align: i.align || 'center' })),
+      length && {
+        colKey: 'action',
+        title: '操作',
+        width: isMobile.value ? 120 : length * 70,
+        fixed: 'right',
+        render: (h, { type }) => type !== 'title' && renderAction(),
+      }
+    )
+  )
+})
 
 const tableRef = ref()
 const paginationRef = ref()
@@ -87,5 +131,9 @@ onMounted(() => {
 })
 onUnmounted(() => {
   window.removeEventListener('resize', resize)
+})
+
+defineExpose({
+  getData,
 })
 </script>

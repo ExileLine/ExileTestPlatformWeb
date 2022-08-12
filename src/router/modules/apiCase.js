@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '用例列表',
         },
-        component: () => import('@view/apiCase/index.vue'),
+        component: () => import('@view/api-case/index.vue'),
       },
       {
         name: 'apiSceneList',

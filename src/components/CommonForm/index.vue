@@ -34,7 +34,7 @@
           :clearable="field.type !== 'password'"
           :field="field"
           :list-info="listInfo"
-          :is="field.component || 't-input'"
+          :is="comp[field.component] || field.component || 't-input'"
           @clear="clear"
         />
         <span v-if="field.suffix" :class="field.suffixClass">{{ field.suffix }}</span>
@@ -72,6 +72,21 @@
 
 <script setup>
 import { ref } from 'vue'
+import TRadio from './components/Radio.vue'
+import TSelect from './components/Select.vue'
+import TCheckbox from './components/Checkbox.vue'
+import RemoteSelect from './components/RemoteSelect.vue'
+
+const comp = {
+  TRadio,
+  TSelect,
+  TCheckbox,
+  RemoteSelect,
+  't-radio': TRadio,
+  't-select': TSelect,
+  't-checkbox': TCheckbox,
+  'remote-select': RemoteSelect,
+}
 const props = defineProps({
   labelWidth: {
     type: String,
