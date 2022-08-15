@@ -29,10 +29,13 @@ import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/edit/closebrackets'
 // JSON代码高亮需要由JavaScript插件支持
 import 'codemirror/mode/javascript/javascript'
+import 'codemirror/mode/xml/xml'
+import 'codemirror/mode/htmlmixed/htmlmixed'
 // JSON错误检查
 import 'codemirror/addon/lint/lint'
 // 需要依赖全局的jsonlint，不是很优雅
 import 'codemirror/addon/lint/json-lint'
+
 // 引入jsonlint
 import jsonlint from 'jsonlint-mod'
 window.jsonlint = jsonlint
@@ -40,6 +43,10 @@ window.jsonlint = jsonlint
 const props = defineProps({
   modelValue: [String, Number, Object, Array],
   readOnly: [Boolean],
+  mode: {
+    type: String,
+    default: 'application/json',
+  },
 })
 
 const emit = defineEmits(['changed', 'update:modelValue'])
@@ -62,6 +69,12 @@ watch(
 )
 
 watch(
+  () => props.mode,
+  mode => {
+    jsonEditor.setOption('mode', mode)
+  }
+)
+watch(
   () => theme.value,
   val => {
     nextTick(() => {
@@ -81,7 +94,7 @@ onMounted(() => {
     styleActiveLine: true, // 当前行高亮
     lineNumbers: true, // 是否显示行数
     indentUnit: 2, // 缩进单位，默认2
-    mode: 'application/json',
+    mode: props.mode,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     theme: 'idea',
     lint: true,
@@ -89,8 +102,13 @@ onMounted(() => {
     foldGutter: true,
     matchBrackets: true, // 括号匹配显示
     autoCloseBrackets: true, // 输入和退格时成对
+    autoRefresh: true,
   })
-  jsonEditor.setValue(JSON.stringify(modelValue, null, 2))
+  if (typeof modelValue === 'string') {
+    jsonEditor.setValue(modelValue)
+  } else {
+    jsonEditor.setValue(JSON.stringify(modelValue || {}, null, 2))
+  }
   jsonEditor.on('change', cm => {
     emit('changed', cm.getValue())
     emit('update:modelValue', cm.getValue())
@@ -99,7 +117,18 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 .json-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
   ::v-deep(.CodeMirror) {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    .CodeMirror-scroll {
+      flex: 1;
+    }
     .CodeMirror-vscrollbar {
       &::-webkit-scrollbar {
         width: 8px;

@@ -16,7 +16,7 @@ const title = route.meta?.title ?? ''
 const jsonData = ref({})
 
 for (let index = 0; index < 1000; index++) {
-  jsonData[Math.random()] = index
+  jsonData.value[Math.random()] = { index }
 }
 </script>
 

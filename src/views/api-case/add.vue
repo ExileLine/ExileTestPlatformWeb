@@ -4,19 +4,22 @@
       <t-col :md="5" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10">用例信息</div>
         <common-form
+          ref="caseFormRef"
           label-width="100px"
           :data="addModel"
+          :rules="rules"
           :field-list="fieldList"
           confirm-text="保存"
+          @confirm="saveCase"
         />
       </t-col>
     </t-row>
 
     <t-row :gutter="20">
-      <t-col :md="8" :xs="12">
+      <t-col :md="12" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10">参数信息</div>
         <div class="justify-end mb-10">
-          <t-button>
+          <t-button @click="addReqData">
             <t-icon name="add" />
           </t-button>
         </div>
@@ -46,8 +49,12 @@
               />
               <t-tabs v-model:value="paramsTab" theme="card">
                 <t-tab-panel v-for="tab in paramsTabList" :value="tab.label" :label="tab.label">
-                  <div class="pt-10">
-                    <component :is="tab.component" :data="data.data_info[tab.key]" />
+                  <div class="pt-10 body-container">
+                    <component
+                      :is="tab.component"
+                      v-model:data="data.data_info[tab.key]"
+                      v-model:body-type="data.data_info.request_body_type"
+                    />
                   </div>
                 </t-tab-panel>
               </t-tabs>
@@ -56,15 +63,33 @@
         </t-tabs>
       </t-col>
     </t-row>
+
+    <t-button class="case-btn" size="medium" @click="submitCase">
+      <t-icon name="check" />
+      提交
+    </t-button>
   </page-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, inject } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
+import BodyJson from './components/BodyJson.vue'
+import { fetchAddCase, fetchBindCase } from '@/api/api-case'
+import { validateRequired } from '@/components/validate'
+
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const message = inject('message')
+
+const caseFormRef = ref()
+
 const switchLabel = ['是', '否']
-const addModel = ref({})
+const addModel = reactive({})
 const fieldList = [
   {
     value: 'version_list',
@@ -97,13 +122,6 @@ const fieldList = [
   {
     value: 'request_base_url',
     label: '请求地址',
-    extraProps: {
-      allowCreate: true,
-      url: '/api/case_env_page',
-      labelKey: 'env_name',
-      class: 'wp-100',
-      placeholder: '请选择或输入环境',
-    },
   },
   {
     value: 'request_url',
@@ -150,6 +168,14 @@ const fieldList = [
   },
 ]
 
+const rules = {
+  case_name: [validateRequired('请输入用例名称')],
+  request_base_url: [validateRequired('请输入请求地址')],
+  request_url: [validateRequired('请输入接口')],
+  request_method: [validateRequired('请选择请求方式'), 'change'],
+  case_status: [validateRequired('请选择用例状态'), 'change'],
+}
+
 const paramsTabList = [
   {
     label: 'Params',
@@ -163,6 +189,8 @@ const paramsTabList = [
   },
   {
     label: 'Body',
+    key: 'request_body_hash',
+    component: BodyJson,
   },
   {
     label: '关系变量',
@@ -173,152 +201,88 @@ const paramsTabList = [
   {
     label: '后置条件',
   },
+  {
+    label: '响应断言',
+  },
+  {
+    label: '字段断言',
+  },
 ]
 
 const paramsTab = ref(paramsTabList[0].label)
 
 let cid = 0
 const dataInfoTab = ref()
-const data_list = ref([
-  {
-    data_info: {
-      create_time: '2022-06-27 14:02:18',
-      create_timestamp: 1656309738,
-      creator: 'shell',
-      creator_id: 999999,
-      data_after: [],
-      data_before: [],
-      data_name: '测试数据:12',
-      data_size: 69,
-      id: 12,
-      cid: 1,
-      is_after: 0,
-      is_before: 0,
-      is_deleted: 0,
-      is_public: 1,
-      md5: null,
-      modifier: 'user_00008',
-      modifier_id: 8,
-      remark: '脚本生成',
-      request_params_hash: {
-        token: {
-          active: true,
-          key: 'token',
-          value: '123456',
-          desc: 'token',
-        },
-      },
-      request_headers_hash: {
-        token: {
-          key: 'token23213',
-          active: true,
-          value: '123456',
-          desc: 'token',
-        },
-      },
-      request_body_hash: {
-        id: {
-          active: true,
-          value: '123',
-          desc: '用例id',
-        },
-        name: {
-          active: false,
-          value: '123',
-          desc: '名称',
-        },
-        user_id: {
-          active: true,
-          value: '${user_id}',
-          desc: '名称',
-        },
-      },
-      request_body: '{\n\t"password": 2452572,\n\t"user_id": "${user_id}"\n}',
-      request_body_type: 2,
-      request_headers: '{\n\t"token": "${token}"\n}',
-      request_params: '{}',
-      status: 1,
-      update_time: '2022-08-12 14:36:22',
-      update_timestamp: 1659575846,
-      update_var_list: [],
-      var_list: null,
-    },
-    ass_resp_id_list: [],
-    ass_field_id_list: [],
+
+const genReqData = () => ({
+  data_info: {
+    cid: ++cid,
+    data_after: [],
+    data_before: [],
+    data_name: '未命名',
+    is_after: false,
+    is_before: false,
+    request_body_type: 'none',
+    request_params_hash: [],
+    request_headers_hash: [],
+    request_body_hash: '',
+    update_var_list: [],
+    var_list: null,
   },
-  {
-    data_info: {
-      create_time: '2022-06-27 14:02:18',
-      create_timestamp: 1656309738,
-      creator: 'shell',
-      creator_id: 999999,
-      data_after: [],
-      data_before: [],
-      data_name: '测试数据测试数据测试数据',
-      data_size: 69,
-      id: 12,
-      cid: 2,
-      is_after: 0,
-      is_before: 0,
-      is_deleted: 0,
-      is_public: 1,
-      md5: null,
-      modifier: 'user_00008',
-      modifier_id: 8,
-      remark: '脚本生成',
-      request_body: '{\n\t"password": 2452572,\n\t"user_id": "${user_id}"\n}',
-      request_body_type: 2,
-      request_headers: '{\n\t"token": "${token}"\n}',
-      request_params: '{}',
-      status: 1,
-      update_time: '2022-08-12 14:36:22',
-      update_timestamp: 1659575846,
-      update_var_list: [],
-      var_list: null,
-    },
-    ass_resp_id_list: [],
-    ass_field_id_list: [],
-  },
-  {
-    data_info: {
-      create_time: '2022-06-27 14:02:18',
-      create_timestamp: 1656309738,
-      creator: 'shell',
-      creator_id: 999999,
-      data_after: [],
-      data_before: [],
-      data_name: '3333',
-      data_size: 69,
-      id: 12,
-      cid: 3,
-      is_after: 0,
-      is_before: 0,
-      is_deleted: 0,
-      is_public: 1,
-      md5: null,
-      modifier: 'user_00008',
-      modifier_id: 8,
-      remark: '脚本生成',
-      request_body: '{\n\t"password": 2452572,\n\t"user_id": "${user_id}"\n}',
-      request_body_type: 2,
-      request_headers: '{\n\t"token": "${token}"\n}',
-      request_params: '{}',
-      status: 1,
-      update_time: '2022-08-12 14:36:22',
-      update_timestamp: 1659575846,
-      update_var_list: [],
-      var_list: null,
-    },
-    ass_resp_id_list: [],
-    ass_field_id_list: [],
-  },
-])
+  ass_resp_id_list: [],
+  ass_field_id_list: [],
+})
+const data_list = ref([genReqData()])
+data_list.value.forEach(i => (i.data_info.cid = cid++))
 
 dataInfoTab.value = data_list.value[0].data_info.cid
 
+const addReqData = () => {
+  data_list.value.push(genReqData())
+  dataInfoTab.value = cid
+}
 const removeDataInfoTab = ({ index }) => {
-  data_list.value.splice(index, 1)
+  if (data_list.value.length > 1) {
+    data_list.value.splice(index, 1)
+  }
+}
+
+const saveCase = async () => {
+  const { id } = await fetchAddCase(addModel)
+  message.success('保存成功')
+  return id
+}
+
+const submitCase = async () => {
+  const validateResult = await caseFormRef.value.validate()
+  if (validateResult === true) {
+    const case_id = await saveCase()
+    await fetchBindCase({
+      case_id,
+      data_list: data_list.value,
+    })
+    message.success('操作成功')
+    store.commit('app/delTag', route.fullPath)
+    router.push({
+      path: '/api-case',
+    })
+  } else {
+    message.warning('请填写必选项')
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.body-container {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-btn {
+  position: fixed;
+  right: 40px;
+  bottom: 60px;
+  z-index: 2;
+}
+</style>

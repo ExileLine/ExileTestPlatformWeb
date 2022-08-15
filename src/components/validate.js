@@ -1,5 +1,5 @@
 // 校验必填项
-export const validateRequired = (message, trigger = 'blue', type = 'error') => ({
+export const validateRequired = (message, trigger = 'blur', type = 'error') => ({
   required: true,
   message,
   type,

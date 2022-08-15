@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 
-export const renderAction = actionOptionList => {
+export const renderAction = (actionOptionList, row) => {
   const store = useStore()
   const isMobile = computed(() => store.getters.isMobile)
   if (isMobile.value) {
@@ -15,7 +15,7 @@ export const renderAction = actionOptionList => {
     <div>
       {actionOptionList.map(i => (
         <t-tooltip content={i.content}>
-          <t-button theme={i.theme} variant="text" onClick={() => i.onClick()}>
+          <t-button theme={i.theme} variant="text" onClick={() => i.onClick(row)}>
             <t-icon name={i.value} />
           </t-button>
         </t-tooltip>

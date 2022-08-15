@@ -135,7 +135,7 @@ const formRef = ref()
 function getProps({ component, label, extraProps }) {
   const compProps = { ...(extraProps || {}) }
   if (!compProps.placeholder) {
-    const isInput = !component || component === 't-input'
+    const isInput = !component || component === 't-input' || component === 't-textarea'
     compProps.placeholder = isInput ? `请输入${label}` : `请选择${label}`
   }
   return compProps
@@ -146,7 +146,6 @@ async function validate() {
 }
 async function confirm() {
   const validateResult = await validate()
-  console.log(validateResult)
   if (validateResult === true) {
     emit('confirm')
   }
@@ -161,6 +160,7 @@ function clear(...rest) {
 
 defineExpose({
   cancel,
+  validate,
 })
 </script>
 
