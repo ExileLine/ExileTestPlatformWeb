@@ -42,7 +42,7 @@ export default defineConfig(configEnv => {
       port: 5050,
     },
     optimizeDeps: {
-      include: ['tdesign-vue-next'],
+      include: ['echarts', 'tdesign-vue-next'],
     },
     build: {
       reportCompressedSize: false,
