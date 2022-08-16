@@ -17,11 +17,11 @@
 
 <script setup lang="jsx">
 import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
-const store = useStore()
-const isMobile = computed(() => store.getters.isMobile)
+
+const router = useRouter()
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -96,8 +96,14 @@ const actionOptionList = [
     content: '编辑',
     value: 'edit',
     theme: 'primary',
-    onClick() {
-      console.log('编辑')
+    onClick({ row }) {
+      console.log('编辑', row)
+      router.push({
+        path: '/api-case/edit',
+        query: {
+          id: row.id,
+        },
+      })
     },
   },
   {

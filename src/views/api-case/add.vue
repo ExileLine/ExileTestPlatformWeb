@@ -19,9 +19,16 @@
       <t-col :md="12" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10">参数信息</div>
         <div class="justify-end mb-10">
-          <t-button @click="addReqData">
-            <t-icon name="add" />
-          </t-button>
+          <t-tooltip content="选择请求参数">
+            <t-button theme="success">
+              <t-icon name="root-list"></t-icon>
+            </t-button>
+          </t-tooltip>
+          <t-tooltip content="新增请求参数">
+            <t-button theme="primary" @click="addReqData">
+              <t-icon name="add"></t-icon>
+            </t-button>
+          </t-tooltip>
         </div>
         <t-tabs
           v-model:value="dataInfoTab"
@@ -42,15 +49,25 @@
               </t-tooltip>
             </template>
             <div class="p-10">
-              <t-input
-                v-model="data.data_info.data_name"
-                class="mb-10 w-200"
-                placeholder="请输入参数名称"
-              />
+              <div class="mb-10 flex-between">
+                <t-input
+                  v-model="data.data_info.data_name"
+                  class="w-200"
+                  placeholder="请输入参数名称"
+                />
+
+                <t-button theme="success" @click="sendCase(data.data_info)">发送</t-button>
+              </div>
               <t-tabs v-model:value="paramsTab" theme="card">
                 <t-tab-panel v-for="tab in paramsTabList" :value="tab.label" :label="tab.label">
                   <div class="pt-10 body-container">
                     <component
+                      v-if="tab.isAssert"
+                      :is="tab.component"
+                      v-model:data="data[tab.key]"
+                    />
+                    <component
+                      v-else
                       :is="tab.component"
                       v-model:data="data.data_info[tab.key]"
                       v-model:body-type="data.data_info.request_body_type"
@@ -72,14 +89,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, inject } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { map } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
 import BodyJson from './components/BodyJson.vue'
-import { fetchAddCase, fetchBindCase } from '@/api/api-case'
+import VariableTable from './components/VariableTable.vue'
+import ResponseAssertTable from './components/ResponseAssertTable.vue'
+import FieldAssertTable from './components/FieldAssertTable.vue'
+import {
+  fetchGetCase,
+  fetchAddCase,
+  fetchUpdateCase,
+  fetchBindCase,
+  fetchSendCase,
+} from '@/api/api-case'
 import { validateRequired } from '@/components/validate'
+import { toSelectList, sendSelectListTo } from '@/utils/business'
 
 const store = useStore()
 const route = useRoute()
@@ -89,7 +117,7 @@ const message = inject('message')
 const caseFormRef = ref()
 
 const switchLabel = ['是', '否']
-const addModel = reactive({})
+const addModel = ref({})
 const fieldList = [
   {
     value: 'version_list',
@@ -99,7 +127,7 @@ const fieldList = [
       url: '/api/project_version_page',
       labelKey: 'version_name',
       valueKey: 'id',
-      class: 'wp-100',
+      valueType: 'object',
       multiple: true,
     },
   },
@@ -111,7 +139,7 @@ const fieldList = [
       url: '/api/module_app_page',
       labelKey: 'module_name',
       valueKey: 'id',
-      class: 'wp-100',
+      valueType: 'object',
       multiple: true,
     },
   },
@@ -194,6 +222,8 @@ const paramsTabList = [
   },
   {
     label: '关系变量',
+    key: 'update_var_list',
+    component: VariableTable,
   },
   {
     label: '前置条件',
@@ -203,13 +233,21 @@ const paramsTabList = [
   },
   {
     label: '响应断言',
+    isAssert: true,
+    key: 'case_resp_ass_info',
+    component: ResponseAssertTable,
   },
   {
     label: '字段断言',
+    isAssert: true,
+    key: 'case_field_ass_info',
+    component: FieldAssertTable,
   },
 ]
 
 const paramsTab = ref(paramsTabList[0].label)
+
+let case_id = route.query.id
 
 let cid = 0
 const dataInfoTab = ref()
@@ -229,13 +267,11 @@ const genReqData = () => ({
     update_var_list: [],
     var_list: null,
   },
-  ass_resp_id_list: [],
-  ass_field_id_list: [],
+  case_field_ass_info: [],
+  case_resp_ass_info: [],
 })
 const data_list = ref([genReqData()])
 data_list.value.forEach(i => (i.data_info.cid = cid++))
-
-dataInfoTab.value = data_list.value[0].data_info.cid
 
 const addReqData = () => {
   data_list.value.push(genReqData())
@@ -248,18 +284,33 @@ const removeDataInfoTab = ({ index }) => {
 }
 
 const saveCase = async () => {
-  const { id } = await fetchAddCase(addModel)
+  const caseParams = {
+    ...addModel.value,
+    version_list: sendSelectListTo(addModel.value.version_list, 'version_name'),
+    module_list: sendSelectListTo(addModel.value.module_list, 'module_name'),
+  }
+  if (!case_id) {
+    const { id } = await fetchAddCase(caseParams)
+    message.success('保存成功')
+    return id
+  }
+  await fetchUpdateCase(caseParams)
   message.success('保存成功')
-  return id
+  return case_id
 }
 
 const submitCase = async () => {
   const validateResult = await caseFormRef.value.validate()
   if (validateResult === true) {
     const case_id = await saveCase()
+    const bindParams = data_list.value
     await fetchBindCase({
       case_id,
-      data_list: data_list.value,
+      data_list: map(bindParams, item => ({
+        ...item,
+        ass_resp_id_list: map(item.case_resp_ass_info, 'id'),
+        ass_field_id_list: map(item.case_field_ass_info, 'id'),
+      })),
     })
     message.success('操作成功')
     store.commit('app/delTag', route.fullPath)
@@ -270,6 +321,30 @@ const submitCase = async () => {
     message.warning('请填写必选项')
   }
 }
+
+const sendCase = async record => {
+  await fetchSendCase({
+    ...addModel.value,
+    ...record,
+  })
+}
+
+onMounted(async () => {
+  if (case_id) {
+    const { bind_info, case_info } = await fetchGetCase(case_id)
+    addModel.value = {
+      ...case_info,
+      version_list: toSelectList(case_info.version_list, 'version_name'),
+      module_list: toSelectList(case_info.module_list, 'module_name'),
+    }
+    data_list.value = map(bind_info, item => {
+      item.data_info.cid = ++cid
+      return item
+    })
+  }
+
+  dataInfoTab.value = data_list.value[0].data_info.cid
+})
 </script>
 
 <style lang="scss" scoped>
@@ -283,6 +358,6 @@ const submitCase = async () => {
   position: fixed;
   right: 40px;
   bottom: 60px;
-  z-index: 2;
+  z-index: 100;
 }
 </style>

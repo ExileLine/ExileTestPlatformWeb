@@ -88,7 +88,7 @@ const _column = computed(() => {
         title: '操作',
         width: isMobile.value ? 120 : length * 70,
         fixed: 'right',
-        render: (h, { type }) => type !== 'title' && renderAction(actionOptionList),
+        render: (h, { type, ...rest }) => type !== 'title' && renderAction(actionOptionList, rest),
       }
     )
   )

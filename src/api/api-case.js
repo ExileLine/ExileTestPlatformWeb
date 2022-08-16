@@ -6,3 +6,5 @@ export const fetchUpdateCase = data => put('/api/case', data)
 export const fetchDeleteCase = data => del('/api/case', data)
 
 export const fetchBindCase = data => post('/api/case_bind', data)
+
+export const fetchSendCase = data => post('/api/case_send', data)

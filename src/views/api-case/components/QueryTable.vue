@@ -1,5 +1,5 @@
 <template>
-  <t-table bordered row-key="cid" :data="data" :columns="columns"></t-table>
+  <t-table bordered row-key="cid" :data="data" :columns="columns" />
 </template>
 
 <script setup lang="jsx">

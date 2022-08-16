@@ -35,6 +35,15 @@ const router = [
         },
         component: () => import('@view/api-case/add.vue'),
       },
+      {
+        name: 'editCase',
+        path: 'edit',
+        meta: {
+          title: '编辑接口用例',
+          hidden: true,
+        },
+        component: () => import('@view/api-case/add.vue'),
+      },
     ],
   },
 ]

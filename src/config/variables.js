@@ -22,7 +22,7 @@ export const requestMethodList = [
   {
     label: 'PATCH',
     value: 'PATCH',
-    theme: 'info',
+    theme: 'default',
   },
   {
     label: 'OPTION',
@@ -51,5 +51,17 @@ export const caseStatusList = [
     label: '弃用',
     value: 'over',
     theme: 'danger',
+  },
+]
+
+// <!-- response_body, response_headers   -->
+export const varSourceList = [
+  {
+    label: '响应体',
+    value: 'response_body',
+  },
+  {
+    label: '响应头',
+    value: 'response_headers',
   },
 ]
