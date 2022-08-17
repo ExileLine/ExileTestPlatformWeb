@@ -1,14 +1,18 @@
 import router from '@/router'
-import { setToken, getToken, setStorage, getStorage, clearStorage } from '@/utils/store'
-import { fetchLogin, fetchLogout } from '@/api/user'
+import { setToken, getToken, setStorage, clearStorage } from '@/utils/store'
+import { fetchGetUser, fetchLogin, fetchLogout } from '@/api/user'
 
 export default {
   namespaced: true,
   state: {
-    info: getStorage('info'),
+    info: null,
     token: getToken(),
   },
   actions: {
+    async getInfo({ commit }) {
+      const info = await fetchGetUser()
+      commit('SET_INFO', info)
+    },
     async login({ commit }, data) {
       const info = await fetchLogin(data)
       commit('SET_TOKEN', info.token)
@@ -25,7 +29,6 @@ export default {
   mutations: {
     SET_INFO(state, info) {
       state.info = info
-      setStorage('info', info)
     },
     SET_TOKEN(state, token) {
       state.token = token

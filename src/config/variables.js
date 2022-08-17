@@ -75,3 +75,38 @@ export const bodyTypeList = [
   { value: 'html', label: 'html', mode: 'text/html' },
   { value: 'xml', label: 'xml', mode: 'application/xml' },
 ]
+
+export const ruleList = [
+  {
+    label: '==',
+    value: '==',
+  },
+  {
+    label: '<',
+    value: '<',
+  },
+  {
+    label: '>',
+    value: '>',
+  },
+  {
+    label: '<=',
+    value: '<=',
+  },
+  {
+    label: '>=',
+    value: '>=',
+  },
+  {
+    label: '!=',
+    value: '!=',
+  },
+  {
+    label: 'in',
+    value: 'in',
+  },
+  {
+    label: 'not in',
+    value: 'not in',
+  },
+]

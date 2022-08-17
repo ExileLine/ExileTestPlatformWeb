@@ -14,10 +14,6 @@ const route = useRoute()
 const title = route.meta?.title ?? ''
 
 const jsonData = ref({})
-
-for (let index = 0; index < 1000; index++) {
-  jsonData.value[Math.random()] = { index }
-}
 </script>
 
 <style lang="scss" scoped></style>

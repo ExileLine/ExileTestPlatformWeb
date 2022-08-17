@@ -15,7 +15,7 @@
       <slot name="formActions"></slot>
     </div>
     <div ref="tableRef">
-      <t-table bordered :data="tableData" :columns="_column" :height="height">
+      <t-table bordered :data="tableData" :columns="_column" :max-height="height">
         <!-- <template #empty>
         <div class="flex-col-center">
           <svg-icon icon="no-data" width="10em" height="10em" />
@@ -86,7 +86,8 @@ const _column = computed(() => {
       length && {
         colKey: 'action',
         title: '操作',
-        width: isMobile.value ? 120 : length * 70,
+        width: isMobile.value ? 120 : length * 48 + 48 + length * 8,
+        align: 'center',
         fixed: 'right',
         render: (h, { type, ...rest }) => type !== 'title' && renderAction(actionOptionList, rest),
       }

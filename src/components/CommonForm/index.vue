@@ -136,7 +136,7 @@ function getProps({ component, label, extraProps }) {
   const compProps = { ...(extraProps || {}) }
   if (!compProps.placeholder) {
     const isInput = !component || component === 't-input' || component === 't-textarea'
-    compProps.placeholder = isInput ? `请输入${label}` : `请选择${label}`
+    compProps.placeholder = isInput ? `请输入${label || ''}` : `请选择${label || ''}`
   }
   return compProps
 }

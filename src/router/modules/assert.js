@@ -14,9 +14,9 @@ const router = [
         name: 'respAssertList',
         path: 'resp',
         meta: {
-          title: '断言管理',
+          title: '响应断言',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/assert/response.vue'),
       },
       {
         name: 'fieldAssertList',
@@ -24,7 +24,7 @@ const router = [
         meta: {
           title: '字段断言',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/assert/field.vue'),
       },
     ],
   },

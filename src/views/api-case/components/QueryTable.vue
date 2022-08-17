@@ -8,7 +8,6 @@ import { useStore } from 'vuex'
 import { AddIcon } from 'tdesign-icons-vue-next'
 import { renderAction } from '@/composables/renderTableAction'
 
-let cid = 0
 const store = useStore()
 const isMobile = computed(() => store.getters.isMobile)
 const props = defineProps({
@@ -18,6 +17,7 @@ const props = defineProps({
   },
 })
 
+let cid = 0
 props.data.forEach(i => (i.cid = ++cid))
 
 const genQueryData = () => ({

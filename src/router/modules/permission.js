@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '权限配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/maintenance/index.vue'),
       },
     ],
   },

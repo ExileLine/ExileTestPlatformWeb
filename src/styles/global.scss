@@ -83,3 +83,22 @@ body,
 .overflow-x {
   overflow-x: auto;
 }
+
+.assert-dialog-form {
+  .t-input,
+  .t-textarea {
+    min-width: 60px;
+
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+  }
+}
+
+.assert-dialog-input {
+  width: 300px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+}

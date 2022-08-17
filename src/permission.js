@@ -8,7 +8,11 @@ router.beforeEach(async (to, from, next) => {
   if (includes(whiteList, to.path)) {
     return next()
   }
-  if (store.getters.token) {
+  const { token, info } = store.getters
+  if (token) {
+    if (!info) {
+      await store.dispatch('user/getInfo')
+    }
     next()
   } else {
     next({

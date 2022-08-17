@@ -21,10 +21,10 @@ import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import { fetchDeleteCase } from '@/api/api-case'
+import { confirmDialog } from '@/utils/business'
 
 const router = useRouter()
 const message = inject('message')
-const dialog = inject('dialog')
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -124,21 +124,16 @@ const actionOptionList = [
     content: '删除',
     value: 'delete',
     theme: 'danger',
-    onClick({ row }) {
-      const confirmDialog = dialog.confirm({
-        header: '提示',
-        body: (
-          <div>
-            是否删除用例：<span class="text-warning-6">{row.case_name}</span>
-          </div>
-        ),
-        async onConfirm() {
-          await fetchDeleteCase(row)
-          message.success('删除成功')
-          confirmDialog.hide()
-          baseTableRef.value.getData = true
-        },
-      })
+    async onClick({ row }) {
+      const dialog = await confirmDialog(
+        <div>
+          是否删除用例：<span class="text-warning-6">{row.case_name}</span>
+        </div>
+      )
+      await fetchDeleteCase(row)
+      message.success('删除成功')
+      dialog.hide()
+      baseTableRef.value.getData = true
     },
   },
 ]

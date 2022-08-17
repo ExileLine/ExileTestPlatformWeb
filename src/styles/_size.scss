@@ -93,7 +93,7 @@
 }
 
 @each $size in $font-weight-map {
-  .fs-#{$size} {
-    font-weight: #{$size}px;
+  .fw-#{$size} {
+    font-weight: #{$size};
   }
 }

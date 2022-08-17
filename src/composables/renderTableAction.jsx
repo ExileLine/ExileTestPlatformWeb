@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 export const renderAction = (actionOptionList, row) => {
   const store = useStore()
   const isMobile = computed(() => store.getters.isMobile)
-  if (isMobile.value) {
+  if (isMobile.value && actionOptionList.length > 1) {
     return (
       <t-dropdown options={actionOptionList}>
         <t-button variant="outline">更多...</t-button>
