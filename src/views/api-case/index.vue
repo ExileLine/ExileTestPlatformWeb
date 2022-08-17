@@ -16,12 +16,15 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
+import { fetchDeleteCase } from '@/api/api-case'
 
 const router = useRouter()
+const message = inject('message')
+const dialog = inject('dialog')
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -97,7 +100,6 @@ const actionOptionList = [
     value: 'edit',
     theme: 'primary',
     onClick({ row }) {
-      console.log('编辑', row)
       router.push({
         path: '/api-case/edit',
         query: {
@@ -122,7 +124,22 @@ const actionOptionList = [
     content: '删除',
     value: 'delete',
     theme: 'danger',
-    onClick() {},
+    onClick({ row }) {
+      const confirmDialog = dialog.confirm({
+        header: '提示',
+        body: (
+          <div>
+            是否删除用例：<span class="text-warning-6">{row.case_name}</span>
+          </div>
+        ),
+        async onConfirm() {
+          await fetchDeleteCase(row)
+          message.success('删除成功')
+          confirmDialog.hide()
+          baseTableRef.value.getData = true
+        },
+      })
+    },
   },
 ]
 

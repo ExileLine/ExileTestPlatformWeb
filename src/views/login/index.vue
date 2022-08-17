@@ -23,8 +23,8 @@
 
       <div :class="{ hidden: isTouristHidden }">
         <t-card shadow>
-          <div>账号：user_00001</div>
-          <div>密码：ASDFGH</div>
+          <div>账号：{{ tourist.username }}</div>
+          <div>密码：{{ tourist.password }}</div>
         </t-card>
       </div>
     </div>
@@ -32,14 +32,18 @@
 </template>
 
 <script setup lang="jsx">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { LockOnIcon, UserIcon } from 'tdesign-icons-vue-next'
+import { fetchTourist } from '@/api/user'
 
+const store = useStore()
 const router = useRouter()
 const appName = import.meta.env.VITE_APP_NAME
-const loginData = ref({})
+const loginData = reactive({})
 const isTouristHidden = ref(true)
+const tourist = ref({})
 
 const fieldList = [
   {
@@ -59,13 +63,17 @@ const fieldList = [
     },
   },
 ]
-const getTouristAccount = () => {
+const getTouristAccount = async () => {
   if (!isTouristHidden.value) return
+  tourist.value = await fetchTourist()
   isTouristHidden.value = false
 }
 
 const login = async () => {
-  router.push('/')
+  await store.dispatch('user/login', loginData)
+  router.push({
+    path: '/project',
+  })
 }
 </script>
 

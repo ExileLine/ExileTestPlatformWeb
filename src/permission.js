@@ -8,12 +8,11 @@ router.beforeEach(async (to, from, next) => {
   if (includes(whiteList, to.path)) {
     return next()
   }
-  next()
-  // if (store.getters.token) {
-  //   next()
-  // } else {
-  //   next({
-  //     path: '/login'
-  //   })
-  // }
+  if (store.getters.token) {
+    next()
+  } else {
+    next({
+      path: '/login',
+    })
+  }
 })

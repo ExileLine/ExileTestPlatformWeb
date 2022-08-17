@@ -5,7 +5,7 @@ const router = [
     redirect: '/assert/resp',
     meta: {
       sort: 1000,
-      icon: 'gift',
+      icon: 'chart-bubble',
       title: '断言管理',
     },
     component: () => import('@/layout/BlankLayout.vue'),

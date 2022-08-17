@@ -1,7 +1,7 @@
 <template>
   <page-container>
     <div class="mb-10">{{ title }}</div>
-    <json-editor v-model="jsonData" ref="jsonEditor" />
+    <json-editor v-model="jsonData" />
   </page-container>
 </template>
 

@@ -45,7 +45,7 @@
               重置密码
             </div>
           </t-dropdown-item>
-          <t-dropdown-item>
+          <t-dropdown-item @click="logout">
             <div class="align-center">
               <t-icon name="poweroff" class="mr-10" />
               退出登录
@@ -58,7 +58,7 @@
           <t-icon class="header-user-avatar" name="user-circle" />
         </template>
         <div class="header-user-account">
-          Admin
+          {{ info.username }}
           <t-icon name="chevron-down" />
         </div>
       </t-button>
@@ -88,11 +88,6 @@ import ThemeTabs from './ThemeTabs.vue'
 import { validateRequired } from '@comp/validate'
 import { fetchResetPwd } from '@/api/user'
 
-const route = useRoute()
-const router = useRouter()
-const store = useStore()
-const message = inject('message')
-
 const props = defineProps({
   collapsed: {
     type: Boolean,
@@ -101,6 +96,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:collapsed'])
+
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const message = inject('message')
+
+const info = computed(() => store.getters.info)
 
 const resetPwdFormRef = ref()
 const commonProps = {
@@ -184,7 +186,13 @@ async function resetPwd() {
 
 const gotoProject = () => {
   store.commit('app/clearTag')
-  router.push('/project')
+  router.push({
+    path: '/project',
+  })
+}
+
+const logout = () => {
+  store.dispatch('user/logout')
 }
 </script>
 <style lang="scss">

@@ -138,7 +138,9 @@ const projectDropdownOptions = [
 
 const gotoHome = project => {
   store.commit('app/setProjectId', project.id)
-  router.push('/')
+  router.push({
+    path: '/dashboard',
+  })
 }
 
 const page = ref(1)

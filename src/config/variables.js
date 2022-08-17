@@ -65,3 +65,13 @@ export const varSourceList = [
     value: 'response_headers',
   },
 ]
+
+export const bodyTypeList = [
+  { value: 'none', label: 'none' },
+  { value: 'form-data', label: 'form-data', mode: 'application/json' },
+  { value: 'x-form-data', label: 'x-form-data', mode: 'application/json' },
+  { value: 'json', label: 'json', mode: 'application/json' },
+  { value: 'text', label: 'text', mode: 'text/plain' },
+  { value: 'html', label: 'html', mode: 'text/html' },
+  { value: 'xml', label: 'xml', mode: 'application/xml' },
+]

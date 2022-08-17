@@ -85,6 +85,8 @@
       <t-icon name="check" />
       提交
     </t-button>
+
+    <response-detail-dialog v-model:visible="responseDetailDialogVisible" :info="responseDetail" />
   </page-container>
 </template>
 
@@ -99,6 +101,7 @@ import BodyJson from './components/BodyJson.vue'
 import VariableTable from './components/VariableTable.vue'
 import ResponseAssertTable from './components/ResponseAssertTable.vue'
 import FieldAssertTable from './components/FieldAssertTable.vue'
+import ResponseDetailDialog from './components/ResponseDetailDialog.vue'
 import {
   fetchGetCase,
   fetchAddCase,
@@ -322,11 +325,15 @@ const submitCase = async () => {
   }
 }
 
+const responseDetailDialogVisible = ref(false)
+const responseDetail = ref({})
+
 const sendCase = async record => {
-  await fetchSendCase({
+  responseDetail.value = await fetchSendCase({
     ...addModel.value,
     ...record,
   })
+  responseDetailDialogVisible.value = true
 }
 
 onMounted(async () => {

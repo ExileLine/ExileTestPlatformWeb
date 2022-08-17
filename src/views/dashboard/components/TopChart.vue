@@ -83,7 +83,7 @@ const lineOptions = ref({
   ],
   series: [
     {
-      color: '#8e9dff',
+      color: '#85dbbe',
       name: '成功',
       type: 'line',
       smooth: true,
@@ -98,7 +98,7 @@ const lineOptions = ref({
           colorStops: [
             {
               offset: 0.25,
-              color: '#8e9dff',
+              color: '#85dbbe',
             },
             {
               offset: 1,
@@ -113,7 +113,7 @@ const lineOptions = ref({
       data: [4623, 6145, 6268, 6411, 1890, 4251, 2978, 3880, 3606, 4311],
     },
     {
-      color: '#26deca',
+      color: '#f78d94',
       name: '失败',
       type: 'line',
       smooth: true,
@@ -128,7 +128,7 @@ const lineOptions = ref({
           colorStops: [
             {
               offset: 0.25,
-              color: '#26deca',
+              color: '#f78d94',
             },
             {
               offset: 1,
@@ -160,7 +160,7 @@ const pieOptions = ref({
   },
   series: [
     {
-      color: ['#5da8ff', '#8e9dff', '#fedc69', '#26deca'],
+      color: ['#85dbbe', '#f78d94', '#f1cf50', '#4787f0'],
       name: '时间安排',
       type: 'pie',
       radius: ['45%', '75%'],
@@ -187,7 +187,7 @@ const pieOptions = ref({
         { value: 20, name: '成功' },
         { value: 10, name: '失败' },
         { value: 30, name: '错误' },
-        { value: 23, name: '跳过' },
+        { value: 23, name: '执行' },
       ],
     },
   ],
