@@ -110,3 +110,28 @@ export const ruleList = [
     value: 'not in',
   },
 ]
+
+export const valTypeList = [
+  {
+    label: 'int',
+    value: 'int',
+  },
+  {
+    label: 'str',
+    value: 'str',
+  },
+  {
+    label: 'bool',
+    value: 'bool',
+  },
+  {
+    label: 'json',
+    value: 'json',
+  },
+  {
+    label: 'json_str',
+    value: 'json_str',
+  },
+]
+
+export const expTip = '对象获取：obj.get("key") 数组列表获取：obj.get("key")[0]'

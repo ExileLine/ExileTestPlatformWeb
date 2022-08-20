@@ -1,18 +1,20 @@
 <template>
-  <t-dialog :visible="visible" :footer="false" :header="title" @close="close">
-    <common-form
-      dialog
-      ref="userFormRef"
-      :rules="rules"
-      :data="data"
-      :field-list="fieldList"
-      label-width="6em"
-      confirm-text="确定"
-      cancel-text="取消"
-      @confirm="saveUser"
-      @cancel="$emit('update:visible', false)"
-    />
-  </t-dialog>
+  <div>
+    <t-dialog :visible="visible" :footer="false" :header="title" @close="close">
+      <common-form
+        dialog
+        ref="userFormRef"
+        :rules="rules"
+        :data="data"
+        :field-list="fieldList"
+        label-width="6em"
+        confirm-text="确定"
+        cancel-text="取消"
+        @confirm="saveUser"
+        @cancel="$emit('update:visible', false)"
+      />
+    </t-dialog>
+  </div>
 </template>
 
 <script setup>

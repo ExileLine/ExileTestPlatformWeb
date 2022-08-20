@@ -1,46 +1,51 @@
 <template>
-  <t-dialog
-    placement="center"
-    :visible="visible"
-    :footer="false"
-    :header="title"
-    width="1400"
-    @close="close"
-  >
-    <common-form
-      dialog
-      ref="assertFormRef"
-      :rules="rules"
-      :data="data"
-      :field-list="fieldList"
-      label-width="6em"
-      confirm-text="确定"
-      cancel-text="取消"
-      class="assert-dialog-form"
-      @confirm="saveRespAssert"
-      @cancel="$emit('update:visible', false)"
+  <div>
+    <t-dialog
+      placement="center"
+      :visible="visible"
+      :footer="false"
+      :header="title"
+      width="1400"
+      @close="dialogClose"
     >
-      <template #assertJson>
-        <div class="h-300">
-          <t-table
-            bordered
-            :max-height="300"
-            row-key="cid"
-            :data="data.ass_json"
-            :columns="columns"
-            size="small"
-          />
-        </div>
-      </template>
-    </common-form>
-  </t-dialog>
+      <common-form
+        dialog
+        ref="assertFormRef"
+        :rules="rules"
+        :data="data"
+        :field-list="fieldList"
+        label-width="6em"
+        confirm-text="确定"
+        cancel-text="取消"
+        class="assert-dialog-form"
+        @confirm="saveRespAssert"
+        @cancel="formClose"
+      >
+        <template #ass_json>
+          <div class="h-300 wp-100">
+            <t-table
+              bordered
+              :max-height="300"
+              row-key="uuid"
+              :data="data.ass_json"
+              :columns="columns"
+              size="small"
+            />
+          </div>
+        </template>
+      </common-form>
+    </t-dialog>
+  </div>
 </template>
 
 <script setup lang="jsx">
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { AddIcon } from 'tdesign-icons-vue-next'
 import { renderAction } from '@/composables/renderTableAction'
-import { varSourceList, ruleList } from '@/config/variables'
+import { varSourceList, ruleList, valTypeList, expTip } from '@/config/variables'
+import { addRespRule, updateRespRule } from '@/api/assertion'
+import { addVersionList } from '@/utils/business'
+import { validateRequired } from '@/components/validate'
 
 const props = defineProps({
   data: {
@@ -53,10 +58,15 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits('update:visible', 'close', 'save')
+const message = inject('message')
+
 const assertFormRef = ref()
 const title = computed(() => (props.data.id ? '编辑响应断言规则' : '新增响应断言规则'))
 
-const rules = {}
+const rules = {
+  assert_description: [validateRequired('请输入断言描述')],
+}
 const fieldList = [
   {
     value: 'version_list',
@@ -95,14 +105,13 @@ const fieldList = [
     },
   },
   {
-    scopedSlots: 'assertJson',
+    scopedSlots: 'ass_json',
     labelWidth: '0',
   },
 ]
-let cid = 0
-props.data.ass_json.forEach(i => (i.cid = ++cid))
+
 const genAssertData = () => ({
-  cid: ++cid,
+  uuid: Date.now(),
   assert_key: '',
   rule: '',
   response_source: '',
@@ -178,7 +187,7 @@ const columns = [
     align: 'center',
     width: 120,
     render: (h, { type, row }) =>
-      type !== 'title' && <t-select v-model={row.expect_val_type}></t-select>,
+      type !== 'title' && <t-select v-model={row.expect_val_type} options={valTypeList}></t-select>,
   },
   {
     colKey: 'is_expression',
@@ -191,10 +200,20 @@ const columns = [
   {
     colKey: 'python_val_exp',
     title: '表达式',
-    align: 'center',
     width: 350,
-    render: (h, { type, row }) =>
-      type !== 'title' && <t-input v-model={row.python_val_exp}></t-input>,
+    render: (h, { type, row }) => {
+      if (type === 'title') {
+        return (
+          <div>
+            <span class="mr-10">表达式</span>
+            <t-tooltip content={expTip}>
+              <t-icon name="help-circle-filled"></t-icon>
+            </t-tooltip>
+          </div>
+        )
+      }
+      return <t-input v-model={row.python_val_exp}></t-input>
+    },
   },
   {
     colKey: 'action',
@@ -206,16 +225,25 @@ const columns = [
       type === 'title' ? renderAddAction() : renderAction(actionOptionList, rest),
   },
 ]
-
-const close = () => {
-  assertFormRef.value.cancel()
+const formClose = () => {
   emit('update:visible', false)
   emit('close')
 }
+const dialogClose = () => {
+  assertFormRef.value.cancel()
+  formClose()
+}
 
-const saveRespAssert = () => {
-  close()
-  emit('save')
+const saveRespAssert = async () => {
+  let data = addVersionList(props.data)
+  const isUpdate = !!data.id
+  if (isUpdate) {
+    data = await updateRespRule(data)
+  } else {
+    data = await addRespRule(data)
+  }
+  emit('save', data, isUpdate)
+  dialogClose()
   message.success('保存成功')
 }
 </script>

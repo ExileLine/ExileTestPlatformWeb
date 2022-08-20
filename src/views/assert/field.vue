@@ -16,13 +16,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { columns } from './variables'
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['add'])
+
 const baseTableRef = ref()
 
 const formModel = ref({
   assertion_type: 'field',
 })
+const refresh = () => {
+  baseTableRef.value.getData = true
+}
 const fieldList = [
   {
     label: '断言描述',
@@ -37,26 +49,37 @@ const fieldList = [
       labelKey: 'username',
     },
     on: {
-      change() {
-        baseTableRef.value.getData = true
-      },
+      change: refresh,
     },
   },
 ]
-const actionOptionList = [
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {},
-  },
-  {
-    content: '删除',
-    value: 'close',
-    theme: 'danger',
-    onClick({ row }) {},
-  },
-]
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '编辑',
+      value: 'edit',
+      theme: 'primary',
+      async onClick({ row }) {},
+    },
+    {
+      content: '删除',
+      value: 'close',
+      theme: 'danger',
+      async onClick({ row }) {},
+    },
+  ]
+  if (props.hasAddBtn) {
+    options.push({
+      content: '关联',
+      value: 'add',
+      theme: 'success',
+      async onClick({ row }) {
+        emit('bind', row)
+      },
+    })
+  }
+  return options
+})
 </script>
 
 <style lang="scss" scoped></style>

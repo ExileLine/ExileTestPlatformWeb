@@ -63,8 +63,11 @@
                   <div class="pt-10 body-container">
                     <component
                       v-if="tab.isAssert"
-                      :is="tab.component"
                       v-model:data="data[tab.key]"
+                      :is="tab.component"
+                      @get-assertion-list="type => getAssertionList(type, data)"
+                      @add="type => addAssertionRule(type, data)"
+                      @edit="(type, row) => editAssertionRule(type, row, data)"
                     />
                     <component
                       v-else
@@ -85,8 +88,20 @@
       <t-icon name="check" />
       提交
     </t-button>
-
     <response-detail-dialog v-model:visible="responseDetailDialogVisible" :info="responseDetail" />
+    <response-rule-dialog
+      ref="respRef"
+      v-model:visible="responseRuleVisible"
+      :data="responseForm"
+      @save="saveAssertionRule"
+      @close="responseForm = { ass_json: [] }"
+    />
+    <assert-list-dialog
+      v-model:visible="assertListDialogVisible"
+      :assertion-type="assertListRuleType"
+      :info="dataInfo"
+      @bind="bindAssertion"
+    />
   </page-container>
 </template>
 
@@ -94,7 +109,7 @@
 import { ref, inject, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { map } from 'lodash'
+import { map, find, findIndex } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
 import BodyJson from './components/BodyJson.vue'
@@ -102,6 +117,8 @@ import VariableTable from './components/VariableTable.vue'
 import ResponseAssertTable from './components/ResponseAssertTable.vue'
 import FieldAssertTable from './components/FieldAssertTable.vue'
 import ResponseDetailDialog from './components/ResponseDetailDialog.vue'
+import AssertListDialog from './components/AssertListDialog.vue'
+import ResponseRuleDialog from '@/views/assert/component/ResponseRuleDialog.vue'
 import {
   fetchGetCase,
   fetchAddCase,
@@ -109,8 +126,9 @@ import {
   fetchBindCase,
   fetchSendCase,
 } from '@/api/api-case'
+import { getRespRule } from '@/api/assertion'
 import { validateRequired } from '@/components/validate'
-import { toSelectList, sendSelectListTo } from '@/utils/business'
+import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
 
 const store = useStore()
 const route = useRoute()
@@ -287,11 +305,7 @@ const removeDataInfoTab = ({ index }) => {
 }
 
 const saveCase = async () => {
-  const caseParams = {
-    ...addModel.value,
-    version_list: sendSelectListTo(addModel.value.version_list, 'version_name'),
-    module_list: sendSelectListTo(addModel.value.module_list, 'module_name'),
-  }
+  const caseParams = addVersionList(addModuleList(addModel.value))
   if (!case_id) {
     const { id } = await fetchAddCase(caseParams)
     message.success('保存成功')
@@ -336,6 +350,67 @@ const sendCase = async record => {
   responseDetailDialogVisible.value = true
 }
 
+// 响应断言规则
+const dataInfo = ref({
+  data_info: {},
+})
+const responseRuleVisible = ref(false)
+const responseForm = ref({
+  ass_json: [],
+})
+const assertListRuleType = ref('response')
+const assertListDialogVisible = ref(false)
+const setAssertionRule = (type, info) => {
+  dataInfo.value = info
+  assertListRuleType.value = type
+}
+const getAssertionList = (type, info) => {
+  setAssertionRule(type, info)
+  assertListDialogVisible.value = true
+}
+const addAssertionRule = (type, info) => {
+  setAssertionRule(type, info)
+  if (assertListRuleType.value === 'response') {
+    responseRuleVisible.value = true
+  }
+}
+
+const editAssertionRule = async (type, row, info) => {
+  setAssertionRule(type, info)
+  if (assertListRuleType.value === 'response') {
+    responseForm.value = await getRespRule(row.id)
+    responseRuleVisible.value = true
+  }
+}
+function getAssInfo() {
+  let list
+  if (assertListRuleType.value === 'response') {
+    list = dataInfo.value.case_resp_ass_info
+  } else {
+    list = dataInfo.value.case_field_ass_info
+  }
+  return list
+}
+const bindAssertion = row => {
+  const assertRuleList = getAssInfo()
+  const hasRule = find(assertRuleList, { id: row.id })
+  if (hasRule) {
+    return message.warning(
+      `参数(${dataInfo.value.data_info.data_name})已关联：${row.assert_description}`
+    )
+  }
+  assertRuleList.push(row)
+}
+
+const saveAssertionRule = (rule, isUpdate) => {
+  const assertRuleList = getAssInfo()
+  if (isUpdate) {
+    const idx = findIndex(assertRuleList, { id: rule.id })
+    assertRuleList[idx] = rule
+  } else {
+    assertRuleList.push(rule)
+  }
+}
 onMounted(async () => {
   if (case_id) {
     const { bind_info, case_info } = await fetchGetCase(case_id)

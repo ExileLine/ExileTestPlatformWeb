@@ -15,6 +15,16 @@ export function sendSelectListTo(list, key) {
   }))
 }
 
+export function addVersionList(object) {
+  object.version_list = sendSelectListTo(object.version_list, 'version_name')
+  return object
+}
+
+export function addModuleList(object) {
+  object.module_list = sendSelectListTo(object.module_list, 'module_name')
+  return object
+}
+
 export function confirmDialog(body) {
   return new Promise(resolve => {
     const confirmDialog = DialogPlugin.confirm({

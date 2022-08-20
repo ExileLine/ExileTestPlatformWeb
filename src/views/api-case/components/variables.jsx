@@ -85,13 +85,15 @@ const actionOptionList = [
     content: '编辑',
     value: 'edit',
     theme: 'primary',
-    onClick({ rowIndex }) {},
+    onClick({ row, props }) {
+      props.emit('edit', props.type, row)
+    },
   },
   {
     content: '删除',
     value: 'close',
     theme: 'danger',
-    onClick({ rowIndex, props }) {
+    onClick({ rowIndex, props: { props } }) {
       props.data.splice(rowIndex, 1)
     },
   },

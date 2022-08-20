@@ -43,7 +43,11 @@ const service = axios.create({
 const errorHandler = error => {
   deleteLoading()
   const status = error?.response?.status + ''
+
   error.message = errorStatus[status] || '未知错误'
+  if (!window.navigator.onLine) {
+    error.message = '网络异常，请检查'
+  }
   MessagePlugin.error(error.message)
   return Promise.reject(error)
 }
@@ -86,6 +90,7 @@ service.interceptors.response.use(
     if (typeof message === 'undefined' || message === true) {
       MessagePlugin.error(data.message)
     }
+
     return Promise.reject(new Error(data.message || 'Error'))
   },
   error => {

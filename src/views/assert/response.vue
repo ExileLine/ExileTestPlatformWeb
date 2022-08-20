@@ -12,20 +12,40 @@
         <t-button @click="addResponseDialogVisible = true">新增</t-button>
       </template>
     </base-table>
-    <add-response-dialog v-model:visible="addResponseDialogVisible" :data="responseForm" />
+    <response-rule-dialog
+      v-model:visible="addResponseDialogVisible"
+      :data="responseForm"
+      @close="responseForm = { ass_json: [] }"
+      @save="refresh"
+    />
   </PageContainer>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { cloneDeep } from 'lodash'
-import AddResponseDialog from './component/AddResponseDialog.vue'
+<script setup lang="jsx">
+import { ref, inject, computed } from 'vue'
+import ResponseRuleDialog from './component/ResponseRuleDialog.vue'
 import { columns } from './variables'
+import { getRespRule, deleteRespRule } from '@/api/assertion'
+import { confirmDialog } from '@/utils/business'
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['add'])
+
+const message = inject('message')
+
 const baseTableRef = ref()
 
 const formModel = ref({
   assertion_type: 'response',
 })
+const refresh = () => {
+  baseTableRef.value.getData = true
+}
 const fieldList = [
   {
     label: '断言描述',
@@ -40,9 +60,7 @@ const fieldList = [
       labelKey: 'username',
     },
     on: {
-      change() {
-        baseTableRef.value.getData = true
-      },
+      change: refresh,
     },
   },
 ]
@@ -51,23 +69,46 @@ const responseForm = ref({
   ass_json: [],
 })
 const addResponseDialogVisible = ref(false)
-const actionOptionList = [
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {
-      responseForm.value = cloneDeep(row)
-      addResponseDialogVisible.value = true
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '编辑',
+      value: 'edit',
+      theme: 'primary',
+      async onClick({ row }) {
+        responseForm.value = await getRespRule(row.id)
+        addResponseDialogVisible.value = true
+      },
     },
-  },
-  {
-    content: '删除',
-    value: 'close',
-    theme: 'danger',
-    onClick({ row }) {},
-  },
-]
+    {
+      content: '删除',
+      value: 'close',
+      theme: 'danger',
+      async onClick({ row }) {
+        const dialog = await confirmDialog(
+          <div>
+            是否删除响应断言规则：<span class="text-warning-6">{row.assert_description}</span>
+          </div>
+        )
+        await deleteRespRule(row)
+        dialog.hide()
+        message.success('操作成功')
+        refresh()
+      },
+    },
+  ]
+  if (props.hasAddBtn) {
+    options.push({
+      content: '关联',
+      value: 'add',
+      theme: 'success',
+      async onClick({ row }) {
+        emit('bind', row)
+      },
+    })
+  }
+  return options
+})
 </script>
 
 <style lang="scss" scoped></style>
