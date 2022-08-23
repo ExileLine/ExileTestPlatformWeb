@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '变量列表',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/variable/index.vue'),
       },
     ],
   },

@@ -134,4 +134,48 @@ export const valTypeList = [
   },
 ]
 
+export const variableTypeList = [
+  ...valTypeList,
+  {
+    label: '随机整数',
+    value: 'random_int',
+  },
+  {
+    label: '随机字符串',
+    value: 'random_str',
+  },
+  {
+    label: '随机字符串数字',
+    value: 'random_str_number',
+  },
+  {
+    label: '随机布尔值',
+    value: 'random_bool',
+  },
+  {
+    label: '日期(年月日)',
+    value: 'date',
+  },
+  {
+    label: '时间(时分秒)',
+    value: 'time',
+  },
+  {
+    label: '日期(年月日时分秒)',
+    value: 'datetime',
+  },
+  {
+    label: '时间戳',
+    value: 'timestamp',
+  },
+  {
+    label: '短UUID',
+    value: 'uuid_short',
+  },
+  {
+    label: '长UUID',
+    value: 'uuid_long',
+  },
+]
+
 export const expTip = '对象获取：obj.get("key") 数组列表获取：obj.get("key")[0]'
