@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '参数列表',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/api-case-param/index.vue'),
       },
     ],
   },
