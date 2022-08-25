@@ -43,7 +43,7 @@ import { ref, computed, inject } from 'vue'
 import { AddIcon } from 'tdesign-icons-vue-next'
 import { renderAction } from '@/composables/renderTableAction'
 import { varSourceList, ruleList, valTypeList, expTip } from '@/config/variables'
-import { addRespRule, updateRespRule } from '@/api/assertion'
+import { fetchAddRespRule, fetchUpdateRespRule } from '@/api/assertion'
 import { addVersionList } from '@/utils/business'
 import { validateRequired } from '@/components/validate'
 
@@ -238,9 +238,9 @@ const saveRespAssert = async () => {
   let data = addVersionList(props.data)
   const isUpdate = !!data.id
   if (isUpdate) {
-    data = await updateRespRule(data)
+    data = await fetchUpdateRespRule(data)
   } else {
-    data = await addRespRule(data)
+    data = await fetchAddRespRule(data)
   }
   emit('save', data, isUpdate)
   dialogClose()

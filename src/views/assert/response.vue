@@ -25,7 +25,7 @@
 import { ref, inject, computed } from 'vue'
 import ResponseRuleDialog from './component/ResponseRuleDialog.vue'
 import { columns } from './variables'
-import { getRespRule, deleteRespRule } from '@/api/assertion'
+import { fetchGetRespRule, fetchDeleteRespRule } from '@/api/assertion'
 import { confirmDialog } from '@/utils/business'
 
 const props = defineProps({
@@ -76,7 +76,7 @@ const actionOptionList = computed(() => {
       value: 'edit',
       theme: 'primary',
       async onClick({ row }) {
-        responseForm.value = await getRespRule(row.id)
+        responseForm.value = await fetchGetRespRule(row.id)
         addResponseDialogVisible.value = true
       },
     },
@@ -90,7 +90,7 @@ const actionOptionList = computed(() => {
             是否删除响应断言规则：<span class="text-warning-6">{row.assert_description}</span>
           </div>
         )
-        await deleteRespRule(row)
+        await fetchDeleteRespRule(row)
         dialog.hide()
         message.success('操作成功')
         refresh()

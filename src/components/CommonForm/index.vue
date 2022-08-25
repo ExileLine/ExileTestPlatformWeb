@@ -155,7 +155,7 @@ function cancel() {
   emit('cancel')
 }
 function clear(...rest) {
-  emit('cancel', ...rest)
+  emit('clear', ...rest)
 }
 
 defineExpose({

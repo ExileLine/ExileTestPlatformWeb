@@ -1,5 +1,5 @@
 import { renderAction } from '@/composables/renderTableAction'
-import { varSourceList } from '@/config/variables'
+import { expTip, varSourceList } from '@/config/variables'
 
 export const genVariableColumns = props => [
   {
@@ -50,13 +50,21 @@ export const genVariableColumns = props => [
   },
   {
     colKey: 'expression',
-    title: '取值表达式',
-    align: 'center',
+    title: '表达式',
     width: 230,
-    render: (h, { type, row }) =>
-      type !== 'title' && (
-        <t-input v-model={row.expression} placeholder="请输入取值表达式"></t-input>
-      ),
+    render: (h, { type, row }) => {
+      if (type === 'title') {
+        return (
+          <div>
+            <span class="mr-10">表达式</span>
+            <t-tooltip content={expTip}>
+              <t-icon name="help-circle-filled"></t-icon>
+            </t-tooltip>
+          </div>
+        )
+      }
+      return <t-input v-model={row.expression} placeholder="请输入表达式"></t-input>
+    },
   },
   {
     colKey: 'action',

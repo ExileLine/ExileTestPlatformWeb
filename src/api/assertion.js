@@ -1,10 +1,10 @@
 import { get, post, put, del } from '@/utils/request'
 
-export const getRespRule = id => get(`/api/resp_ass_rule/${id}`)
-export const addRespRule = data => post('/api/resp_ass_rule', data)
-export const updateRespRule = data => put('/api/resp_ass_rule', data)
-export const deleteRespRule = data => del('/api/resp_ass_rule', data)
+export const fetchGetRespRule = id => get(`/api/resp_ass_rule/${id}`)
+export const fetchAddRespRule = data => post('/api/resp_ass_rule', data)
+export const fetchUpdateRespRule = data => put('/api/resp_ass_rule', data)
+export const fetchDeleteRespRule = data => del('/api/resp_ass_rule', data)
 
-export const addFieldRule = data => post('/api/field_ass_rule', data)
-export const updateFieldRule = data => put('/api/resp_ass_rule', data)
-export const deleteFieldRule = data => del('/api/resp_ass_rule', data)
+export const fetchAddFieldRule = data => post('/api/field_ass_rule', data)
+export const fetchUpdateFieldRule = data => put('/api/resp_ass_rule', data)
+export const fetchDeleteFieldRule = data => del('/api/resp_ass_rule', data)

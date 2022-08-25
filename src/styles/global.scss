@@ -102,3 +102,16 @@ body,
     width: 100%;
   }
 }
+
+body input:-internal-autofill-selected,
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  background-color: #fff;
+  background-image: none;
+  color: rgb(0, 0, 0);
+}
+
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px var(--td-bg-color-container) inset !important;
+}

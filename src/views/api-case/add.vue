@@ -126,7 +126,7 @@ import {
   fetchBindCase,
   fetchSendCase,
 } from '@/api/api-case'
-import { getRespRule } from '@/api/assertion'
+import { fetchGetRespRule } from '@/api/assertion'
 import { validateRequired } from '@/components/validate'
 import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
 
@@ -378,7 +378,7 @@ const addAssertionRule = (type, info) => {
 const editAssertionRule = async (type, row, info) => {
   setAssertionRule(type, info)
   if (assertListRuleType.value === 'response') {
-    responseForm.value = await getRespRule(row.id)
+    responseForm.value = await fetchGetRespRule(row.id)
     responseRuleVisible.value = true
   }
 }
