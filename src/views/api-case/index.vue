@@ -12,6 +12,19 @@
         <t-button theme="primary" @click="$router.push('/api-case/add')">新增</t-button>
       </template>
     </base-table>
+
+    <t-dialog
+      v-model:visible="logDialogVisible"
+      header="最新日志（10条）"
+      :footer="null"
+      width="1260px"
+      placement="center"
+      destroy-on-close
+    >
+      <div class="p-5">
+        <log-tabs-container :execute-log="caseLog" />
+      </div>
+    </t-dialog>
   </page-container>
 </template>
 
@@ -20,8 +33,10 @@ import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
+import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchDeleteCase } from '@/api/api-case'
 import { confirmDialog } from '@/utils/business'
+import { caseLog } from '@/config/mock'
 
 const router = useRouter()
 const message = inject('message')
@@ -88,6 +103,7 @@ const fieldList = [
   },
 ]
 
+const logDialogVisible = ref(false)
 const actionOptionList = [
   {
     content: '执行',
@@ -112,7 +128,9 @@ const actionOptionList = [
     content: '日志',
     value: 'file',
     theme: 'warning',
-    onClick() {},
+    onClick() {
+      logDialogVisible.value = true
+    },
   },
   {
     content: '复制',

@@ -90,10 +90,7 @@
               </div>
             </template>
             <template v-else>
-              <div v-if="!projectList.length && finished" class="flex-col-center">
-                <svg-icon icon="no-data" width="20em" height="20em" />
-                <div>暂无项目</div>
-              </div>
+              <base-empty v-if="!projectList.length && finished" description="暂无项目" />
               <t-divider v-else>已经到底了</t-divider>
             </template>
           </div>
@@ -110,9 +107,11 @@ import { useStore } from 'vuex'
 
 // search、add图标
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
+import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import HeadPart from '@/layout/components/HeadPart.vue'
 import projectIcon from '@/assets/project-icon.png'
 import { post } from '@util/request'
+import BaseEmpty from '@/components/BaseEmpty/index.vue'
 
 const router = useRouter()
 const store = useStore()

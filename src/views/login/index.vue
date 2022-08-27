@@ -1,7 +1,6 @@
 <template>
   <div id="login-container">
     <div id="logo-container">
-      <div class="logo">logo</div>
       <div class="flag-text">开源企业级</div>
       <div class="slogan-text">
         持续测试平台, 涵盖测试跟踪、接口测试、UI测试、 团队协作等功能有效助力开发和测试团队
@@ -9,6 +8,9 @@
       <img src="@/assets/logo-icon.png" alt="" />
     </div>
     <div id="login-content">
+      <div class="logo">
+        <img src="@/assets/logo.png" alt="logo" />
+      </div>
       <h2 class="app-name">{{ appName }}</h2>
       <common-form
         hidden-cancel
@@ -27,6 +29,10 @@
           <div>密码：{{ tourist.password }}</div>
         </t-card>
       </div>
+
+      <div class="theme-tabs">
+        <theme-tabs class="mlr-10" />
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +42,7 @@ import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { LockOnIcon, UserIcon } from 'tdesign-icons-vue-next'
+import ThemeTabs from '@/layout/components/ThemeTabs.vue'
 import { fetchTourist } from '@/api/user'
 
 const store = useStore()
@@ -95,15 +102,12 @@ const login = async () => {
     img {
       width: 100%;
     }
-    .logo {
-      font-size: 40px;
-      margin-bottom: 80px;
-    }
+
     .flag-text {
       font-size: 60px;
       font-family: $font-family-medium;
       font-weight: 500;
-      margin-bottom: 14px;
+      margin: 80px 0 20px;
     }
     .slogan-text {
       padding: 20px 24px;
@@ -113,6 +117,11 @@ const login = async () => {
     }
   }
   #login-content {
+    .logo {
+      img {
+        width: 80px;
+      }
+    }
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -151,5 +160,10 @@ const login = async () => {
       color: var(--td-brand-color-active);
     }
   }
+}
+.theme-tabs {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 </style>

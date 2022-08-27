@@ -61,10 +61,12 @@ const codemirrorRef = ref()
 watch(
   () => props.modelValue,
   value => {
-    const editorValue = jsonEditor.getValue()
-    if (value !== editorValue) {
-      jsonEditor.setValue(JSON.stringify(value, null, 2))
-    }
+    nextTick(() => {
+      const editorValue = jsonEditor.getValue()
+      if (value !== editorValue) {
+        setValue()
+      }
+    })
   }
 )
 
@@ -86,8 +88,16 @@ watch(
   }
 )
 
+const setValue = () => {
+  const { modelValue } = props
+  if (typeof modelValue === 'string') {
+    jsonEditor.setValue(modelValue)
+  } else {
+    jsonEditor.setValue(JSON.stringify(modelValue || {}, null, 2))
+  }
+}
 onMounted(() => {
-  const { readOnly, modelValue } = props
+  const { readOnly } = props
   // CodeMirror的配置项，搜官网看这里的配置项配置
   jsonEditor = CodeMirror.fromTextArea(codemirrorRef.value, {
     smartIndent: true, // 是否智能缩进
@@ -104,11 +114,7 @@ onMounted(() => {
     autoCloseBrackets: true, // 输入和退格时成对
     autoRefresh: true,
   })
-  if (typeof modelValue === 'string') {
-    jsonEditor.setValue(modelValue)
-  } else {
-    jsonEditor.setValue(JSON.stringify(modelValue || {}, null, 2))
-  }
+  setValue()
   jsonEditor.on('change', cm => {
     emit('changed', cm.getValue())
     emit('update:modelValue', cm.getValue())

@@ -6,9 +6,11 @@
           'w-190': !collapsed,
           'w-40': collapsed,
         }"
+        class="align-center"
         @click="gotoProject"
       >
-        Exile
+        <img src="@/assets/logo.png" alt="logo" class="w-40 mr-20" />
+        <span class="fs-30">Exile</span>
       </div>
       <div v-if="!isProject && !isMobile" class="ml-10 fs-22 cursor" @click="toggleCollapse">
         <t-icon :name="`${collapsed ? 'menu-fold' : 'menu-unfold'}`" />
@@ -212,6 +214,9 @@ const logout = () => {
     margin-top: -15px;
     left: 10px;
     background-size: 100% 100%;
+    .align-center {
+      overflow: hidden;
+    }
   }
 }
 </style>

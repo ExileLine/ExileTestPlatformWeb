@@ -12,6 +12,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: var(--td-text-color-primary);
+  background: var(--td-bg-color-container);
 }
 
 html,
@@ -109,9 +110,18 @@ textarea:-webkit-autofill,
 select:-webkit-autofill {
   background-color: #fff;
   background-image: none;
-  color: rgb(0, 0, 0);
+  color: var(--td-text-color-primary);
 }
 
 input:-webkit-autofill {
   box-shadow: 0 0 0px 1000px var(--td-bg-color-container) inset !important;
+}
+
+input:-internal-autofill-selected {
+  -webkit-text-fill-color: var(--td-text-color-primary) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  color: var(--td-text-color-primary) !important;
+}
+.overflow-y {
+  overflow-y: auto;
 }
