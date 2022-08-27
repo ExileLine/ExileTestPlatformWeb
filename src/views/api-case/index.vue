@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'

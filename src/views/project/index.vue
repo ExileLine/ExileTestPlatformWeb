@@ -111,7 +111,6 @@ import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import HeadPart from '@/layout/components/HeadPart.vue'
 import projectIcon from '@/assets/project-icon.png'
 import { post } from '@util/request'
-import BaseEmpty from '@/components/BaseEmpty/index.vue'
 
 const router = useRouter()
 const store = useStore()

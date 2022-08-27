@@ -14,7 +14,7 @@ export const renderAction = (actionOptionList, row) => {
   return (
     <div>
       {actionOptionList.map(i => (
-        <t-tooltip content={i.content}>
+        <t-tooltip content={i.content} attach="#main-container">
           <t-button theme={i.theme} variant="text" onClick={() => i.onClick(row)}>
             <t-icon name={i.value} />
           </t-button>

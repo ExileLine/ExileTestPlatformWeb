@@ -12,7 +12,7 @@
         <t-icon v-else name="check-circle" class="text-success-6 ml-5" />
       </template>
       <div class="pt-10"></div>
-      <div class="h-600 overflow-y">
+      <div class="h-600 overflow-y narrow-scrollbar">
         <t-collapse :default-value="getCollapseDefaultValue(log.data_dict)">
           <t-collapse-panel
             v-for="(data, key) in log.data_dict"
