@@ -24,7 +24,7 @@ const router = [
         meta: {
           title: '场景列表',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/api-case/scene.vue'),
       },
       {
         name: 'addCase',
@@ -35,6 +35,7 @@ const router = [
         },
         component: () => import('@view/api-case/add.vue'),
       },
+
       {
         name: 'editCase',
         path: 'edit',
@@ -43,6 +44,24 @@ const router = [
           hidden: true,
         },
         component: () => import('@view/api-case/add.vue'),
+      },
+      {
+        name: 'editScene',
+        path: 'edit-scene',
+        meta: {
+          title: '编辑场景',
+          hidden: true,
+        },
+        component: () => import('@view/api-case/add-scene.vue'),
+      },
+      {
+        name: 'addScene',
+        path: 'add-scene',
+        meta: {
+          title: '添加场景',
+          hidden: true,
+        },
+        component: () => import('@view/api-case/add-scene.vue'),
       },
     ],
   },
