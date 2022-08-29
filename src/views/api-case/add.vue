@@ -423,6 +423,10 @@ onMounted(async () => {
       item.data_info.cid = ++cid
       return item
     })
+
+    if (bind_info.some(i => i.data_info.request_body_type !== 'none')) {
+      paramsTab.value = paramsTabList[2].label
+    }
   }
 
   dataInfoTab.value = data_list.value[0].data_info.cid

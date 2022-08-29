@@ -22,8 +22,9 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onActivated } from 'vue'
 import { useStore } from 'vuex'
+import { debounce } from 'lodash'
 import request from '@/utils/request'
 const props = defineProps({
   url: String,
@@ -69,7 +70,7 @@ const size = ref(10)
 const total = ref(10)
 const isMobile = computed(() => store.getters.isMobile)
 
-function getList() {
+const getList = debounce(() => {
   if (!props.url) return
   const params = {
     page: page.value,
@@ -81,7 +82,7 @@ function getList() {
     emit('update:list', res.records)
     total.value = +res.total
   })
-}
+})
 
 const handleSizeChange = s => {
   size.value = s
@@ -135,6 +136,9 @@ watch(
   }
 )
 
+onActivated(() => {
+  getList()
+})
 onMounted(() => {
   getList()
 })
