@@ -3,12 +3,9 @@
     <t-row class="crumbs-nav">
       <t-col :span="20">
         <t-breadcrumb separator="/">
-          <t-breadcrumb-item
-            v-for="(item, index) in routeList"
-            :key="item.index"
-            :to="index == 1 ? item.path : ''"
-          >
-            {{ item.name }}
+          <t-breadcrumb-item v-for="item in routeList" :key="item.index" :to="item.path">
+            <t-icon v-if="item.meta && item.meta.icon" :name="item.meta.icon"></t-icon>
+            <span>{{ item.meta.title }}</span>
           </t-breadcrumb-item>
         </t-breadcrumb>
       </t-col>
@@ -16,60 +13,11 @@
   </div>
 </template>
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { pageRoutes } from '@/router'
+import { getBreadcrumbByRouteKey } from '@/utils/breadcrumb'
 const route = useRoute()
-const routePath = computed(() => route.path)
-const routeList = ref([])
-
-function getName(path, routes) {
-  let name = ''
-  for (let item of routes) {
-    if (item.path === path) {
-      name = item.meta ? item.meta.title : ''
-      break
-    }
-    if (item.children) {
-      let res = getName(path, item.children)
-      if (res) {
-        name = res
-        break
-      }
-    }
-  }
-  return name
-}
-
-function init() {
-  const path = routePath.value
-  const arr = path.split('/')
-  const arr2 = []
-  arr.reduce((a, b) => {
-    arr2.push(a + '/' + b)
-    return a + '/' + b
-  })
-  const _routeList = []
-  for (let item of arr2) {
-    let name = getName(item, pageRoutes)
-    if (name) {
-      _routeList.push({ name, path: item })
-    }
-  }
-  routeList.value = _routeList
-}
-
-watch(
-  () => routePath.value,
-  (n, o) => {
-    if (n !== o) {
-      init()
-    }
-  }
-)
-onMounted(() => {
-  init()
-})
+const routeList = computed(() => getBreadcrumbByRouteKey(route.path))
 </script>
 <style lang="scss">
 .crumbs {

@@ -5,7 +5,7 @@
         <log-tabs :execute-log="tab.executeLog" />
       </template>
       <template v-else>
-        <div class="h-600 flex-col-center ">
+        <div class="h-600 flex-col-center">
           <base-empty :description="`暂无${tab.label}日志`" />
         </div>
       </template>

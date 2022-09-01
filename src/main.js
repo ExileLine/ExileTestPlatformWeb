@@ -15,6 +15,9 @@ import PageContainer from '@comp/PageContainer/index.vue'
 import BaseTable from '@comp/BaseTable/index.vue'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import svgIcon from '@/components/SvgIcon/index.vue'
+import { genBreadcrumbRoutePath } from '@/utils/breadcrumb'
+// 生成面包屑
+genBreadcrumbRoutePath()
 
 const app = createApp(App)
 
