@@ -9,3 +9,4 @@ export const fetchGetCaseList = data => post('/api/case_page', data)
 
 export const fetchBindCase = data => post('/api/case_bind', data)
 export const fetchSendCase = data => post('/api/case_send', data)
+

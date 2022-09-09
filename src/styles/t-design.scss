@@ -223,11 +223,11 @@
 .t-form {
   .t-input__wrap,
   .t-input {
+    max-width: 100%;
     min-width: 200px;
 
     @media (max-width: 540px) {
       min-width: 100px;
-      max-width: 100%;
       .t-input__inner {
         max-width: 100%;
       }
@@ -235,6 +235,13 @@
   }
 }
 
+.t-table {
+  .t-input__wrap,
+  .t-input {
+    min-width: 60px;
+    max-width: 100%;
+  }
+}
 .t-tabs__nav-item,
 .t-input {
   transition: none;

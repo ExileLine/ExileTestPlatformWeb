@@ -8,7 +8,7 @@
     >
       <template #label>
         {{ log.case_name }}（{{ idx + 1 }}）
-        <t-icon v-if="log.fail" name="close-circle" class="text-error-6 ml-5" />
+        <t-icon v-if="!log.flag" name="close-circle" class="text-error-6 ml-5" />
         <t-icon v-else name="check-circle" class="text-success-6 ml-5" />
       </template>
       <div class="pt-10"></div>
@@ -22,7 +22,7 @@
             destroy-on-collapse
           >
             <template #headerRightContent>
-              <t-icon v-if="data.fail" name="close-circle" class="text-error-6" />
+              <t-icon v-if="!data.flag" name="close-circle" class="text-error-6" />
               <t-icon v-else name="check-circle" class="text-success-6" />
             </template>
             <t-tabs default-value="logs_summary">
@@ -40,7 +40,7 @@
                 <template #label>
                   {{ data.logs[tab.key].description }}
                   <t-icon
-                    v-if="data.logs[tab.key].fail"
+                    v-if="data.logs[tab.key].flag === false"
                     name="close-circle"
                     class="text-error-6 ml-5"
                   />

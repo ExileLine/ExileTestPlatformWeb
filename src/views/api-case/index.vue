@@ -35,8 +35,9 @@ import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchDeleteCase } from '@/api/api-case'
+import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
-import { caseLog } from '@/config/mock'
+// import { caseLog } from '@/config/mock'
 
 const router = useRouter()
 const message = inject('message')
@@ -104,6 +105,7 @@ const fieldList = [
 ]
 
 const logDialogVisible = ref(false)
+const caseLog = ref({})
 const actionOptionList = [
   {
     content: '执行',
@@ -128,7 +130,12 @@ const actionOptionList = [
     content: '日志',
     value: 'file',
     theme: 'warning',
-    onClick() {
+    async onClick({ row }) {
+      const resp = await fetchGetCaseLog({
+        execute_id: row.id,
+        execute_type: 'case',
+      })
+      caseLog.value = resp.case_logs
       logDialogVisible.value = true
     },
   },

@@ -35,11 +35,11 @@ const tabs = computed(() => {
     },
     {
       label: '成功',
-      executeLog: filter(executeLog, i => !i.fail),
+      executeLog: filter(executeLog, 'flag'),
     },
     {
       label: '失败',
-      executeLog: filter(executeLog, 'fail'),
+      executeLog: filter(executeLog, i => !i.flag),
     },
   ]
 })

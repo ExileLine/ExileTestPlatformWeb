@@ -121,6 +121,10 @@ export const valTypeList = [
     value: 'str',
   },
   {
+    label: 'float',
+    value: 'float',
+  },
+  {
     label: 'bool',
     value: 'bool',
   },
