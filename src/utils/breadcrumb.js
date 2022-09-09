@@ -4,11 +4,15 @@ import { pageRoutes } from '@/router'
 let routeTitle = {}
 export function genBreadcrumbRoutePath(routes = pageRoutes, parent = {}, titleList = []) {
   routes.forEach(route => {
-    const { path } = route
+    const {
+      path,
+      meta: { parentIndex },
+    } = route
     const routePath = path.startsWith('/')
       ? path
       : `${parent.path || ''}/${path.replace(/^\//, '')}`
-    routeTitle[routePath] = concat([], titleList, route)
+    const routeParent = routes[parentIndex]
+    routeTitle[routePath] = concat(routeParent ? [routeParent] : [], titleList, route)
     if (route.children?.length) {
       genBreadcrumbRoutePath(route.children, route, routeTitle[routePath])
     }

@@ -4,8 +4,10 @@
       <t-col :span="20">
         <t-breadcrumb separator="/">
           <t-breadcrumb-item v-for="item in routeList" :key="item.index" :to="item.path">
-            <t-icon v-if="item.meta && item.meta.icon" :name="item.meta.icon"></t-icon>
-            <span>{{ item.meta.title }}</span>
+            <span class="align-center">
+              <t-icon v-if="item.meta && item.meta.icon" :name="item.meta.icon"></t-icon>
+              <span>{{ item.meta.title }}</span>
+            </span>
           </t-breadcrumb-item>
         </t-breadcrumb>
       </t-col>

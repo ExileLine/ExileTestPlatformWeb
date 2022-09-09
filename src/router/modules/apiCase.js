@@ -32,6 +32,7 @@ const router = [
         meta: {
           title: '添加接口用例',
           hidden: true,
+          parentIndex: 0,
         },
         component: () => import('@view/api-case/add.vue'),
       },
@@ -42,6 +43,7 @@ const router = [
         meta: {
           title: '编辑接口用例',
           hidden: true,
+          parentIndex: 0,
         },
         component: () => import('@view/api-case/add.vue'),
       },
@@ -51,6 +53,7 @@ const router = [
         meta: {
           title: '编辑场景',
           hidden: true,
+          parentIndex: 1,
         },
         component: () => import('@view/api-case/add-scene.vue'),
       },
@@ -60,6 +63,7 @@ const router = [
         meta: {
           title: '添加场景',
           hidden: true,
+          parentIndex: 1,
         },
         component: () => import('@view/api-case/add-scene.vue'),
       },
