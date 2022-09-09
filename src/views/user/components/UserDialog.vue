@@ -57,7 +57,6 @@ const addFieldList = [
   {
     label: '密码',
     value: 'password',
-    type: 'password',
     extraProps: {
       type: 'password',
       showPassword: true,

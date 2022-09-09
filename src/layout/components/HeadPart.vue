@@ -136,7 +136,6 @@ const resetPwdFieldList = [
     value: 'old_password',
     label: '旧密码',
     component: 't-input',
-    type: 'password',
     extraProps: {
       ...commonProps,
     },
@@ -145,7 +144,6 @@ const resetPwdFieldList = [
     value: 'new_password',
     label: '新密码',
     component: 't-input',
-    type: 'password',
     extraProps: {
       ...commonProps,
     },
@@ -154,7 +152,6 @@ const resetPwdFieldList = [
     value: 'raw_password',
     label: '确认密码',
     component: 't-input',
-    type: 'password',
     extraProps: {
       ...commonProps,
     },

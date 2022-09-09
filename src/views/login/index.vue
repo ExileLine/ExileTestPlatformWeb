@@ -63,7 +63,6 @@ const fieldList = [
   {
     label: '密码',
     value: 'password',
-    type: 'password',
     extraProps: {
       type: 'password',
       prefixIcon: () => <LockOnIcon />,

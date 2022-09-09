@@ -10,7 +10,7 @@
     @submit="confirm"
   >
     <t-form-item
-      v-for="(field, idx) in fieldList"
+      v-for="field in fieldList"
       :key="field.value"
       :label="field.label"
       :name="field.value"
@@ -31,7 +31,7 @@
           v-model="data[field.value]"
           v-bind="getProps(field)"
           v-on="field.on"
-          :clearable="field.type !== 'password'"
+          clearable
           :field="field"
           :list-info="listInfo"
           :is="comp[field.component] || field.component || 't-input'"
