@@ -12,7 +12,7 @@ export function genBreadcrumbRoutePath(routes = pageRoutes, parent = {}, titleLi
       ? path
       : `${parent.path || ''}/${path.replace(/^\//, '')}`
     const routeParent = routes[parentIndex]
-    routeTitle[routePath] = concat(routeParent ? [routeParent] : [], titleList, route)
+    routeTitle[routePath] = concat([], titleList, routeParent || [], route)
     if (route.children?.length) {
       genBreadcrumbRoutePath(route.children, route, routeTitle[routePath])
     }
