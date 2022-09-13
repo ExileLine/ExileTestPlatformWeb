@@ -56,13 +56,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { fetchGetCaseList } from '@/api/api-case'
 const formModal = ref({
-  case_list: [
-    {
-      case_id: 8658,
-      index: 1,
-      sleep: 10,
-    },
-  ],
+  case_list: [],
 })
 const switchLabel = ['是', '否']
 
@@ -138,7 +132,9 @@ const keys = {
   value: 'id',
 }
 
-const handlePageChange = page => {}
+const handlePageChange = page => {
+  pagination.current = page
+}
 
 const handleSearch = ({ query }) => {
   //   caseList.value = []

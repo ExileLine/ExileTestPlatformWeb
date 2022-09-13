@@ -9,14 +9,29 @@
       url="/api/case_scenario_page"
     >
       <template #formActions>
-        <t-button theme="primary" @click="$router.push('/api-case/add')">新增</t-button>
+        <t-button theme="primary" @click="$router.push('/api-case/add-scene')">新增</t-button>
       </template>
     </base-table>
+
+    <t-dialog
+      v-model:visible="logDialogVisible"
+      header="最新日志（10条）"
+      :footer="null"
+      width="1260px"
+      placement="center"
+      destroy-on-close
+    >
+      <div class="p-5">
+        <log-tabs-container is-scene :execute-log="caseLog" />
+      </div>
+    </t-dialog>
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
+import LogTabsContainer from './components/LogTabsContainer.vue'
+import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
 
 const message = inject('message')
@@ -66,6 +81,7 @@ const fieldList = [
 ]
 
 const logDialogVisible = ref(false)
+const caseLog = ref({})
 const actionOptionList = [
   {
     content: '执行',
@@ -83,7 +99,14 @@ const actionOptionList = [
     content: '日志',
     value: 'file',
     theme: 'warning',
-    onClick() {},
+    async onClick({ row }) {
+      const resp = await fetchGetCaseLog({
+        execute_id: row.id,
+        execute_type: 'scenario',
+      })
+      caseLog.value = resp.scenario_logs
+      logDialogVisible.value = true
+    },
   },
   {
     content: '删除',
