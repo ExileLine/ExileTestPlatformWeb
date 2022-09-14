@@ -8,7 +8,7 @@
       :action-option-list="actionOptionList"
       url="/api/case_req_data_page"
     >
-      <template #formActions>
+      <template v-if="!hasAddBtn" #formActions>
         <t-button theme="primary" @click="userDialogVisible = true">新增</t-button>
       </template>
     </base-table>
@@ -34,6 +34,14 @@ import { cloneDeep, find } from 'lodash'
 import JsonEditor from '@/components/JsonEditor/index.vue'
 import { confirmDialog } from '@/utils/business'
 import { bodyTypeList } from '@/config/variables'
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['add'])
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -70,17 +78,30 @@ const fieldList = [
 const userDialogVisible = ref(false)
 const userForm = ref({})
 
-const actionOptionList = [
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {
-      userForm.value = cloneDeep(row)
-      userDialogVisible.value = true
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '编辑',
+      value: 'edit',
+      theme: 'primary',
+      onClick({ row }) {
+        userForm.value = cloneDeep(row)
+        userDialogVisible.value = true
+      },
     },
-  },
-]
+  ]
+  if (props.hasAddBtn) {
+    options.push({
+      content: '关联',
+      value: 'add',
+      theme: 'success',
+      async onClick({ row }) {
+        emit('bind', row)
+      },
+    })
+  }
+  return options
+})
 
 const record = ref({})
 const jsonViewVisible = ref(false)

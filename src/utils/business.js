@@ -9,7 +9,10 @@ export function toSelectList(list, key) {
 }
 
 export function sendSelectListTo(list, key) {
-  return map(list, ({ value, label }) => ({
+  return map(list, ({ value, label, ...rest }) => ({
+    ...rest,
+    value,
+    label,
     id: value,
     [key]: label,
   }))

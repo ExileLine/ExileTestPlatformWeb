@@ -8,7 +8,7 @@
       :action-option-list="actionOptionList"
       url="/api/assertion_page"
     >
-      <template #formActions>
+      <template v-if="!hasAddBtn" #formActions>
         <t-button @click="addResponseDialogVisible = true">新增</t-button>
       </template>
     </base-table>

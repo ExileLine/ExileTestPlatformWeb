@@ -20,12 +20,12 @@
         <div class="mb-20 fs-20 fw-600 mt-10">参数信息</div>
         <div class="justify-end mb-10">
           <t-tooltip content="选择请求参数">
-            <t-button theme="success">
+            <t-button theme="success" @click="paramListDialogVisible = true">
               <t-icon name="root-list"></t-icon>
             </t-button>
           </t-tooltip>
           <t-tooltip content="新增请求参数">
-            <t-button theme="primary" @click="addReqData">
+            <t-button theme="primary" @click="() => addReqData()">
               <t-icon name="add"></t-icon>
             </t-button>
           </t-tooltip>
@@ -44,9 +44,16 @@
             removable
           >
             <template #label>
-              <t-tooltip :content="data.data_info.data_name" placement="left">
-                <span class="ellipsis" style="width: 10em">{{ data.data_info.data_name }}</span>
-              </t-tooltip>
+              <div class="align-center">
+                <t-tooltip content="设为默认" placement="left">
+                  <span class="align-center" @click.stop="defaultCid = data.data_info.cid">
+                    <t-radio :checked="data.data_info.cid === defaultCid">&nbsp;</t-radio>
+                  </span>
+                </t-tooltip>
+                <t-tooltip :content="data.data_info.data_name" placement="left">
+                  <span class="ellipsis" style="width: 10em">{{ data.data_info.data_name }}</span>
+                </t-tooltip>
+              </div>
             </template>
             <div class="p-10">
               <div class="mb-10 flex-between">
@@ -102,6 +109,8 @@
       :info="dataInfo"
       @bind="bindAssertion"
     />
+
+    <param-list-dialog v-model:visible="paramListDialogVisible" @bind="addReqData" />
   </page-container>
 </template>
 
@@ -109,7 +118,7 @@
 import { ref, inject, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { map, find, findIndex } from 'lodash'
+import { map, find, findIndex, sortBy } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
 import BodyJson from './components/BodyJson.vue'
@@ -118,6 +127,7 @@ import ResponseAssertTable from './components/ResponseAssertTable.vue'
 import FieldAssertTable from './components/FieldAssertTable.vue'
 import ResponseDetailDialog from './components/ResponseDetailDialog.vue'
 import AssertListDialog from './components/AssertListDialog.vue'
+import ParamListDialog from './components/ParamListDialog.vue'
 import ResponseRuleDialog from '@/views/assert/component/ResponseRuleDialog.vue'
 import {
   fetchGetCase,
@@ -293,14 +303,35 @@ const genReqData = () => ({
 })
 const data_list = ref([genReqData()])
 data_list.value.forEach(i => (i.data_info.cid = cid++))
+const defaultCid = ref()
 
-const addReqData = () => {
-  data_list.value.push(genReqData())
+const paramListDialogVisible = ref(false)
+const addReqData = row => {
+  if (row) {
+    const hasReqData = find(data_list.value, ({ data_info }) => data_info.id === row.id)
+    if (hasReqData) {
+      return message.warning(`参数(${row.data_name})已关联用例`)
+    }
+    data_list.value.push({
+      data_info: {
+        cid: ++cid,
+        ...row,
+      },
+      case_field_ass_info: [],
+      case_resp_ass_info: [],
+    })
+  } else {
+    data_list.value.push(genReqData())
+  }
   dataInfoTab.value = cid
 }
 const removeDataInfoTab = ({ index }) => {
   if (data_list.value.length > 1) {
-    data_list.value.splice(index, 1)
+    const [deleteItem] = data_list.value.splice(index, 1)
+    if (dataInfoTab.value === deleteItem.data_info.cid) {
+      const idx = index - 1 < 0 ? 0 : index - 1
+      defaultCid.value = dataInfoTab.value = data_list.value[idx].data_info.cid
+    }
   }
 }
 
@@ -308,11 +339,11 @@ const saveCase = async () => {
   const caseParams = addVersionList(addModuleList(addModel.value))
   if (!case_id) {
     const { id } = await fetchAddCase(caseParams)
-    message.success('保存成功')
+    message.success('用例保存成功')
     return id
   }
   await fetchUpdateCase(caseParams)
-  message.success('保存成功')
+  message.success('用例保存成功')
   return case_id
 }
 
@@ -320,7 +351,11 @@ const submitCase = async () => {
   const validateResult = await caseFormRef.value.validate()
   if (validateResult === true) {
     const case_id = await saveCase()
-    const bindParams = data_list.value
+    const bindParams = data_list.value.sort(({ data_info }, { data_info: next }) => {
+      if (data_info.cid === defaultCid.value) return -1
+      if (next.cid === defaultCid.value) return 1
+      return 0
+    })
     await fetchBindCase({
       case_id,
       data_list: map(bindParams, item => ({
@@ -411,6 +446,7 @@ const saveAssertionRule = (rule, isUpdate) => {
     assertRuleList.push(rule)
   }
 }
+
 onMounted(async () => {
   if (case_id) {
     const { bind_info, case_info } = await fetchGetCase(case_id)
@@ -429,7 +465,7 @@ onMounted(async () => {
     }
   }
 
-  dataInfoTab.value = data_list.value[0].data_info.cid
+  defaultCid.value = dataInfoTab.value = data_list.value[0].data_info.cid
 })
 </script>
 
