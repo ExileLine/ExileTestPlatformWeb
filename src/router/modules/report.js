@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '报告列表',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/report/index.vue'),
       },
     ],
   },

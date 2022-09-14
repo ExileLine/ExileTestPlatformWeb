@@ -1,3 +1,4 @@
+// 用例
 export const requestMethodList = [
   {
     label: 'GET',
@@ -76,6 +77,7 @@ export const bodyTypeList = [
   { value: 'xml', label: 'xml', mode: 'application/xml' },
 ]
 
+// 变量参数
 export const ruleList = [
   {
     label: '==',
@@ -179,6 +181,42 @@ export const variableTypeList = [
   {
     label: '长UUID',
     value: 'uuid_long',
+  },
+]
+
+// 日志相关
+export const executeTypeList = [
+  { value: 'case', label: '用例(单个)' },
+  { value: 'scenario', label: '场景(单个)' },
+  { value: 'project_all', label: '项目(全部)' },
+  { value: 'project_case', label: '项目(用例)' },
+  { value: 'project_scenario', label: '项目(场景)' },
+  { value: 'version_all', label: '迭代(全部)' },
+  { value: 'version_case', label: '迭代(用例)' },
+  { value: 'version_scenario', label: '迭代(场景)' },
+  { value: 'task_all', label: '任务(全部)' },
+  { value: 'task_case', label: '任务(用例)' },
+  { value: 'task_scenario', label: '任务(场景)' },
+  { value: 'module_all', label: '模块(全部)' },
+  { value: 'module_case', label: '模块(用例)' },
+  { value: 'module_scenario', label: '模块(场景)' },
+]
+
+export const triggerTypeList = [
+  { value: 'user_execute', label: '用户触发' },
+  { value: 'timed_execute', label: '定时任务' },
+]
+
+export const executeStatusList = [
+  {
+    label: '成功',
+    value: 1,
+    theme: 'success',
+  },
+  {
+    label: '失败',
+    value: 0,
+    theme: 'danger',
   },
 ]
 
