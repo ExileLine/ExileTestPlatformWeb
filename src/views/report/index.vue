@@ -13,9 +13,10 @@
 
 <script setup lang="jsx">
 import { ref, inject, computed } from 'vue'
-import { cloneDeep, find } from 'lodash'
-import { confirmDialog } from '@/utils/business'
+import { find } from 'lodash'
 import { executeTypeList, triggerTypeList, executeStatusList } from '@/config/variables'
+import { fetchGetReport } from '@/api/report'
+import { downloadFile } from '@/utils/download'
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -64,21 +65,27 @@ const fieldList = [
 ]
 
 const userDialogVisible = ref(false)
-const userForm = ref({})
 
 const actionOptionList = [
   {
-    content: '编辑',
-    value: 'edit',
+    content: '报告',
+    value: 'file',
+    theme: 'success',
+    async onClick({ row }) {
+      window.open(`${import.meta.env.VITE_BASE_URL}api/case_report/${row.redis_key}`, '_blank')
+    },
+  },
+  {
+    content: '下载',
+    value: 'download',
     theme: 'primary',
-    onClick({ row }) {
-      userForm.value = cloneDeep(row)
-      userDialogVisible.value = true
+    async onClick({ row }) {
+      const data = await fetchGetReport(row.redis_key)
+      downloadFile(data, `${row.execute_name}.html`)
+      message.success('操作成功')
     },
   },
 ]
-
-const record = ref({})
 
 const columns = [
   {
