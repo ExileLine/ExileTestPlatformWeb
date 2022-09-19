@@ -9,15 +9,32 @@
       url="/api/case_env_page"
     >
       <template #formActions>
-        <t-button theme="primary" @click="userDialogVisible = true">新增</t-button>
+        <t-button theme="primary" @click="envDialogVisible = true">新增</t-button>
       </template>
     </base-table>
+
+    <t-dialog v-model:visible="envDialogVisible" :footer="false" :header="title" @close="close">
+      <common-form
+        dialog
+        :data="envForm"
+        :rules="envRules"
+        :field-list="envFieldList"
+        label-width="4em"
+        confirm-text="确定"
+        cancel-text="取消"
+        @confirm="saveEnv"
+        @cancel="envDialogVisible = false"
+      />
+    </t-dialog>
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
 import { cloneDeep } from 'lodash'
+import { fetchAddEnv, fetchUpdateEnv, fetchDeleteEnv } from '@/api/env'
+import { validateRequired } from '@/components/validate'
+import { confirmDialog } from '@/utils/business'
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -50,8 +67,18 @@ const fieldList = [
   },
 ]
 
-// const userDialogVisible = ref(false)
-// const userForm = ref({})
+const envDialogVisible = ref(false)
+const envForm = ref({})
+const envFieldList = fieldList.slice(0, 2).concat({
+  label: '备注',
+  value: 'remark',
+})
+const envRules = {
+  env_name: [validateRequired('请输入名称')],
+  env_url: [validateRequired('请输入地址')],
+}
+
+const title = computed(() => (envForm.value.id ? '编辑环境' : '新增环境'))
 
 const actionOptionList = [
   {
@@ -59,8 +86,8 @@ const actionOptionList = [
     value: 'edit',
     theme: 'primary',
     onClick({ row }) {
-      userForm.value = cloneDeep(row)
-      userDialogVisible.value = true
+      envForm.value = cloneDeep(row)
+      envDialogVisible.value = true
     },
   },
   // {
@@ -79,12 +106,25 @@ const actionOptionList = [
   //     message.success('操作成功')
   //   },
   // },
-  // {
-  //   content: '删除',
-  //   value: 'delete',
-  //   theme: 'danger',
-  //   onClick() {},
-  // },
+  {
+    content: '删除',
+    value: 'delete',
+    theme: 'danger',
+    async onClick({ row }) {
+      const dialog = await confirmDialog(
+        <div>
+          是否删除环境：
+          <span class="text-warning-6">
+            {row.name}：{row.env_url}
+          </span>
+        </div>
+      )
+      await fetchDeleteEnv(row)
+      dialog.hide()
+      selectChange.change()
+      message.success('操作成功')
+    },
+  },
 ]
 
 const columns = computed(() => [
@@ -125,6 +165,22 @@ const columns = computed(() => [
     width: 180,
   },
 ])
+
+function close() {
+  envForm.value = {}
+}
+const saveEnv = async () => {
+  const data = envForm.value
+  if (data.id) {
+    await fetchUpdateEnv(data)
+  } else {
+    await fetchAddEnv(data)
+  }
+  envDialogVisible.value = false
+  close()
+  selectChange.change()
+  message.success('操作成功')
+}
 </script>
 
 <style lang="scss" scoped></style>

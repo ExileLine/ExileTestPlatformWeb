@@ -13,26 +13,14 @@
       </template>
     </base-table>
 
-    <t-dialog
-      v-model:visible="jsonViewVisible"
-      :header="record.title"
-      width="1000px"
-      destroy-on-close
-      placement="center"
-      :footer="null"
-    >
-      <div class="h-400">
-        <json-editor :model-value="record[record.colKey]" read-only />
-      </div>
-    </t-dialog>
+    <json-editor-dialog v-model:visible="jsonViewVisible" :record="record" />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, inject, computed } from 'vue'
 import { cloneDeep, find } from 'lodash'
-import JsonEditor from '@/components/JsonEditor/index.vue'
-import { confirmDialog } from '@/utils/business'
+import JsonEditorDialog from '@/components/JsonEditorDialog/index.vue'
 import { bodyTypeList } from '@/config/variables'
 
 const props = defineProps({

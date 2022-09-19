@@ -40,7 +40,7 @@ const router = [
         meta: {
           title: '数据库配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/configure/db.vue'),
       },
       {
         name: 'cicdList',

@@ -33,7 +33,7 @@ const deleteLoading = () => {
 const service = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost:7878/',
   // withCredentials: true,
-  timeout: 10000,
+  timeout: 1000 * 60,
   headers: {
     'Content-Type': 'application/json',
   },

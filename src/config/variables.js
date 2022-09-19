@@ -220,4 +220,35 @@ export const executeStatusList = [
   },
 ]
 
+export const dbTypeList = [
+  {
+    value: 'mysql',
+    label: 'MySQL',
+  },
+  {
+    value: 'redis',
+    label: 'Redis',
+  },
+  {
+    value: 'postgresql',
+    label: 'PostgreSql',
+  },
+  {
+    value: 'mongodb',
+    label: 'mongoDB',
+  },
+  {
+    value: 'sqlserver',
+    label: 'SqlServer',
+  },
+  {
+    value: 'oracle',
+    label: 'Oracle',
+  },
+  {
+    value: 'es',
+    label: 'Elasticsearch',
+  },
+]
+
 export const expTip = '对象获取：obj.get("key") 数组列表获取：obj.get("key")[0]'

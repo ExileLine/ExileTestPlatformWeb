@@ -18,7 +18,7 @@
       :footer="null"
       placement="center"
       width="600px"
-      header="新增变量"
+      :header="title"
       @close="close"
     >
       <common-form
@@ -90,6 +90,7 @@ const fieldList = [
 const variableFormRef = ref()
 const variableForm = ref({})
 const variableDialogVisible = ref(false)
+const title = computed(() => (variableForm.value.id ? '编辑变量' : '新增变量'))
 
 const actionOptionList = [
   {
@@ -272,6 +273,7 @@ const variableFieldList = computed(() => {
 })
 
 const close = () => {
+  variableForm.value = {}
   variableFormRef.value.cancel()
 }
 

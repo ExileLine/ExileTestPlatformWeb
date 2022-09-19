@@ -118,7 +118,7 @@ const actionOptionList = [
           是否删除场景：<span class="text-warning-6">{row.scenario_title}</span>
         </div>
       )
-      message.success('删除成功')
+      message.success('操作成功')
       dialog.hide()
       baseTableRef.value.getData = true
     },

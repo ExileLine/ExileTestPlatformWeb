@@ -156,7 +156,7 @@ const actionOptionList = [
         </div>
       )
       await fetchDeleteCase(row)
-      message.success('删除成功')
+      message.success('操作成功')
       dialog.hide()
       baseTableRef.value.getData = true
     },
