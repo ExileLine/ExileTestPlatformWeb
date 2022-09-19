@@ -16,7 +16,7 @@ const router = [
         meta: {
           title: '环境配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/configure/env.vue'),
       },
       {
         name: 'dingdingList',

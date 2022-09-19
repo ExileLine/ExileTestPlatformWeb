@@ -64,8 +64,6 @@ const fieldList = [
   },
 ]
 
-const userDialogVisible = ref(false)
-
 const actionOptionList = [
   {
     content: '报告',
