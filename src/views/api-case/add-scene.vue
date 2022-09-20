@@ -56,7 +56,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { fetchGetCaseList } from '@/api/api-case'
 const formModal = ref({
-  case_list: [],
+  case_list: [8657],
 })
 const switchLabel = ['是', '否']
 

@@ -251,4 +251,23 @@ export const dbTypeList = [
   },
 ]
 
+export const versionTaskTypeList = [
+  {
+    value: 'API自动化测试',
+    label: 'API自动化测试',
+  },
+  {
+    value: 'UI自动化测试',
+    label: 'UI自动化测试',
+  },
+  {
+    value: '性能测试',
+    label: '性能测试',
+  },
+  {
+    value: '安全测试',
+    label: '安全测试',
+  },
+]
+
 export const expTip = '对象获取：obj.get("key") 数组列表获取：obj.get("key")[0]'

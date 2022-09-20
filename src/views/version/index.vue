@@ -39,7 +39,7 @@
           :key="version.id"
           class="mb-20 pointer"
         >
-          <t-card shadow @click="gotoHome(version)">
+          <t-card shadow @click="gotoPath(version)">
             <div class="flex relative">
               <t-avatar :image="imgList[version.icon - 1]" size="70px" />
               <div class="flex-1 ml-20 w-0">
@@ -111,6 +111,7 @@
 
 <script setup lang="jsx">
 import { nextTick, ref, inject, computed } from 'vue'
+import { useRouter } from 'vue-router'
 // search、add图标
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
 import { keys, cloneDeep } from 'lodash'
@@ -120,6 +121,7 @@ import { validateRequired } from '@/components/validate'
 import { fetchAddVersion, fetchUpdateVersion } from '@/api/project'
 
 const message = inject('message')
+const router = useRouter()
 
 const imgPathList = import.meta.globEager('@/assets/version-icon0*.png')
 const imgList = keys(imgPathList).map(key => imgPathList[key].default)
@@ -233,6 +235,15 @@ const updateVersion = async () => {
   close()
   clearVersion()
   message.success('操作成功')
+}
+
+const gotoPath = version => {
+  router.push({
+    path: '/version/task',
+    query: {
+      version_id: version.id,
+    },
+  })
 }
 </script>
 

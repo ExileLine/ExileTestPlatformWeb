@@ -19,6 +19,16 @@ const router = [
         component: () => import('@view/version/index.vue'),
       },
       {
+        name: 'versionTaskList',
+        path: 'task',
+        meta: {
+          title: '任务列表',
+          hidden: true,
+          parentIndex: 0,
+        },
+        component: () => import('@view/version/version-task.vue'),
+      },
+      {
         name: 'moduleList',
         path: 'module',
         meta: {
