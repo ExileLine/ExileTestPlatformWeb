@@ -2,7 +2,7 @@ const router = [
   {
     name: 'version',
     path: '/version',
-    redirect: '/version/version',
+    redirect: '/version/index',
     meta: {
       sort: 300,
       icon: 'view-module',
@@ -12,11 +12,11 @@ const router = [
     children: [
       {
         name: 'versionList',
-        path: 'version',
+        path: 'index',
         meta: {
           title: '版本迭代',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/version/index.vue'),
       },
       {
         name: 'moduleList',

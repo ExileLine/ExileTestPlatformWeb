@@ -24,6 +24,7 @@
                   theme="primary"
                   size="large"
                   :icon="renderAddBtnIcon"
+                  @click="projectDialogVisible = true"
                 >
                   新增
                 </t-button>
@@ -69,6 +70,7 @@
                           <t-dropdown-item
                             v-for="option in projectDropdownOptions"
                             :key="option.name"
+                            @click="option.handle(project)"
                           >
                             <div class="align-center">
                               <t-icon :name="option.icon" class="mr-10" />
@@ -97,13 +99,28 @@
         </div>
       </div>
     </div>
+
+    <t-dialog v-model:visible="projectDialogVisible" :footer="false" :header="title" @close="close">
+      <common-form
+        dialog
+        :data="projectForm"
+        :rules="projectRules"
+        :field-list="projectFieldList"
+        label-width="6em"
+        confirm-text="确定"
+        cancel-text="取消"
+        @confirm="updateProject"
+        @cancel="projectDialogVisible = false"
+      />
+    </t-dialog>
   </div>
 </template>
 
 <script setup lang="jsx">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, inject, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { cloneDeep } from 'lodash'
 
 // search、add图标
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
@@ -111,6 +128,10 @@ import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import HeadPart from '@/layout/components/HeadPart.vue'
 import projectIcon from '@/assets/project-icon.png'
 import { post } from '@util/request'
+import { validateRequired } from '@/components/validate'
+import { fetchAddProject, fetchUpdateProject } from '@/api/project'
+
+const message = inject('message')
 
 const router = useRouter()
 const store = useStore()
@@ -123,14 +144,37 @@ const colSpan = {
   xs: 12,
 }
 
+const projectDialogVisible = ref(false)
+const projectForm = ref({})
+const projectFieldList = [
+  {
+    label: '项目名称',
+    value: 'project_name',
+  },
+  {
+    label: '备注',
+    value: 'remark',
+  },
+]
+const projectRules = {
+  project_name: [validateRequired('请输入版本名称')],
+}
+
+const title = computed(() => (projectForm.value.id ? '编辑项目' : '新增项目'))
+
 const projectDropdownOptions = [
   {
     name: '编辑',
     icon: 'edit-1',
+    handle(project) {
+      projectForm.value = cloneDeep(project)
+      projectDialogVisible.value = true
+    },
   },
   {
     name: '执行',
     icon: 'play-circle',
+    handle(project) {},
   },
 ]
 
@@ -187,54 +231,25 @@ const clearProject = () => {
 }
 const renderSearchIcon = () => <SearchIcon onClick={() => search()} />
 const renderAddBtnIcon = () => <AddIcon />
+
+function close() {
+  projectForm.value = {}
+}
+
+const updateProject = async () => {
+  const data = projectForm.value
+  if (data.id) {
+    await fetchUpdateProject(data)
+  } else {
+    await fetchAddProject(data)
+  }
+  projectDialogVisible.value = false
+  close()
+  clearProject()
+  message.success('操作成功')
+}
 </script>
 
 <style lang="scss" scoped>
-#project-search-container {
-  box-shadow: rgb(0 0 0 / 12%) 0px 2px 4px, rgb(0 0 0 / 4%) 0px 0px 6px;
-  background-color: var(--td-bg-color-container);
-  ::v-deep(.t-input-adornment) {
-    flex: 1;
-    max-width: 500px;
-    border-radius: 100px;
-    overflow: hidden;
-    border: 1px solid var(--td-border-level-2-color);
-    margin-right: 20px;
-    .t-input-adornment__append,
-    .t-input {
-      border: none;
-    }
-    .t-input-adornment__append {
-      border-left: 1px solid var(--td-border-level-2-color);
-      cursor: pointer;
-      padding: 0;
-      .t-icon {
-        font-size: 20px;
-        padding: 0 12px;
-        width: 100%;
-        height: 100%;
-      }
-    }
-    .t-input {
-      min-width: 150px;
-    }
-    .t-input--focused {
-      border: none;
-      box-shadow: none;
-    }
-  }
-  ::v-deep(.t-button) {
-    transition: none;
-  }
-}
-.project-desc {
-  opacity: 0.5;
-}
-.setting-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 100;
-  cursor: pointer;
-}
+@import './project.scss';
 </style>
