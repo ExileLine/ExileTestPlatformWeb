@@ -2,13 +2,13 @@
   <div>
     <div class="mb-10 justify-end">
       <t-tooltip content="选择关系变量">
-        <t-button theme="success">
-          <t-icon name="root-list"></t-icon>
+        <t-button theme="success" @click="getAssertionList">
+          <t-icon name="root-list" />
         </t-button>
       </t-tooltip>
       <t-tooltip content="新增关系变量">
-        <t-button theme="primary">
-          <t-icon name="add"></t-icon>
+        <t-button theme="primary" @click="add">
+          <t-icon name="add" />
         </t-button>
       </t-tooltip>
     </div>
@@ -24,7 +24,15 @@ const props = defineProps({
     required: true,
   },
 })
+const emit = defineEmits(['get-variable-list', 'add', 'edit'])
 const columns = genVariableColumns(props)
+
+const getAssertionList = () => {
+  emit('get-variable-list')
+}
+const add = () => {
+  emit('add')
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -8,7 +8,7 @@
       :action-option-list="actionOptionList"
       url="/api/case_variable_page"
     >
-      <template #formActions>
+      <template v-if="!hasAddBtn" #formActions>
         <t-button theme="primary" @click="variableDialogVisible = true">新增</t-button>
       </template>
     </base-table>
@@ -44,6 +44,15 @@ import { confirmDialog } from '@/utils/business'
 import { varSourceList, variableTypeList } from '@/config/variables'
 import { validateRequired } from '@/components/validate'
 import { fetchAddVariable, fetchUpdateVariable, fetchDeleteVariable } from '@/api/case-variable'
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const emit = defineEmits(['bind'])
 
 const message = inject('message')
 
@@ -92,34 +101,47 @@ const variableForm = ref({})
 const variableDialogVisible = ref(false)
 const title = computed(() => (variableForm.value.id ? '编辑变量' : '新增变量'))
 
-const actionOptionList = [
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {
-      // row.is_source = !!row.var_source
-      variableForm.value = cloneDeep(row)
-      variableDialogVisible.value = true
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '编辑',
+      value: 'edit',
+      theme: 'primary',
+      onClick({ row }) {
+        // row.is_source = !!row.var_source
+        variableForm.value = cloneDeep(row)
+        variableDialogVisible.value = true
+      },
     },
-  },
-  {
-    content: '删除',
-    value: 'close',
-    theme: 'danger',
-    async onClick({ row }) {
-      const dialog = await confirmDialog(
-        <div>
-          是否删除响应断言规则：<span class="text-warning-6">{row.var_name}</span>
-        </div>
-      )
-      await fetchDeleteVariable(row)
-      dialog.hide()
-      message.success('操作成功')
-      refresh()
+    {
+      content: '删除',
+      value: 'close',
+      theme: 'danger',
+      async onClick({ row }) {
+        const dialog = await confirmDialog(
+          <div>
+            是否删除响应断言规则：<span class="text-warning-6">{row.var_name}</span>
+          </div>
+        )
+        await fetchDeleteVariable(row)
+        dialog.hide()
+        message.success('操作成功')
+        refresh()
+      },
     },
-  },
-]
+  ]
+  if (props.hasAddBtn) {
+    options.push({
+      content: '关联',
+      value: 'add',
+      theme: 'success',
+      async onClick({ row }) {
+        emit('bind', row)
+      },
+    })
+  }
+  return options
+})
 
 const columns = computed(() => [
   {

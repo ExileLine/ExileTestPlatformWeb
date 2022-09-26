@@ -81,6 +81,7 @@
                       :is="tab.component"
                       v-model:data="data.data_info[tab.key]"
                       v-model:body-type="data.data_info.request_body_type"
+                      @get-variable-list="() => getVariableList(data)"
                     />
                   </div>
                 </t-tab-panel>
@@ -111,14 +112,15 @@
     />
 
     <param-list-dialog v-model:visible="paramListDialogVisible" @bind="addReqData" />
+    <variable-list-dialog v-model:visible="variableListDialogVisible" @bind="addVariableData" />
   </page-container>
 </template>
 
 <script setup>
-import { ref, inject, onMounted } from 'vue'
+import { ref, inject, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { map, find, findIndex, sortBy } from 'lodash'
+import { map, find, findIndex } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
 import BodyJson from './components/BodyJson.vue'
@@ -128,6 +130,7 @@ import FieldAssertTable from './components/FieldAssertTable.vue'
 import ResponseDetailDialog from './components/ResponseDetailDialog.vue'
 import AssertListDialog from './components/AssertListDialog.vue'
 import ParamListDialog from './components/ParamListDialog.vue'
+import VariableListDialog from './components/VariableListDialog.vue'
 import ResponseRuleDialog from '@/views/assert/component/ResponseRuleDialog.vue'
 import {
   fetchGetCase,
@@ -325,6 +328,7 @@ const addReqData = row => {
   }
   dataInfoTab.value = cid
 }
+
 const removeDataInfoTab = ({ index }) => {
   if (data_list.value.length > 1) {
     const [deleteItem] = data_list.value.splice(index, 1)
@@ -445,6 +449,28 @@ const saveAssertionRule = (rule, isUpdate) => {
   } else {
     assertRuleList.push(rule)
   }
+}
+
+// 变量
+const variableInfo = ref({})
+const variableListDialogVisible = ref(false)
+const getVariableList = info => {
+  variableInfo.value = info
+  variableListDialogVisible.value = true
+}
+
+const currentReqData = computed(() => {
+  return find(data_list.value, ({ data_info }) => data_info.cid === dataInfoTab.value)
+})
+
+const addVariableData = row => {
+  const data_info = currentReqData.value.data_info
+  const var_list = data_info.update_var_list
+  const hasReqData = find(var_list, ({ id }) => id === row.id)
+  if (hasReqData) {
+    return message.warning(`变量(${row.var_name})已关联参数：${data_info.data_name}`)
+  }
+  var_list.push(row)
 }
 
 onMounted(async () => {

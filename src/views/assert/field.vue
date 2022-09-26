@@ -25,7 +25,7 @@ const props = defineProps({
     default: false,
   },
 })
-const emit = defineEmits(['add'])
+const emit = defineEmits(['bind'])
 
 const baseTableRef = ref()
 
