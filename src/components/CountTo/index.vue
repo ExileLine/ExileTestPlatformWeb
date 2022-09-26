@@ -15,7 +15,7 @@ const props = defineProps({
   /** 结束值 */
   endValue: {
     type: Number,
-    default: 2021,
+    default: 1,
   },
   /** 动画时长 */
   duration: {
@@ -82,7 +82,7 @@ function start() {
   source.value = props.endValue
 }
 function formatNumber(num) {
-  if (!num) {
+  if (!num && num !== 0) {
     return ''
   }
   const { decimals, decimal, separator, suffix, prefix } = props

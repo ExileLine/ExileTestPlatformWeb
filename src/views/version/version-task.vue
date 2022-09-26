@@ -12,14 +12,22 @@
         <t-button theme="primary" @click="envDialogVisible = true">新增</t-button>
       </template>
     </base-table>
+
+    <execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.task_name"
+      execute-key="task"
+    />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
-import { versionTaskTypeList } from '@/config/variables'
-import { confirmDialog } from '@/utils/business'
 import { useRoute } from 'vue-router'
+import { versionTaskTypeList } from '@/config/variables'
+import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
+import { confirmDialog } from '@/utils/business'
 
 const route = useRoute()
 const baseTableRef = ref()
@@ -58,12 +66,18 @@ const fieldList = [
   },
 ]
 
+const executeDialogVisible = ref(false)
+const record = ref({})
+
 const actionOptionList = [
   {
     content: '执行',
     value: 'play-circle',
     theme: 'success',
-    onClick({ row }) {},
+    onClick({ row }) {
+      record.value = row
+      executeDialogVisible.value = true
+    },
   },
   {
     content: '编辑',

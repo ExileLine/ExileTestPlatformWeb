@@ -25,6 +25,12 @@
         <log-tabs-container :execute-log="caseLog" />
       </div>
     </t-dialog>
+
+    <execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.case_name"
+    />
   </page-container>
 </template>
 
@@ -34,6 +40,7 @@ import { useRouter } from 'vue-router'
 import { find } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import LogTabsContainer from './components/LogTabsContainer.vue'
+import ExecuteDialog from './components/ExecuteDialog.vue'
 import { fetchDeleteCase } from '@/api/api-case'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
@@ -105,13 +112,18 @@ const fieldList = [
 ]
 
 const logDialogVisible = ref(false)
+const record = ref({})
+const executeDialogVisible = ref(false)
 const caseLog = ref({})
 const actionOptionList = [
   {
     content: '执行',
     value: 'play-circle',
     theme: 'success',
-    onClick() {},
+    onClick({ row }) {
+      record.value = row
+      executeDialogVisible.value = true
+    },
   },
   {
     content: '编辑',

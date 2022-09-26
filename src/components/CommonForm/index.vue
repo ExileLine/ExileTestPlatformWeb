@@ -9,6 +9,7 @@
     reset-type="initial"
     @submit="confirm"
   >
+    <slot name="top"></slot>
     <t-form-item
       v-for="field in fieldList"
       :key="field.value"

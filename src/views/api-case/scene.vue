@@ -25,11 +25,19 @@
         <log-tabs-container is-scene :execute-log="caseLog" />
       </div>
     </t-dialog>
+
+    <execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.scenario_title"
+      execute-key="scenario"
+    />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
+import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
@@ -82,12 +90,18 @@ const fieldList = [
 
 const logDialogVisible = ref(false)
 const caseLog = ref({})
+
+const executeDialogVisible = ref(false)
+const record = ref({})
 const actionOptionList = [
   {
     content: '执行',
     value: 'play-circle',
     theme: 'success',
-    onClick() {},
+    onClick({ row }) {
+      record.value = row
+      executeDialogVisible.value = true
+    },
   },
   {
     content: '编辑',

@@ -106,6 +106,13 @@
         @cancel="versionDialogVisible = false"
       />
     </t-dialog>
+
+    <execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.version_name"
+      execute-key="version"
+    />
   </div>
 </template>
 
@@ -116,6 +123,7 @@ import { useRouter } from 'vue-router'
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
 import { keys, cloneDeep } from 'lodash'
 import BaseEmpty from '@/components/BaseEmpty/index.vue'
+import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import { post } from '@util/request'
 import { validateRequired } from '@/components/validate'
 import { fetchAddVersion, fetchUpdateVersion } from '@/api/project'
@@ -157,6 +165,8 @@ const versionRules = {
 
 const title = computed(() => (versionForm.value.id ? '编辑版本迭代' : '新增版本迭代'))
 
+const executeDialogVisible = ref(false)
+const record = ref({})
 const versionDropdownOptions = [
   {
     name: '编辑',
@@ -169,7 +179,10 @@ const versionDropdownOptions = [
   {
     name: '执行',
     icon: 'play-circle',
-    handle(version) {},
+    handle(version) {
+      record.value = version
+      executeDialogVisible.value = true
+    },
   },
 ]
 

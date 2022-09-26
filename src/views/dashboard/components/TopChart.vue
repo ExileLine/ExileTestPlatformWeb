@@ -36,9 +36,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import CountTo from '@/components/CountTo/index.vue'
 import { useEcharts } from '@/composables/echarts'
+
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({}),
+    required: true,
+  },
+})
 const lineOptions = ref({
   tooltip: {
     trigger: 'axis',
@@ -146,8 +154,7 @@ const lineOptions = ref({
 })
 
 const { domRef: lineRef } = useEcharts(lineOptions)
-console.log(lineRef)
-const pieOptions = ref({
+const pieOptions = computed(() => ({
   tooltip: {
     trigger: 'item',
   },
@@ -184,14 +191,14 @@ const pieOptions = ref({
         show: false,
       },
       data: [
-        { value: 20, name: '成功' },
-        { value: 10, name: '失败' },
-        { value: 30, name: '错误' },
-        { value: 23, name: '执行' },
+        { value: props.data.total_execute_success, name: '成功' },
+        { value: props.data.total_execute_fail, name: '失败' },
+        { value: props.data.total_execute_error, name: '错误' },
+        { value: props.data.total_execute_count, name: '执行' },
       ],
     },
   ],
-})
+}))
 
 const { domRef: pieRef } = useEcharts(pieOptions)
 </script>

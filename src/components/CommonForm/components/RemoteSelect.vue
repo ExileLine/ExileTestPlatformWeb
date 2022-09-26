@@ -14,7 +14,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
-import { map } from 'lodash'
+import { map, isFunction } from 'lodash'
 import { post } from '@/utils/request'
 import { onMounted } from 'vue'
 
@@ -42,6 +42,7 @@ const options = ref([])
 
 async function getList(value = '') {
   const { url, labelKey, valueKey, dataKey } = props
+  if (!url) return
   const { records } = await post(url, {
     page: 1,
     size: 100,
@@ -50,8 +51,8 @@ async function getList(value = '') {
   })
   options.value = map(records, item => ({
     ...item,
-    label: item[props.labelKey],
-    value: item[props.valueKey],
+    label: isFunction(labelKey) ? labelKey(item) : item[labelKey],
+    value: item[valueKey],
   }))
 }
 

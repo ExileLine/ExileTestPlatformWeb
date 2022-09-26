@@ -113,6 +113,13 @@
         @cancel="projectDialogVisible = false"
       />
     </t-dialog>
+
+    <execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.project_name"
+      execute-key="project"
+    />
   </div>
 </template>
 
@@ -126,6 +133,7 @@ import { cloneDeep } from 'lodash'
 import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
 import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import HeadPart from '@/layout/components/HeadPart.vue'
+import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import projectIcon from '@/assets/project-icon.png'
 import { post } from '@util/request'
 import { validateRequired } from '@/components/validate'
@@ -162,6 +170,9 @@ const projectRules = {
 
 const title = computed(() => (projectForm.value.id ? '编辑项目' : '新增项目'))
 
+const executeDialogVisible = ref(false)
+const record = ref({})
+
 const projectDropdownOptions = [
   {
     name: '编辑',
@@ -174,7 +185,10 @@ const projectDropdownOptions = [
   {
     name: '执行',
     icon: 'play-circle',
-    handle(project) {},
+    handle(project) {
+      record.value = project
+      executeDialogVisible.value = true
+    },
   },
 ]
 
