@@ -31,6 +31,8 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/mode/htmlmixed/htmlmixed'
+import 'codemirror/mode/python/python'
+
 // JSON错误检查
 import 'codemirror/addon/lint/lint'
 // 需要依赖全局的jsonlint，不是很优雅
@@ -52,7 +54,7 @@ const props = defineProps({
 const emit = defineEmits(['changed', 'update:modelValue'])
 
 const store = useStore()
-const theme = computed(() => store.getters.theme)
+const theme = computed(() => store?.getters?.theme ?? 'light')
 
 let jsonEditor
 const codemirrorRef = ref()

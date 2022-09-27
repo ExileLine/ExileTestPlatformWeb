@@ -1,5 +1,7 @@
+import JsonEditor from '@/components/JsonEditor/index.vue'
 import { renderAction } from '@/composables/renderTableAction'
-import { expTip, varSourceList } from '@/config/variables'
+import { varSourceList } from '@/config/variables'
+import { pythonExpressionTip, pythonExpression, helpDialog } from '@/utils/helpDialog'
 
 export const genVariableColumns = props => [
   {
@@ -57,8 +59,21 @@ export const genVariableColumns = props => [
         return (
           <div>
             <span class="mr-10">表达式</span>
-            <t-tooltip content={expTip}>
-              <t-icon name="help-circle-filled"></t-icon>
+            <t-tooltip content="帮助">
+              <t-icon
+                name="help-circle-filled"
+                onClick={() =>
+                  helpDialog(
+                    <div>
+                      <div class="mb-10 fw-600">{pythonExpressionTip}</div>
+                      <div class="h-650">
+                        <JsonEditor v-model={pythonExpression} read-only mode="python" />
+                      </div>
+                    </div>,
+                    '关于取值表达式'
+                  )
+                }
+              />
             </t-tooltip>
           </div>
         )
