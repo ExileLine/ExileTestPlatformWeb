@@ -18,13 +18,13 @@
       :label-width="field.labelWidth"
     >
       <template #label>
-        <template v-if="field.scopedSlotsLabel">
-          <slot :name="field.scopedSlotsLabel" />
+        <template v-if="field.labelSlot">
+          <slot :name="field.labelSlot" />
         </template>
         <template v-else-if="field.label">{{ field.label }}</template>
       </template>
-      <template v-if="$slots[field.scopedSlots]">
-        <slot :name="field.scopedSlots" />
+      <template v-if="$slots[field.slot]">
+        <slot :name="field.slot" />
       </template>
       <template v-else>
         <span v-if="field.prefix" :class="field.prefixClass">{{ field.prefix }}</span>
@@ -77,16 +77,19 @@ import TRadio from './components/Radio.vue'
 import TSelect from './components/Select.vue'
 import TCheckbox from './components/Checkbox.vue'
 import RemoteSelect from './components/RemoteSelect.vue'
+import JsonEditor from '@/components/JsonEditor/index.vue'
 
 const comp = {
   TRadio,
   TSelect,
   TCheckbox,
   RemoteSelect,
+  JsonEditor,
   't-radio': TRadio,
   't-select': TSelect,
   't-checkbox': TCheckbox,
   'remote-select': RemoteSelect,
+  'json-editor': JsonEditor,
 }
 const props = defineProps({
   labelWidth: {

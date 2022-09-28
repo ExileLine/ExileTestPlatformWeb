@@ -107,7 +107,7 @@ const fieldList = [
     },
   },
   {
-    scopedSlots: 'ass_json',
+    slot: 'ass_json',
     labelWidth: '0',
   },
 ]

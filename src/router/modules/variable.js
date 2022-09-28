@@ -18,6 +18,26 @@ const router = [
         },
         component: () => import('@view/variable/index.vue'),
       },
+      {
+        name: 'addVariable',
+        path: 'add',
+        meta: {
+          title: '添加变量',
+          hidden: true,
+          parentIndex: 0,
+        },
+        component: () => import('@view/variable/add.vue'),
+      },
+      {
+        name: 'editVariable',
+        path: 'edit',
+        meta: {
+          title: '编辑变量',
+          hidden: true,
+          parentIndex: 0,
+        },
+        component: () => import('@view/variable/add.vue'),
+      },
     ],
   },
 ]

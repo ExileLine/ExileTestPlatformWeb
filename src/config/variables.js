@@ -159,27 +159,27 @@ export const variableTypeList = [
     value: 'random_bool',
   },
   {
-    label: '日期(年月日)',
+    label: '当前日期(年月日)',
     value: 'date',
   },
   {
-    label: '时间(时分秒)',
+    label: '当前时间(时分秒)',
     value: 'time',
   },
   {
-    label: '日期(年月日时分秒)',
+    label: '当前日期(年月日时分秒)',
     value: 'datetime',
   },
   {
-    label: '时间戳',
+    label: '当前时间戳',
     value: 'timestamp',
   },
   {
-    label: '短UUID',
+    label: '短UUID(16位)',
     value: 'uuid_short',
   },
   {
-    label: '长UUID',
+    label: '长UUID(32位)',
     value: 'uuid_long',
   },
 ]
