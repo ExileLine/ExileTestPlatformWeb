@@ -90,7 +90,6 @@ const variableFieldList = computed(() => {
         url: '/api/project_version_page',
         labelKey: 'version_name',
         valueKey: 'id',
-        valueType: 'object',
         multiple: true,
       },
     },

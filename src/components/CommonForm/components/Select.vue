@@ -11,6 +11,6 @@ const props = defineProps(['field', 'value', 'listInfo'])
 const options = computed(() => {
   const { field, listInfo } = props
   if (Array.isArray(field.list)) return field.list
-  return listInfo && listInfo[field.list]
+  return listInfo?.[field.list] || []
 })
 </script>

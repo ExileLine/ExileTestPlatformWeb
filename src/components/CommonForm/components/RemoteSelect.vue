@@ -5,8 +5,6 @@
     filterable
     remote
     clearable
-    :multiple="multiple"
-    :value-key="valueKey"
     :options="options"
     :remote-method="getList"
   />
@@ -21,9 +19,8 @@ import { onMounted } from 'vue'
 const store = useStore()
 
 const props = defineProps({
-  value: null,
+  value: [String, Number, Object, Array],
   url: String,
-  multiple: Boolean,
   valueKey: {
     type: String,
     default: 'id',
