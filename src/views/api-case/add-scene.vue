@@ -57,6 +57,8 @@ import { onMounted, reactive, ref } from 'vue'
 import { fetchGetCaseList } from '@/api/api-case'
 const formModal = ref({
   case_list: [8657],
+  version_list: [],
+  module_list: [],
 })
 const switchLabel = ['是', '否']
 
@@ -72,6 +74,7 @@ const fieldList = [
       url: '/api/project_version_page',
       labelKey: 'version_name',
       valueKey: 'id',
+      valueType: 'object',
       multiple: true,
       ...extraProps,
     },
@@ -84,6 +87,7 @@ const fieldList = [
       url: '/api/module_app_page',
       labelKey: 'module_name',
       valueKey: 'id',
+      valueType: 'object',
       multiple: true,
       ...extraProps,
     },

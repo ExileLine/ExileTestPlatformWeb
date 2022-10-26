@@ -67,6 +67,7 @@ const fieldList = [
 
 const responseForm = ref({
   ass_json: [],
+  version_list: [],
 })
 const addResponseDialogVisible = ref(false)
 const actionOptionList = computed(() => {

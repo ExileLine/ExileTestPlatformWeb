@@ -35,7 +35,9 @@ const message = inject('message')
 
 const { id } = route.query
 
-const variableForm = ref({})
+const variableForm = ref({
+  version_list: [],
+})
 const variableRules = {
   var_name: [validateRequired('请输入变量名称')],
   var_type: [validateRequired('请选择变量类型')],
@@ -90,6 +92,7 @@ const variableFieldList = computed(() => {
         url: '/api/project_version_page',
         labelKey: 'version_name',
         valueKey: 'id',
+        valueType: 'object',
         multiple: true,
       },
     },

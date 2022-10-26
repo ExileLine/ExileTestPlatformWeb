@@ -151,7 +151,10 @@ const message = inject('message')
 const caseFormRef = ref()
 
 const switchLabel = ['是', '否']
-const addModel = ref({})
+const addModel = ref({
+  version_list: [],
+  module_list: [],
+})
 const fieldList = [
   {
     value: 'version_list',
@@ -161,6 +164,7 @@ const fieldList = [
       url: '/api/project_version_page',
       labelKey: 'version_name',
       valueKey: 'id',
+      valueType: 'object',
       multiple: true,
     },
   },
@@ -172,6 +176,7 @@ const fieldList = [
       url: '/api/module_app_page',
       labelKey: 'module_name',
       valueKey: 'id',
+      valueType: 'object',
       multiple: true,
     },
   },
@@ -394,6 +399,7 @@ const dataInfo = ref({
 const responseRuleVisible = ref(false)
 const responseForm = ref({
   ass_json: [],
+  version_list: [],
 })
 const assertListRuleType = ref('response')
 const assertListDialogVisible = ref(false)

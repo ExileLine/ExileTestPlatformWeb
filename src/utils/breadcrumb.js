@@ -26,3 +26,5 @@ export function genBreadcrumbRoutePath(routes = pageRoutes, parent = {}, titleLi
 export function getBreadcrumbByRouteKey(activeKey) {
   return routeTitle[activeKey]
 }
+
+console.log(routeTitle)

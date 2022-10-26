@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, useRoute } from 'vue-router'
 import { flatten, keys } from 'lodash'
 import Layout from '@/layout/index.vue'
+import { getBreadcrumbByRouteKey } from '@/utils/breadcrumb'
 
 const rts = import.meta.globEager('./modules/*.js')
 export const pageRoutes = flatten(keys(rts).map(key => rts[key].default))
@@ -34,6 +35,14 @@ export const getActive = (maxLevel = 2) => {
   const route = useRoute()
   if (!route.path) {
     return ''
+  }
+  const activePathList = getBreadcrumbByRouteKey(route.path)
+  const activePathListLength = activePathList.length
+  if (activePathListLength > maxLevel) {
+    return activePathList
+      .slice(0, -1)
+      .map(item => `/${item.path.replace(/^\//, '')}`)
+      .join('')
   }
   return route.path
     .split('/')
