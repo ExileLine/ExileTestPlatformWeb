@@ -9,7 +9,7 @@
     </div>
     <div id="login-content">
       <div class="logo">
-        <img src="@/assets/logo.png" alt="logo" />
+        <img src="@/assets/new_logo.png" alt="logo" />
       </div>
       <h2 class="app-name">{{ appName }}</h2>
       <common-form

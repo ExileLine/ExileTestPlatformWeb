@@ -9,7 +9,7 @@
         class="align-center"
         @click="gotoProject"
       >
-        <img src="@/assets/logo.png" alt="logo" class="w-40 mr-20" />
+        <img src="@/assets/new_logo.png" alt="logo" class="w-40 mr-20" />
         <span class="fs-30">Exile</span>
       </div>
       <div v-if="!isProject && !isMobile" class="ml-10 fs-22 cursor" @click="toggleCollapse">
