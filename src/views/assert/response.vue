@@ -15,7 +15,7 @@
     <response-rule-dialog
       v-model:visible="addResponseDialogVisible"
       :data="responseForm"
-      @close="responseForm = { ass_json: [] }"
+      @close="responseForm = { ass_json: [], version_list: [] }"
       @save="refresh"
     />
   </PageContainer>
@@ -78,6 +78,7 @@ const actionOptionList = computed(() => {
       theme: 'primary',
       async onClick({ row }) {
         responseForm.value = await fetchGetRespRule(row.id)
+        !responseForm.value.version_list  && (responseForm.value.version_list = [])
         addResponseDialogVisible.value = true
       },
     },

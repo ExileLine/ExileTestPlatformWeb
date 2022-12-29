@@ -129,20 +129,24 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   flex: 1;
+
   ::v-deep(.CodeMirror) {
     height: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
+
     .CodeMirror-scroll {
       flex: 1;
     }
+
     .CodeMirror-vscrollbar {
       &::-webkit-scrollbar {
         width: 8px;
         height: 8px;
         background: transparent;
       }
+
       &::-webkit-scrollbar-thumb {
         border-radius: var(--td-radius-medium);
         border: 2px solid transparent;

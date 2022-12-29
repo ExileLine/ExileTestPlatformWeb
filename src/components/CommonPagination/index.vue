@@ -4,7 +4,7 @@
     class="flex-between flex-wrap"
     style="display: flex; justify-content: center; margin-top: 20px"
   >
-    <t-jumper v-if="isMobile" showCurrent :disabled="jumperDisabled" @change="handleJumperChange" />
+    <t-pagination-mini v-if="isMobile" showCurrent :disabled="jumperDisabled" @change="handleJumperChange" />
     <t-pagination
       v-else
       v-bind="{
