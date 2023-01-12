@@ -14,9 +14,25 @@ const router = [
         name: 'uiCaseList',
         path: 'case',
         meta: {
-          title: '用例列表',
+          title: 'UI用例列表',
         },
-        component: () => import('@view/maintenance/index.vue'),
+        component: () => import('@view/ui-case/index.vue'),
+      },
+      {
+        name: 'addUiCaseList',
+        path: 'add',
+        meta: {
+          title: '新增UI用例',
+        },
+        component: () => import('@view/ui-case/add.vue'),
+      },
+      {
+        name: 'editUiCaseList',
+        path: 'edit',
+        meta: {
+          title: '编辑UI用例',
+        },
+        component: () => import('@view/ui-case/add.vue'),
       },
     ],
   },

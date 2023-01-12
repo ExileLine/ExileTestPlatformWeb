@@ -91,6 +91,11 @@
 .flex-1 {
   flex: 1 1 0%;
 }
+
+.flex-2 {
+  flex: 2;
+}
+
 .flex-1-hidden {
   @extend .flex-1;
   overflow: hidden;
