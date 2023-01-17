@@ -102,7 +102,7 @@
       v-model:visible="responseRuleVisible"
       :data="responseForm"
       @save="saveAssertionRule"
-      @close="responseForm = { ass_json: [] }"
+      @close="responseForm = { ass_json: [], version_list: [] }"
     />
     <assert-list-dialog
       v-model:visible="assertListDialogVisible"
@@ -422,6 +422,7 @@ const editAssertionRule = async (type, row, info) => {
   setAssertionRule(type, info)
   if (assertListRuleType.value === 'response') {
     responseForm.value = await fetchGetRespRule(row.id)
+    !responseForm.value.version_list && (responseForm.value.version_list = [])
     responseRuleVisible.value = true
   }
 }

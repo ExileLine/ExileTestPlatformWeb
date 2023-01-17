@@ -30,6 +30,7 @@ import 'codemirror/addon/edit/closebrackets'
 // JSON代码高亮需要由JavaScript插件支持
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/xml/xml'
+import 'codemirror/mode/sql/sql'
 import 'codemirror/mode/htmlmixed/htmlmixed'
 import 'codemirror/mode/python/python'
 

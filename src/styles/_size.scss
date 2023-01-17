@@ -63,6 +63,7 @@
 @each $size in $width-map {
   .w-#{$size} {
     width: #{$size}px;
+    max-width: 100%;
   }
 
   .h-#{$size} {

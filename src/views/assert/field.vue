@@ -9,14 +9,24 @@
       url="/api/assertion_page"
     >
       <template v-if="!hasAddBtn" #formActions>
-        <t-button>新增</t-button>
+        <t-button @click="addFieldialogVisible = true">新增</t-button>
       </template>
     </base-table>
+
+    <field-rule-dialog
+      v-model:visible="addFieldialogVisible"
+      :data="fieldForm"
+      @close="fieldForm = { ass_json: [], version_list: [] }"
+      @save="refresh"
+    />
   </PageContainer>
 </template>
 
-<script setup>
+<script setup lang="jsx">
+import { confirmDialog } from '@/utils/business'
 import { ref, computed } from 'vue'
+import FieldRuleDialog from './component/FieldRuleDialog.vue'
+import { fetchGetFieldRule, fetchDeleteFieldRule } from '@api/assertion'
 import { columns } from './variables'
 
 const props = defineProps({
@@ -53,19 +63,39 @@ const fieldList = [
     },
   },
 ]
+
+const addFieldialogVisible = ref(false)
+const fieldForm = ref({
+  ass_json: [],
+  version_list: [],
+})
 const actionOptionList = computed(() => {
   const options = [
     {
       content: '编辑',
       value: 'edit',
       theme: 'primary',
-      async onClick({ row }) {},
+      async onClick({ row }) {
+        fieldForm.value = await fetchGetFieldRule(row.id)
+        !fieldForm.value.version_list && (fieldForm.value.version_list = [])
+        addFieldialogVisible.value = true
+      },
     },
     {
       content: '删除',
       value: 'close',
       theme: 'danger',
-      async onClick({ row }) {},
+      async onClick({ row }) {
+        const dialog = await confirmDialog(
+          <div>
+            是否删除字段断言规则：<span class="text-warning-6">{row.assert_description}</span>
+          </div>
+        )
+        await fetchDeleteFieldRule(row)
+        dialog.hide()
+        message.success('操作成功')
+        refresh()
+      },
     },
   ]
   if (props.hasAddBtn) {
