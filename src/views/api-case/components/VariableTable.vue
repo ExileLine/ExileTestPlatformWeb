@@ -17,7 +17,10 @@
 </template>
 
 <script setup lang="jsx">
+import { useRouter } from 'vue-router'
 import { genVariableColumns } from './variables'
+
+const router = useRouter()
 const props = defineProps({
   data: {
     type: Array,
@@ -31,7 +34,10 @@ const getAssertionList = () => {
   emit('get-variable-list')
 }
 const add = () => {
-  emit('add')
+  router.push({
+    path: '/variable/add',
+  })
+  // emit('add')
 }
 </script>
 

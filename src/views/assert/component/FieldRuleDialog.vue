@@ -86,7 +86,7 @@ import { fetchAddFieldRule, fetchUpdateFieldRule } from '@/api/assertion'
 import { addVersionList } from '@/utils/business'
 import { validateRequired } from '@/components/validate'
 import RemoteSelect from '@/components/CommonForm/components/RemoteSelect.vue'
-import { ruleList, valTypeList, varSourceList } from '@/config/variables'
+import { ruleList, valTypeList } from '@/config/variables'
 import { renderAction } from '@/composables/renderTableAction'
 import { helpDialog, pythonExpression, pythonExpressionTip } from '@/utils/helpDialog'
 import JsonEditor from '@/components/JsonEditor/index.vue'
@@ -118,7 +118,7 @@ const genAssertData = () => ({
   assert_key: '',
   expect_val: '',
   expect_val_type: '',
-  is_expression: '',
+  is_expression: false,
   python_val_exp: '',
   rule: '',
 })
@@ -306,8 +306,16 @@ const dialogClose = () => {
 }
 
 const saveRespAssert = async () => {
-  emit('save')
-  message.success('保存成功')
+  let data = addVersionList(props.data)
+  const isUpdate = !!data.id
+  if (isUpdate) {
+    data = await fetchUpdateFieldRule(data)
+  } else {
+    data = await fetchAddFieldRule(data)
+  }
+  emit('save', data, isUpdate)
+  dialogClose()
+  message.success('操作成功')
 }
 </script>
 

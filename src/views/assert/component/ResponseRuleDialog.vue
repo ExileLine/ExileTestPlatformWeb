@@ -44,7 +44,7 @@ import { AddIcon } from 'tdesign-icons-vue-next'
 import JsonEditor from '@/components/JsonEditor/index.vue'
 import { pythonExpressionTip, pythonExpression, helpDialog } from '@/utils/helpDialog'
 import { renderAction } from '@/composables/renderTableAction'
-import { varSourceList, ruleList, valTypeList, expTip } from '@/config/variables'
+import { varSourceList, ruleList, valTypeList } from '@/config/variables'
 import { fetchAddRespRule, fetchUpdateRespRule } from '@/api/assertion'
 import { addVersionList } from '@/utils/business'
 import { validateRequired } from '@/components/validate'
@@ -259,7 +259,7 @@ const saveRespAssert = async () => {
   }
   emit('save', data, isUpdate)
   dialogClose()
-  message.success('保存成功')
+  message.success('操作成功')
 }
 </script>
 

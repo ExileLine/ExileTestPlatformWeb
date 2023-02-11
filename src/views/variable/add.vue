@@ -38,7 +38,7 @@ const { id } = route.query
 const variableForm = ref({
   version_list: [],
 })
-const variableRules = {
+const defaultRules = {
   var_name: [validateRequired('请输入变量名称')],
   var_type: [validateRequired('请选择变量类型')],
   var_args: [
@@ -47,6 +47,11 @@ const variableRules = {
   ],
   var_init_value: [validateRequired('请输入变量值(初始值)')],
 }
+const variableRules = computed(() => {
+  return variableForm.value.is_source
+    ? { ...defaultRules, var_get_key: [validateRequired('请输入取值的key')] }
+    : defaultRules
+})
 const switchField = {
   component: 't-switch',
   extraProps: {
@@ -252,6 +257,7 @@ onMounted(async () => {
       ...resp,
       _var_args: resp.var_args,
       var_args: resp.var_args?.length ?? '',
+      version_list: resp?.version_list ?? [],
     }
   }
 })

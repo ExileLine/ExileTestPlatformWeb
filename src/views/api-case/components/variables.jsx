@@ -113,7 +113,7 @@ const actionOptionList = [
     },
   },
   {
-    content: '删除',
+    content: '移除',
     value: 'close',
     theme: 'danger',
     onClick({ rowIndex, props: { props } }) {

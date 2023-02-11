@@ -21,10 +21,9 @@
     />
   </PageContainer>
 </template>
-
 <script setup lang="jsx">
 import { confirmDialog } from '@/utils/business'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import FieldRuleDialog from './component/FieldRuleDialog.vue'
 import { fetchGetFieldRule, fetchDeleteFieldRule } from '@api/assertion'
 import { columns } from './variables'
@@ -36,7 +35,7 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['bind'])
-
+const message = inject('message')
 const baseTableRef = ref()
 
 const formModel = ref({
@@ -93,8 +92,8 @@ const actionOptionList = computed(() => {
         )
         await fetchDeleteFieldRule(row)
         dialog.hide()
-        message.success('操作成功')
         refresh()
+        message.success('操作成功')
       },
     },
   ]

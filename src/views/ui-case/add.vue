@@ -1,6 +1,17 @@
 <template>
   <page-container class="hp-100 overflow-y narrow-scrollbar">
-    <div class="flex">
+    <common-form
+      ref="uiCaseFormRef"
+      layout="inline"
+      :data="uiCaseForm"
+      :field-list="fieldList"
+      :rules="rules"
+    >
+      <template #actions>
+        <span></span>
+      </template>
+    </common-form>
+    <div class="flex mt-50">
       <div class="flex-1 pr-30">
         <div v-for="control in controlList" class="mb-20">
           <div class="flex-center mb-10">
@@ -19,14 +30,14 @@
       </div>
       <div id="tree-container" class="flex-2">
         <div class="justify-end">
-          <t-switch v-model="expandAll" :label="['展开', '折叠']"></t-switch>
+          <t-switch v-model="expandAll" :label="['折叠', '展开']"></t-switch>
         </div>
         <t-tree
           ref="treeRef"
           :data="treeData"
           line
           hover
-          :expanded="expandedList"
+          v-model:expanded="uiCaseForm.meta_data"
           activable
           draggable
           :keys="treeKeys"
@@ -48,6 +59,10 @@
       <div class="flex-2 pl-30">databases</div>
     </div>
 
+    <t-button class="case-btn" size="medium" @click="submitCase">
+      <template #icon><t-icon name="check" /></template>
+      提交
+    </t-button>
     <t-dialog v-model:visible="treeDialogVisible" header="URL配置">
       <div class="ptb-10">
         <t-form :data="dialogDetail">
@@ -66,21 +81,37 @@
 </template>
 
 <script lang="jsx">
-import { computed, onMounted, ref } from 'vue'
+import { inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { isArray, flattenDeep, map, filter } from 'lodash'
 import { confirmDialog } from '@/utils/business'
-import { fetchGetUiCase } from '@api/ui-api-case'
+import { fetchGetUiCase, fetchAddUiCase, fetchUpdateUiCase } from '@api/ui-api-case'
+import { caseStatusList } from '@/config/variables'
+import { validateRequired } from '@/components/validate'
 
 export default {
   setup() {
     const route = useRoute()
     const treeRef = ref()
+    const message = inject('message')
     const treeDialogVisible = ref(false)
     const dialogDetail = ref({ args: {} })
 
     const treeData = ref([])
     const expandAll = ref(true)
+    const uiCaseFormRef = ref()
+
+    const uiCaseForm = ref({
+      module_list: [],
+      version_list: [],
+      case_name: '',
+      is_shared: true,
+      is_public: true,
+      case_status: '',
+      remark: '',
+      meta_data: [],
+    })
+
     function getValuesBy(obj, valueKey = 'uuid', childKey = 'business_list') {
       return [
         obj[valueKey],
@@ -88,16 +119,28 @@ export default {
       ]
     }
 
-    const expandedList = computed(() =>
-      expandAll.value ? filter(flattenDeep(map(treeData.value, value => getValuesBy(value)))) : []
-    )
-
+    const getAllTreeKey = () =>
+      filter(flattenDeep(map(treeData.value, value => getValuesBy(value))))
     onMounted(async () => {
-      treeData.value = await fetchGetUiCase(route.query.id)
+      if (route.query.id) {
+        treeData.value = await fetchGetUiCase(route.query.id)
+        uiCaseForm.value.meta_data = getAllTreeKey()
+      } else {
+        treeData.value = await fetchGetUiCase(route.query.id)
+        uiCaseForm.value.meta_data = getAllTreeKey()
+      }
     })
-    console.log(expandedList)
+    watch(
+      () => expandAll.value,
+      expandAll => {
+        uiCaseForm.value.meta_data = expandAll ? getAllTreeKey() : []
+      }
+    )
+    const switchLabel = ['是', '否']
+
     return {
       treeRef,
+      uiCaseFormRef,
       treeKeys: { value: 'uuid', label: 'title', children: 'business_list' },
       treeData,
       controlList: [
@@ -180,7 +223,6 @@ export default {
       },
       dialogDetail,
       expandAll,
-      expandedList,
       treeDialogVisible,
       showDialog(node) {
         treeDialogVisible.value = true
@@ -203,6 +245,87 @@ export default {
         )
         treeRef.value.remove(node.value)
         dialog.hide()
+      },
+
+      uiCaseForm,
+      fieldList: [
+        {
+          value: 'version_list',
+          label: '迭代版本',
+          component: 'remote-select',
+          extraProps: {
+            url: '/api/project_version_page',
+            labelKey: 'version_name',
+            valueKey: 'id',
+            valueType: 'object',
+            multiple: true,
+          },
+        },
+        {
+          value: 'module_list',
+          label: '模块',
+          component: 'remote-select',
+          extraProps: {
+            url: '/api/module_app_page',
+            labelKey: 'module_name',
+            valueKey: 'id',
+            valueType: 'object',
+            multiple: true,
+          },
+        },
+        {
+          value: 'case_name',
+          label: '用例名称',
+        },
+        {
+          value: 'case_status',
+          label: '用例状态',
+          component: 't-select',
+          list: caseStatusList,
+          extraProps: {
+            class: 'wp-100',
+          },
+        },
+        {
+          value: 'remark',
+          label: '备注',
+        },
+        {
+          value: 'is_public',
+          label: '公开使用',
+          component: 't-switch',
+          extraProps: {
+            label: switchLabel,
+          },
+        },
+        {
+          value: 'is_shared',
+          label: '公开执行',
+          component: 't-switch',
+          extraProps: {
+            label: switchLabel,
+          },
+        },
+      ],
+      rules: {
+        case_name: [validateRequired('请输入用例名称')],
+        case_status: [validateRequired('请选择用例状态'), 'change'],
+      },
+
+      async submitCase() {
+        const validateResult = await uiCaseFormRef.value.validate()
+        if (validateResult === true) {
+          const data = {
+            ...uiCaseForm.value,
+            meta_data: treeRef.value.getItems(),
+          }
+          if (route.query.id) {
+            await fetchUpdateUiCase(data)
+          } else {
+            await fetchAddUiCase(data)
+          }
+          message.success('操作成功')
+        }
       },
     }
   },
@@ -232,5 +355,12 @@ export default {
   ::v-deep .t-tree__label {
     flex: 1;
   }
+}
+
+.case-btn {
+  position: fixed;
+  right: 40px;
+  bottom: 60px;
+  z-index: 100;
 }
 </style>

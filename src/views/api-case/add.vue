@@ -93,7 +93,7 @@
     </t-row>
 
     <t-button class="case-btn" size="medium" @click="submitCase">
-      <t-icon name="check" />
+      <template #icon><t-icon name="check" /></template>
       提交
     </t-button>
     <response-detail-dialog v-model:visible="responseDetailDialogVisible" :info="responseDetail" />
@@ -103,6 +103,13 @@
       :data="responseForm"
       @save="saveAssertionRule"
       @close="responseForm = { ass_json: [], version_list: [] }"
+    />
+    <field-rule-dialog
+      ref="fieldRef"
+      v-model:visible="fieldRuleVisible"
+      :data="fieldForm"
+      @save="saveAssertionRule"
+      @close="fieldForm = { ass_json: [], version_list: [] }"
     />
     <assert-list-dialog
       v-model:visible="assertListDialogVisible"
@@ -116,11 +123,11 @@
   </page-container>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { ref, inject, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { map, find, findIndex } from 'lodash'
+import { map, find, findIndex, some } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import QueryTable from './components/QueryTable.vue'
 import BodyJson from './components/BodyJson.vue'
@@ -132,6 +139,7 @@ import AssertListDialog from './components/AssertListDialog.vue'
 import ParamListDialog from './components/ParamListDialog.vue'
 import VariableListDialog from './components/VariableListDialog.vue'
 import ResponseRuleDialog from '@/views/assert/component/ResponseRuleDialog.vue'
+import FieldRuleDialog from '@/views/assert/component/FieldRuleDialog.vue'
 import {
   fetchGetCase,
   fetchAddCase,
@@ -139,7 +147,7 @@ import {
   fetchBindCase,
   fetchSendCase,
 } from '@/api/api-case'
-import { fetchGetRespRule } from '@/api/assertion'
+import { fetchGetFieldRule, fetchGetRespRule } from '@/api/assertion'
 import { validateRequired } from '@/components/validate'
 import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
 
@@ -357,6 +365,25 @@ const saveCase = async () => {
 const submitCase = async () => {
   const validateResult = await caseFormRef.value.validate()
   if (validateResult === true) {
+    // 检验关系变量取值的key不能为空
+    const emptyKeyVarData = find(data_list.value, i =>
+      some(i.data_info.update_var_list, ({ var_get_key }) => !var_get_key)
+    )
+    if (emptyKeyVarData) {
+      const { var_name } = find(
+        emptyKeyVarData.data_info.update_var_list,
+        ({ var_get_key }) => !var_get_key
+      )
+      return message.warning({
+        content: (
+          <div>
+            参数：<span class="text-warning-6">{emptyKeyVarData.data_info.data_name} </span>
+            的关系变量：
+            <span class="text-warning-6">{var_name}</span> 取值的key不能为空
+          </div>
+        ),
+      })
+    }
     const case_id = await saveCase()
     const bindParams = data_list.value.sort(({ data_info }, { data_info: next }) => {
       if (data_info.cid === defaultCid.value) return -1
@@ -401,8 +428,15 @@ const responseForm = ref({
   ass_json: [],
   version_list: [],
 })
+const fieldRuleVisible = ref(false)
+const fieldForm = ref({
+  ass_json: [],
+  version_list: [],
+})
+
 const assertListRuleType = ref('response')
 const assertListDialogVisible = ref(false)
+
 const setAssertionRule = (type, info) => {
   dataInfo.value = info
   assertListRuleType.value = type
@@ -413,17 +447,25 @@ const getAssertionList = (type, info) => {
 }
 const addAssertionRule = (type, info) => {
   setAssertionRule(type, info)
-  if (assertListRuleType.value === 'response') {
+  const ruleType = assertListRuleType.value
+  if (ruleType === 'response') {
     responseRuleVisible.value = true
+  } else if (ruleType === 'field') {
+    fieldRuleVisible.value = true
   }
 }
 
 const editAssertionRule = async (type, row, info) => {
   setAssertionRule(type, info)
-  if (assertListRuleType.value === 'response') {
+  const ruleType = assertListRuleType.value
+  if (ruleType === 'response') {
     responseForm.value = await fetchGetRespRule(row.id)
     !responseForm.value.version_list && (responseForm.value.version_list = [])
     responseRuleVisible.value = true
+  } else if (ruleType === 'field') {
+    fieldForm.value = await fetchGetFieldRule(row.id)
+    !fieldForm.value.version_list && (fieldForm.value.version_list = [])
+    fieldRuleVisible.value = true
   }
 }
 function getAssInfo() {
@@ -440,9 +482,12 @@ const bindAssertion = row => {
   const hasRule = find(assertRuleList, { id: row.id })
   if (hasRule) {
     return message.warning(
-      `参数(${dataInfo.value.data_info.data_name})已关联：${row.assert_description}`
+      `参数(${dataInfo.value.data_info.data_name}) 已关联：${row.assert_description}`
     )
   }
+  message.success(
+    `参数(${dataInfo.value.data_info.data_name}) 关联：${row.assert_description} 成功`
+  )
   assertRuleList.push(row)
 }
 
@@ -473,8 +518,9 @@ const addVariableData = row => {
   const var_list = data_info.update_var_list
   const hasReqData = find(var_list, ({ id }) => id === row.id)
   if (hasReqData) {
-    return message.warning(`变量(${row.var_name})已关联参数：${data_info.data_name}`)
+    return message.warning(`变量(${row.var_name}) 已关联参数：${data_info.data_name}`)
   }
+  message.success(`变量(${row.var_name}) 关联参数：${data_info.data_name} 成功`)
   var_list.push(row)
 }
 
@@ -491,7 +537,7 @@ onMounted(async () => {
       return item
     })
 
-    if (bind_info.some(i => i.data_info.request_body_type !== 'none')) {
+    if (some(bind_info, i => i.data_info.request_body_type !== 'none')) {
       paramsTab.value = paramsTabList[2].label
     }
   }

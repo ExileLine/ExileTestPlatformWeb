@@ -39,7 +39,6 @@ const store = useStore()
 
 const tagList = ref([])
 const lastRoute = ref({ fullPath: '/' })
-const needAskUrls = reactive([])
 const nowPath = computed(() => route.fullPath)
 
 function setTags(route) {
@@ -57,20 +56,7 @@ function setTags(route) {
   store.commit('app/setCurrentTags', tagList.value)
 }
 function canIClose(index) {
-  const current = tagList.value[index]
-  if (needAskUrls.includes(current.path)) {
-    //需要问询后关闭
-    const fullPath = current.fullPath
-    if (route.fullPath !== fullPath) {
-      router.push(fullPath)
-    }
-    nextTick(() => {
-      store.commit('app/setAskingPath', fullPath)
-    })
-  } else {
-    // 直接关闭
-    handleClose(index)
-  }
+  handleClose(index)
 }
 function handleClose(index) {
   const closePath = tagList.value[index].fullPath
@@ -115,28 +101,14 @@ function goBack() {
 }
 // 关闭全部标签
 function closeAll() {
-  const indexArr = []
-  tagList.value.map((e, i) => (needAskUrls.includes(e.path) ? indexArr.push(i) : ''))
-  if (indexArr.length > 0) {
-    canIClose(indexArr[0])
-    return
-  }
   tagList.value = []
   store.commit('app/setCurrentTags', tagList.value)
   router.push('/')
 }
 // 关闭其他标签
 function closeOther() {
-  const indexArr = []
-  tagList.value.map((e, i) =>
-    needAskUrls.includes(e.path) && e.fullPath !== route.path ? indexArr.push(i) : ''
-  )
-  if (indexArr.length > 0) {
-    canIClose(indexArr[0])
-    return
-  }
   const curItem = tagList.value.filter(item => {
-    return item.path === route.fullPath
+    return item.fullPath === route.fullPath
   })
   tagList.value = curItem
   store.commit('app/setCurrentTags', tagList.value)
