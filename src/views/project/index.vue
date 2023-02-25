@@ -61,7 +61,7 @@
                       </div>
                     </div>
 
-                    <t-dropdown :options="projectDropdownOptions" trigger="click">
+                    <t-dropdown trigger="click">
                       <div class="setting-icon" @click.stop>
                         <t-icon name="setting" size="30px" />
                       </div>

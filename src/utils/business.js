@@ -1,4 +1,4 @@
-import { map } from 'lodash'
+import { find, map, has } from 'lodash'
 import { DialogPlugin } from 'tdesign-vue-next'
 export function toSelectList(list, key) {
   return map(list, item => ({
@@ -37,5 +37,22 @@ export function confirmDialog(body) {
         resolve(confirmDialog)
       },
     })
+  })
+}
+
+export const isEmptyValKey = list => {
+  return find(list, ({ var_get_key }) => !var_get_key)
+}
+
+export const isOpenExpression = list => {
+  return find(list, assert => {
+    const is_expression = assert.is_expression
+    let expression
+    if (has(assert, 'expression')) {
+      expression = assert.expression
+    } else {
+      expression = assert.python_val_exp
+    }
+    return is_expression && !expression
   })
 }

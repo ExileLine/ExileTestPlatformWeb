@@ -149,7 +149,13 @@ import {
 } from '@/api/api-case'
 import { fetchGetFieldRule, fetchGetRespRule } from '@/api/assertion'
 import { validateRequired } from '@/components/validate'
-import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
+import {
+  toSelectList,
+  addVersionList,
+  addModuleList,
+  isEmptyValKey,
+  isOpenExpression,
+} from '@/utils/business'
 
 const store = useStore()
 const route = useRoute()
@@ -366,20 +372,29 @@ const submitCase = async () => {
   const validateResult = await caseFormRef.value.validate()
   if (validateResult === true) {
     // 检验关系变量取值的key不能为空
-    const emptyKeyVarData = find(data_list.value, i =>
-      some(i.data_info.update_var_list, ({ var_get_key }) => !var_get_key)
-    )
+    const emptyKeyVarData = find(data_list.value, i => isEmptyValKey(i.data_info.update_var_list))
     if (emptyKeyVarData) {
-      const { var_name } = find(
-        emptyKeyVarData.data_info.update_var_list,
-        ({ var_get_key }) => !var_get_key
-      )
+      const { var_name } = isEmptyValKey(emptyKeyVarData.data_info.update_var_list)
       return message.warning({
         content: (
           <div>
             参数：<span class="text-warning-6">{emptyKeyVarData.data_info.data_name} </span>
             的关系变量：
             <span class="text-warning-6">{var_name}</span> 取值的key不能为空
+          </div>
+        ),
+      })
+    }
+
+    const emptVarData = find(data_list.value, i => isOpenExpression(i.data_info.update_var_list))
+    if (emptVarData) {
+      const { var_name } = isOpenExpression(emptVarData.data_info.update_var_list)
+      return message.warning({
+        content: (
+          <div>
+            参数：<span class="text-warning-6">{emptVarData.data_info.data_name} </span>
+            的关系变量：
+            <span class="text-warning-6">{var_name}</span> 的表达式不能为空
           </div>
         ),
       })

@@ -82,8 +82,9 @@
 <script setup lang="jsx">
 import { ref, computed, inject, watch } from 'vue'
 import { AddIcon } from 'tdesign-icons-vue-next'
+import { find, findIndex } from 'lodash'
 import { fetchAddFieldRule, fetchUpdateFieldRule } from '@/api/assertion'
-import { addVersionList } from '@/utils/business'
+import { addVersionList, isOpenExpression } from '@/utils/business'
 import { validateRequired } from '@/components/validate'
 import RemoteSelect from '@/components/CommonForm/components/RemoteSelect.vue'
 import { ruleList, valTypeList } from '@/config/variables'
@@ -137,7 +138,7 @@ const addTab = () => {
 }
 watch(
   () => props.data,
-  ({ id }) => !id && addTab(),
+  ({ id }) => !id && !props.data.ass_json.length && addTab(),
   {
     immediate: true,
   }
@@ -305,9 +306,26 @@ const dialogClose = () => {
   formClose()
 }
 
+const getAssertRule = list => find(list, assert => isOpenExpression(assert.assert_field_list))
+
 const saveRespAssert = async () => {
   let data = addVersionList(props.data)
   const isUpdate = !!data.id
+  const emptVarDataIndex = findIndex(data.ass_json, i => getAssertRule(i.assert_list))
+  if (emptVarDataIndex > -1) {
+    const emptVarData = data.ass_json[emptVarDataIndex]
+    const assert = getAssertRule(emptVarData.assert_list)
+    const { assert_key } = isOpenExpression(assert.assert_field_list)
+
+    return message.warning({
+      content: (
+        <div>
+          字段断言{emptVarDataIndex + 1} 的断言键: <span class="text-warning-6">{assert_key} </span>
+          的表达式不能为空
+        </div>
+      ),
+    })
+  }
   if (isUpdate) {
     data = await fetchUpdateFieldRule(data)
   } else {

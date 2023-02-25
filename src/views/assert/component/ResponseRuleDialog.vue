@@ -46,7 +46,7 @@ import { pythonExpressionTip, pythonExpression, helpDialog } from '@/utils/helpD
 import { renderAction } from '@/composables/renderTableAction'
 import { varSourceList, ruleList, valTypeList } from '@/config/variables'
 import { fetchAddRespRule, fetchUpdateRespRule } from '@/api/assertion'
-import { addVersionList } from '@/utils/business'
+import { addVersionList, isOpenExpression } from '@/utils/business'
 import { validateRequired } from '@/components/validate'
 
 const props = defineProps({
@@ -252,6 +252,19 @@ const dialogClose = () => {
 const saveRespAssert = async () => {
   let data = addVersionList(props.data)
   const isUpdate = !!data.id
+  // 检验关系变量取值的key不能为空
+  const data_list = data.ass_json
+  const emptyKeyVarData = isOpenExpression(data_list)
+  if (emptyKeyVarData) {
+    return message.warning({
+      content: (
+        <div>
+          断言键: <span class="text-warning-6">{emptyKeyVarData.assert_key} </span>
+          的表达式不能为空
+        </div>
+      ),
+    })
+  }
   if (isUpdate) {
     data = await fetchUpdateRespRule(data)
   } else {

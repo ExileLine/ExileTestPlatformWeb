@@ -23,6 +23,7 @@ const router = [
         path: 'add',
         meta: {
           title: '新增UI用例',
+          hidden: true,
         },
         component: () => import('@view/ui-case/add.vue'),
       },
@@ -31,6 +32,7 @@ const router = [
         path: 'edit',
         meta: {
           title: '编辑UI用例',
+          hidden: true,
         },
         component: () => import('@view/ui-case/add.vue'),
       },

@@ -1,3 +1,11 @@
+import MySqlIcon from '@/assets/mysql-icon.png'
+import RedisIcon from '@/assets/redis-icon.png'
+import PostgresqlIcon from '@/assets/postgresql-icon.png'
+import MongodbIcon from '@/assets/mongodb-icon.png'
+import SqlServerIcon from '@/assets/sql-server-icon.png'
+import OracleIcon from '@/assets/oracle-icon.png'
+import EsIcon from '@/assets/es-icon.png'
+
 // 用例
 export const requestMethodList = [
   {
@@ -41,7 +49,7 @@ export const caseStatusList = [
   {
     label: '开发中',
     value: 'dev',
-    theme: 'info',
+    theme: 'default',
   },
   {
     label: '调试中',
@@ -224,30 +232,37 @@ export const dbTypeList = [
   {
     value: 'mysql',
     label: 'MySQL',
+    url: MySqlIcon,
   },
   {
     value: 'redis',
     label: 'Redis',
+    url: RedisIcon,
   },
   {
     value: 'postgresql',
     label: 'PostgreSql',
+    url: PostgresqlIcon,
   },
   {
     value: 'mongodb',
     label: 'mongoDB',
+    url: MongodbIcon,
   },
   {
     value: 'sqlserver',
     label: 'SqlServer',
+    url: SqlServerIcon,
   },
   {
     value: 'oracle',
     label: 'Oracle',
+    url: OracleIcon,
   },
   {
     value: 'es',
     label: 'Elasticsearch',
+    url: EsIcon,
   },
 ]
 

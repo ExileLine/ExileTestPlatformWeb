@@ -188,6 +188,18 @@ const columns = computed(() => [
     width: 100,
   },
   {
+    colKey: 'LOGO',
+    title: 'LOGO',
+    ellipsis: true,
+    width: 100,
+    render: (h, { row, type }) => {
+      if (type !== 'title') {
+        const dbType = find(dbTypeList, { value: row.db_type })
+        return dbType?.url && <img src={dbType?.url} class="wp-100" />
+      }
+    },
+  },
+  {
     colKey: 'name',
     title: '名称',
     ellipsis: true,
@@ -197,7 +209,7 @@ const columns = computed(() => [
     colKey: 'db_type',
     title: '类型',
     ellipsis: true,
-    width: 160,
+    width: 100,
     render: (h, { row, type }) => {
       if (type !== 'title') {
         const dbType = find(dbTypeList, { value: row.db_type })

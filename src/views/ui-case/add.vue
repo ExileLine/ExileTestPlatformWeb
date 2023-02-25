@@ -1,17 +1,22 @@
 <template>
-  <page-container class="hp-100 overflow-y narrow-scrollbar">
-    <common-form
-      ref="uiCaseFormRef"
-      layout="inline"
-      :data="uiCaseForm"
-      :field-list="fieldList"
-      :rules="rules"
-    >
-      <template #actions>
-        <span></span>
-      </template>
-    </common-form>
-    <div class="flex mt-50">
+  <div ref="affixContainerRef" class="hp-100 overflow-y narrow-scrollbar add-ui-contaienr">
+    <t-affix :container="getContainer">
+      <div class="ptb-20 bg-white">
+        <common-form
+          ref="uiCaseFormRef"
+          layout="inline"
+          :data="uiCaseForm"
+          :field-list="fieldList"
+          :rules="rules"
+        >
+          <template #actions>
+            <span></span>
+          </template>
+        </common-form>
+      </div>
+    </t-affix>
+
+    <div class="flex mt-30">
       <div class="flex-1 pr-30">
         <div v-for="control in controlList" class="mb-20">
           <div class="flex-center mb-10">
@@ -34,10 +39,10 @@
         </div>
         <t-tree
           ref="treeRef"
-          :data="treeData"
+          :data="uiCaseForm.meta_data"
           line
           hover
-          v-model:expanded="uiCaseForm.meta_data"
+          v-model:expanded="metaDataKeys"
           activable
           draggable
           :keys="treeKeys"
@@ -63,27 +68,29 @@
       <template #icon><t-icon name="check" /></template>
       提交
     </t-button>
-    <t-dialog v-model:visible="treeDialogVisible" header="URL配置">
-      <div class="ptb-10">
-        <t-form :data="dialogDetail">
-          <t-form-item
-            label="url"
-            name="args.url"
-            label-width="40px"
-            :rules="[{ required: true, message: '请输入url', type: 'error' }]"
-          >
-            <t-input v-model="dialogDetail.args.url" placeholder=" 请输入url" />
-          </t-form-item>
-        </t-form>
-      </div>
-    </t-dialog>
-  </page-container>
+  </div>
+
+  <t-dialog v-model:visible="treeDialogVisible" header="URL配置">
+    <div class="ptb-10">
+      <t-form :data="dialogDetail">
+        <t-form-item
+          v-if="dialogDetail.args && dialogDetail.args.url"
+          label="url"
+          name="args.url"
+          label-width="40px"
+          :rules="[{ required: true, message: '请输入url', type: 'error' }]"
+        >
+          <t-input v-model="dialogDetail.args.url" placeholder=" 请输入url" />
+        </t-form-item>
+      </t-form>
+    </div>
+  </t-dialog>
 </template>
 
 <script lang="jsx">
 import { inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { isArray, flattenDeep, map, filter } from 'lodash'
+import { isArray, flattenDeep, map, filter, throttle } from 'lodash'
 import { confirmDialog } from '@/utils/business'
 import { fetchGetUiCase, fetchAddUiCase, fetchUpdateUiCase } from '@api/ui-api-case'
 import { caseStatusList } from '@/config/variables'
@@ -97,9 +104,12 @@ export default {
     const treeDialogVisible = ref(false)
     const dialogDetail = ref({ args: {} })
 
-    const treeData = ref([])
+    const metaDataKeys = ref([])
     const expandAll = ref(true)
     const uiCaseFormRef = ref()
+    const affixContainerRef = ref(null)
+    const getContainer = () => affixContainerRef.value
+    console.log(affixContainerRef)
 
     const uiCaseForm = ref({
       module_list: [],
@@ -120,20 +130,22 @@ export default {
     }
 
     const getAllTreeKey = () =>
-      filter(flattenDeep(map(treeData.value, value => getValuesBy(value))))
+      filter(flattenDeep(map(uiCaseForm.value.meta_data, value => getValuesBy(value))))
     onMounted(async () => {
       if (route.query.id) {
-        treeData.value = await fetchGetUiCase(route.query.id)
-        uiCaseForm.value.meta_data = getAllTreeKey()
+        uiCaseForm.value = await fetchGetUiCase(route.query.id)
+        !uiCaseForm.value.version_list && (uiCaseForm.value.version_list = [])
+        !uiCaseForm.value.module_list && (uiCaseForm.value.module_list = [])
+        metaDataKeys.value = getAllTreeKey()
+        document.title = '编辑UI用例-' + uiCaseForm.value.case_name
       } else {
-        treeData.value = await fetchGetUiCase(route.query.id)
-        uiCaseForm.value.meta_data = getAllTreeKey()
+        document.title = '新增UI用例'
       }
     })
     watch(
       () => expandAll.value,
       expandAll => {
-        uiCaseForm.value.meta_data = expandAll ? getAllTreeKey() : []
+        metaDataKeys.value = expandAll ? getAllTreeKey() : []
       }
     )
     const switchLabel = ['是', '否']
@@ -142,8 +154,118 @@ export default {
       treeRef,
       uiCaseFormRef,
       treeKeys: { value: 'uuid', label: 'title', children: 'business_list' },
-      treeData,
+      metaDataKeys,
       controlList: [
+        {
+          type: 'ui_control',
+          title: 'ui',
+          business_list: [
+            {
+              type: 'ui_control',
+              title: '启动(URL)',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)111111111111',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+          ],
+        },
+        {
+          type: 'ui_control',
+          title: 'ui',
+          business_list: [
+            {
+              type: 'ui_control',
+              title: '启动(URL)',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)111111111111',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+          ],
+        },
+        {
+          type: 'ui_control',
+          title: 'ui',
+          business_list: [
+            {
+              type: 'ui_control',
+              title: '启动(URL)',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)111111111111',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+          ],
+        },
+        {
+          type: 'ui_control',
+          title: 'ui',
+          business_list: [
+            {
+              type: 'ui_control',
+              title: '启动(URL)',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)111111111111',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+          ],
+        },
+        {
+          type: 'ui_control',
+          title: 'ui',
+          business_list: [
+            {
+              type: 'ui_control',
+              title: '启动(URL)',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)111111111111',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+            {
+              type: 'ui_control',
+              title: '启动(URL)2',
+            },
+          ],
+        },
         {
           type: 'ui_control',
           title: 'ui',
@@ -224,6 +346,8 @@ export default {
       dialogDetail,
       expandAll,
       treeDialogVisible,
+      affixContainerRef,
+      getContainer,
       showDialog(node) {
         treeDialogVisible.value = true
         dialogDetail.value = node.data
@@ -259,6 +383,8 @@ export default {
             valueKey: 'id',
             valueType: 'object',
             multiple: true,
+            class: 'w-200',
+            'min-collapsed-num': 1,
           },
         },
         {
@@ -271,6 +397,8 @@ export default {
             valueKey: 'id',
             valueType: 'object',
             multiple: true,
+            class: 'w-200',
+            'min-collapsed-num': 1,
           },
         },
         {
@@ -283,7 +411,7 @@ export default {
           component: 't-select',
           list: caseStatusList,
           extraProps: {
-            class: 'wp-100',
+            class: 'w-140',
           },
         },
         {
@@ -312,27 +440,51 @@ export default {
         case_status: [validateRequired('请选择用例状态'), 'change'],
       },
 
-      async submitCase() {
+      submitCase: throttle(async function () {
         const validateResult = await uiCaseFormRef.value.validate()
         if (validateResult === true) {
           const data = {
             ...uiCaseForm.value,
-            meta_data: treeRef.value.getItems(),
+            meta_data: map(treeRef.value.getItems(), 'data'),
           }
           if (route.query.id) {
             await fetchUpdateUiCase(data)
           } else {
             await fetchAddUiCase(data)
+            setTimeout(() => {
+              window.close()
+            }, 800)
           }
           message.success('操作成功')
         }
-      },
+      }, 1000),
     }
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.add-ui-contaienr {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  background: white;
+  padding: 0 30px;
+
+  ::v-deep {
+    .t-form-inline .t-form__item {
+      min-width: auto;
+    }
+    .t-form .w-140 .t-input__wrap,
+    .t-form .w-140 .t-input {
+      width: 140px;
+      min-width: 140px;
+    }
+  }
+}
 .tree-node-item {
   .tree-btn-group {
     display: none;

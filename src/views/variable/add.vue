@@ -38,19 +38,25 @@ const { id } = route.query
 const variableForm = ref({
   version_list: [],
 })
-const defaultRules = {
-  var_name: [validateRequired('请输入变量名称')],
-  var_type: [validateRequired('请选择变量类型')],
-  var_args: [
-    validateRequired('请输入位数'),
-    { validator: val => val > 0 && val < 16, message: '位数只能1~16位' },
-  ],
-  var_init_value: [validateRequired('请输入变量值(初始值)')],
-}
+
 const variableRules = computed(() => {
-  return variableForm.value.is_source
-    ? { ...defaultRules, var_get_key: [validateRequired('请输入取值的key')] }
-    : defaultRules
+  const defaultRules = {
+    var_name: [validateRequired('请输入变量名称')],
+    var_type: [validateRequired('请选择变量类型')],
+    var_args: [
+      validateRequired('请输入位数'),
+      { validator: val => val > 0 && val < 16, message: '位数只能1~16位' },
+    ],
+    var_init_value: [validateRequired('请输入变量值(初始值)')],
+  }
+
+  if (variableForm.value.is_source) {
+    defaultRules.var_get_key = [validateRequired('请输入取值的key')]
+  }
+  if (variableForm.value.is_expression) {
+    defaultRules.expression = [validateRequired('请输入表达式')]
+  }
+  return defaultRules
 })
 const switchField = {
   component: 't-switch',
@@ -161,7 +167,7 @@ const variableFieldList = computed(() => {
     },
     {
       label: () => (
-        <div>
+        <span class="flex-end">
           <span class="mr-10">表达式</span>
           <t-tooltip content="帮助">
             <t-icon
@@ -179,7 +185,7 @@ const variableFieldList = computed(() => {
               }
             />
           </t-tooltip>
-        </div>
+        </span>
       ),
       value: 'expression',
       extraProps: {

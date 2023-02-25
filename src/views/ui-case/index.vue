@@ -9,7 +9,7 @@
       url="/api/ui_case_page"
     >
       <template #formActions>
-        <t-button theme="primary" @click="$router.push('/ui-case/add')">新增</t-button>
+        <t-button theme="primary" @click="openAddPage">新增</t-button>
       </template>
     </base-table>
 
@@ -29,11 +29,11 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, computed, inject, nextTick } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { find } from 'lodash'
-import { requestMethodList, caseStatusList } from '@/config/variables'
-import { fetchDeleteCase } from '@/api/api-case'
+import { caseStatusList } from '@/config/variables'
+import { fetchDeleteUiCase } from '@/api/ui-api-case'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
 // import { caseLog } from '@/config/mock'
@@ -96,6 +96,10 @@ const logDialogVisible = ref(false)
 const record = ref({})
 const executeDialogVisible = ref(false)
 const caseLog = ref({})
+
+const openAddPage = () => {
+  window.open('/ui-case/add', '_blank')
+}
 const actionOptionList = [
   {
     content: '执行',
@@ -111,12 +115,13 @@ const actionOptionList = [
     value: 'edit',
     theme: 'primary',
     onClick({ row }) {
-      router.push({
-        path: '/api-case/edit',
-        query: {
-          id: row.id,
-        },
-      })
+      // router.push({
+      //   path: '/ui-case/edit',
+      //   query: {
+      //     id: row.id,
+      //   },
+      // })
+      window.open('/ui-case/edit?id=' + row.id, '_blank')
     },
   },
   {
@@ -148,7 +153,7 @@ const actionOptionList = [
           是否删除用例：<span class="text-warning-6">{row.case_name}</span>
         </div>
       )
-      await fetchDeleteCase(row)
+      await fetchDeleteUiCase(row)
       message.success('操作成功')
       dialog.hide()
       baseTableRef.value.getData = true
@@ -169,7 +174,24 @@ const columns = computed(() => [
     ellipsis: true,
     width: 200,
   },
-
+  {
+    colKey: 'case_status',
+    title: '用例状态',
+    ellipsis: true,
+    width: 120,
+    render: (h, { row, type }) => {
+      if (type !== 'title') {
+        const status = find(caseStatusList, { value: row.case_status })
+        return (
+          status && (
+            <t-tag theme={status?.theme} variant="light">
+              {status.label}
+            </t-tag>
+          )
+        )
+      }
+    },
+  },
   {
     colKey: 'creator',
     title: '创建者',
