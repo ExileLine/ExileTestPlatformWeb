@@ -115,12 +115,8 @@ $bg-color-container-active: var(--td-bg-color-container-active); // 色彩 - 容
 $bg-color-container-select: var(--td-bg-color-container-select); // 色彩 - 容器 - select
 
 $bg-color-secondarycontainer: var(--td-bg-color-secondarycontainer); // 色彩 - 次级容器
-$bg-color-secondarycontainer-hover: var(
-  --td-bg-color-secondarycontainer-hover
-); // 色彩 - 次级容器 - hover
-$bg-color-secondarycontainer-active: var(
-  --td-bg-color-secondarycontainer-active
-); // 色彩 - 次级容器 - active
+$bg-color-secondarycontainer-hover: var(--td-bg-color-secondarycontainer-hover); // 色彩 - 次级容器 - hover
+$bg-color-secondarycontainer-active: var(--td-bg-color-secondarycontainer-active); // 色彩 - 次级容器 - active
 
 $bg-color-component: var(--td-bg-color-component); // 色彩  - 组件
 $bg-color-component-hover: var(--td-bg-color-component-hover); // 色彩 - 组件 - hover
@@ -229,9 +225,15 @@ $screen-md-min: $screen-md;
 $screen-lg-min: $screen-lg;
 $screen-xl-min: $screen-xl;
 
-$screen-sm-max: ($screen-md-min - 1px);
-$screen-md-max: ($screen-lg-min - 1px);
-$screen-lg-max: ($screen-xl-min - 1px);
+$screen-sm-max: (
+  $screen-md-min - 1px
+);
+$screen-md-max: (
+  $screen-lg-min - 1px
+);
+$screen-lg-max: (
+  $screen-xl-min - 1px
+);
 
 // 动画
 $anim-time-fn-easing: cubic-bezier(0.38, 0, 0.24, 1);
@@ -251,8 +253,7 @@ $z-index-Popup: 5500;
 $z-index-Notification: 6000;
 
 $size-map: 5 10 15 20 30 40 50;
-$width-map: 0 40 50 55 60 70 75 80 85 100 120 140 150 160 170 180 185 190 200 220 240 260 280 300
-  310 360 400 450 500 600 650 800;
+$width-map: 0 40 50 55 60 70 75 80 85 100 120 140 150 160 170 180 185 190 200 220 240 260 280 300 310 360 400 450 500 600 650 800;
 $percent-map: 50 100 200;
 $font-map: 12 13 14 16 18 20 22 24 26 30 40;
 $font-weight-map: 500 600;
@@ -268,4 +269,5 @@ $font-family-medium: -apple-system, BlinkMacSystemFont, 'PingFang HK-Semibold', 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  word-wrap: break-word;
 }

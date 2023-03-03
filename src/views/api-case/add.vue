@@ -517,10 +517,8 @@ const saveAssertionRule = (rule, isUpdate) => {
 }
 
 // 变量
-const variableInfo = ref({})
 const variableListDialogVisible = ref(false)
-const getVariableList = info => {
-  variableInfo.value = info
+const getVariableList = () => {
   variableListDialogVisible.value = true
 }
 

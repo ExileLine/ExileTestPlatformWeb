@@ -11,3 +11,5 @@ export const fetchBindUiCase = data => post('/api/ui_case_bind', data)
 export const fetchSendUiCase = data => post('/api/ui_case_send', data)
 
 export const fetchExecute = data => post('/api/ui_case_execute', data)
+
+export const fetchGetUiControlList = () => post('/api/ui_control_dict_api')

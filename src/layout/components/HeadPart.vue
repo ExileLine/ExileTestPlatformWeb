@@ -27,6 +27,11 @@
         <t-icon name="logo-github" />
       </t-button>
     </t-tooltip>
+    <!-- <t-tooltip placement="bottom" content="TDesign">
+      <t-button theme="default" shape="square" variant="text" @click="gotoTD">
+        <t-icon name="heart" />
+      </t-button>
+    </t-tooltip> -->
     <t-tooltip placement="bottom" content="帮助文档">
       <t-button theme="default" shape="square" variant="text">
         <t-icon name="help-circle" />
@@ -166,6 +171,9 @@ function refresh() {
 }
 function gotoGithub() {
   window.open('https://github.com/ExileLine', '_blank')
+}
+function gotoTD() {
+  window.open('https://tdesign.tencent.com/vue-next/changelog', '_blank')
 }
 function toggleCollapse() {
   emit('update:collapsed', !props.collapsed)

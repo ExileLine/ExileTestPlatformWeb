@@ -8,15 +8,12 @@
           :data="uiCaseForm"
           :field-list="fieldList"
           :rules="rules"
-        >
-          <template #actions>
-            <span></span>
-          </template>
-        </common-form>
+          action-class="hide"
+        />
       </div>
     </t-affix>
 
-    <div class="flex mt-30">
+    <div class="flex">
       <div class="flex-1 pr-30">
         <div v-for="control in controlList" class="mb-20">
           <div class="flex-center mb-10">
@@ -25,7 +22,7 @@
             </t-tag>
           </div>
           <t-row :gutter="16">
-            <t-col v-for="(child, idx) in control.business_list" :key="idx" :span="6" class="mb-10">
+            <t-col v-for="(child, idx) in control.control_list" :key="idx" :span="6" class="mb-10">
               <t-tag :theme="controlType[child.type]" class="block text-center ellipsis">
                 {{ child.title }}
               </t-tag>
@@ -92,7 +89,12 @@ import { inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { isArray, flattenDeep, map, filter, throttle } from 'lodash'
 import { confirmDialog } from '@/utils/business'
-import { fetchGetUiCase, fetchAddUiCase, fetchUpdateUiCase } from '@api/ui-api-case'
+import {
+  fetchGetUiCase,
+  fetchAddUiCase,
+  fetchUpdateUiCase,
+  fetchGetUiControlList,
+} from '@api/ui-api-case'
 import { caseStatusList } from '@/config/variables'
 import { validateRequired } from '@/components/validate'
 
@@ -108,8 +110,8 @@ export default {
     const expandAll = ref(true)
     const uiCaseFormRef = ref()
     const affixContainerRef = ref(null)
+    const controlList = ref([])
     const getContainer = () => affixContainerRef.value
-    console.log(affixContainerRef)
 
     const uiCaseForm = ref({
       module_list: [],
@@ -141,6 +143,7 @@ export default {
       } else {
         document.title = '新增UI用例'
       }
+      controlList.value = await fetchGetUiControlList()
     })
     watch(
       () => expandAll.value,
@@ -155,184 +158,7 @@ export default {
       uiCaseFormRef,
       treeKeys: { value: 'uuid', label: 'title', children: 'business_list' },
       metaDataKeys,
-      controlList: [
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'ui_control',
-          title: 'ui',
-          business_list: [
-            {
-              type: 'ui_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)111111111111',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'ui_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'api_control',
-          title: 'api',
-          business_list: [
-            {
-              type: 'api_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'api_control',
-              title: '启动(URL)1',
-            },
-            {
-              type: 'api_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'api_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-        {
-          type: 'logic_control',
-          title: 'logic',
-          business_list: [
-            {
-              type: 'logic_control',
-              title: '启动(URL)',
-            },
-            {
-              type: 'logic_control',
-              title: '启动(URL)1',
-            },
-            {
-              type: 'logic_control',
-              title: '启动(URL)2',
-            },
-            {
-              type: 'logic_control',
-              title: '启动(URL)2',
-            },
-          ],
-        },
-      ],
+      controlList,
       controlType: {
         master: undefined,
         ui_control: 'primary',
@@ -442,10 +268,14 @@ export default {
 
       submitCase: throttle(async function () {
         const validateResult = await uiCaseFormRef.value.validate()
+
         if (validateResult === true) {
           const data = {
             ...uiCaseForm.value,
-            meta_data: map(treeRef.value.getItems(), 'data'),
+            meta_data: map(
+              filter(treeRef.value.getItems(), i => !i.isLeaf()),
+              'data'
+            ),
           }
           if (route.query.id) {
             await fetchUpdateUiCase(data)
@@ -482,6 +312,29 @@ export default {
     .t-form .w-140 .t-input {
       width: 140px;
       min-width: 140px;
+    }
+
+    .t-input__prefix {
+      .t-tag--close {
+        position: relative;
+        max-width: 110px;
+        padding-right: 32px;
+        display: inline-block;
+        vertical-align: middle;
+        @include ellipsis();
+
+        svg {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          right: 8px;
+        }
+      }
+
+      & ~ .t-input__inner {
+        min-width: 0px;
+      }
     }
   }
 }

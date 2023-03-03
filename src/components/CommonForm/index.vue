@@ -48,7 +48,7 @@
       </t-form-item>
     </template>
     <template v-else>
-      <t-form-item :label-width="dialog ? '0' : undefined">
+      <t-form-item :label-width="dialog ? '0' : undefined" :class="actionClass">
         <div class="flex form-action wp-100">
           <div
             class="wp-100"
@@ -131,6 +131,10 @@ const props = defineProps({
   },
   hiddenCancel: {
     type: Boolean,
+  },
+  actionClass: {
+    type: String,
+    default: '',
   },
 })
 const emit = defineEmits(['confirm', 'cancel', 'clear'])

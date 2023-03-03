@@ -9,19 +9,21 @@
       url="/api/case_req_data_page"
     >
       <template v-if="!hasAddBtn" #formActions>
-        <t-button theme="primary" @click="userDialogVisible = true">新增</t-button>
+        <t-button theme="primary" @click="goToAdd">新增</t-button>
       </template>
     </base-table>
-
     <json-editor-dialog v-model:visible="jsonViewVisible" :record="record" />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, inject, computed } from 'vue'
-import { cloneDeep, find } from 'lodash'
+import { useRouter } from 'vue-router'
+import { find } from 'lodash'
 import JsonEditorDialog from '@/components/JsonEditorDialog/index.vue'
 import { bodyTypeList } from '@/config/variables'
+import { confirmDialog } from '@/utils/business'
+import { fetchDeleteReqData } from '@/api/api-case-param'
 
 const props = defineProps({
   hasAddBtn: {
@@ -31,6 +33,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['add'])
 
+const router = useRouter()
 const baseTableRef = ref()
 const formModel = ref({})
 const selectChange = {
@@ -63,9 +66,10 @@ const fieldList = [
   },
 ]
 
-const userDialogVisible = ref(false)
-const userForm = ref({})
-
+const goToAdd = () =>
+  router.push({
+    path: '/api-case-param/add',
+  })
 const actionOptionList = computed(() => {
   const options = [
     {
@@ -73,8 +77,28 @@ const actionOptionList = computed(() => {
       value: 'edit',
       theme: 'primary',
       onClick({ row }) {
-        userForm.value = cloneDeep(row)
-        userDialogVisible.value = true
+        router.push({
+          path: '/api-case-param/edit',
+          query: {
+            id: row.id,
+          },
+        })
+      },
+    },
+    {
+      content: '删除',
+      value: 'close',
+      theme: 'danger',
+      async onClick({ row }) {
+        const dialog = await confirmDialog(
+          <div>
+            是否删除参数：<span class="text-warning-6">{row.data_name}</span>
+          </div>
+        )
+        await fetchDeleteReqData(row)
+        dialog.hide()
+        message.success('操作成功')
+        selectChange.change()
       },
     },
   ]
