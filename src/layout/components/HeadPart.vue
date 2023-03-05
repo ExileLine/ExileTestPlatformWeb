@@ -40,7 +40,7 @@
     <t-dropdown :min-column-width="135" trigger="click">
       <template #dropdown>
         <t-dropdown-menu>
-          <t-dropdown-item>
+          <t-dropdown-item @click="gotoInfo">
             <div class="align-center">
               <t-icon name="user-circle" class="mr-10" />
               个人中心
@@ -177,6 +177,11 @@ function gotoTD() {
 }
 function toggleCollapse() {
   emit('update:collapsed', !props.collapsed)
+}
+function gotoInfo() {
+  router.push({
+    path: '/user/info',
+  })
 }
 function close() {
   resetPwdFormRef.value.cancel()

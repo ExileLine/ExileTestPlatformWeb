@@ -18,6 +18,15 @@ const router = [
         },
         component: () => import('@view/user/index.vue'),
       },
+      {
+        name: 'userInfo',
+        path: 'info',
+        meta: {
+          title: '个人信息',
+          hidden: true,
+        },
+        component: () => import('@view/user/info.vue'),
+      },
     ],
   },
 ]

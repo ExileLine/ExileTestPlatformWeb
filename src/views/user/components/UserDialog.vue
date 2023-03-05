@@ -19,6 +19,8 @@
 
 <script setup>
 import { ref, inject, computed } from 'vue'
+import { useStore } from 'vuex'
+import { clone } from 'lodash'
 import { validateRequired } from '@/components/validate'
 import { fetchAddUser, fetchUpdateUser } from '@/api/user'
 
@@ -38,6 +40,8 @@ const emit = defineEmits(['update:visible', 'close', 'save'])
 const message = inject('message')
 
 const title = computed(() => (props.data.id ? '编辑用户' : '新增用户'))
+const store = useStore()
+const info = computed(() => store.getters.info)
 
 const userFormRef = ref()
 
@@ -121,8 +125,12 @@ const close = () => {
 }
 
 const saveUser = async () => {
-  if (props.data.id) {
+  const id = props.data.id
+  if (id) {
     await fetchUpdateUser(props.data)
+    if (info.value.id === id) {
+      store.commit('user/SET_INFO', clone(props.data))
+    }
   } else {
     await fetchAddUser(props.data)
   }
