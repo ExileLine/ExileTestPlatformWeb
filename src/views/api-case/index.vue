@@ -7,9 +7,13 @@
       :columns="columns"
       :action-option-list="actionOptionList"
       url="/api/case_page"
+      @select-change="tableSelectChange"
     >
       <template #formActions>
-        <t-button theme="primary" @click="$router.push('/api-case/add')">新增</t-button>
+        <t-button v-if="hasAddBtn" theme="primary" @click="$emit('add-selected')">
+          添加选中
+        </t-button>
+        <t-button v-else theme="primary" @click="$router.push('/api-case/add')">新增</t-button>
       </template>
     </base-table>
 
@@ -35,9 +39,9 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, computed, inject, nextTick } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { find } from 'lodash'
+import { find, filter } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import ExecuteDialog from './components/ExecuteDialog.vue'
@@ -48,6 +52,14 @@ import { confirmDialog } from '@/utils/business'
 
 const router = useRouter()
 const message = inject('message')
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['add', 'add-selected', 'select-change'])
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -115,161 +127,194 @@ const logDialogVisible = ref(false)
 const record = ref({})
 const executeDialogVisible = ref(false)
 const caseLog = ref({})
-const actionOptionList = [
-  {
-    content: '执行',
-    value: 'play-circle',
-    theme: 'success',
-    onClick({ row }) {
-      record.value = row
-      executeDialogVisible.value = true
-    },
+const editBtn = {
+  content: '编辑',
+  value: 'edit',
+  theme: 'primary',
+  onClick({ row }) {
+    router.push({
+      path: '/api-case/edit',
+      query: {
+        id: row.id,
+      },
+    })
   },
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {
-      router.push({
-        path: '/api-case/edit',
-        query: {
-          id: row.id,
+}
+const deleteBtn = {
+  content: '删除',
+  value: 'delete',
+  theme: 'danger',
+  async onClick({ row }) {
+    const dialog = await confirmDialog(
+      <div>
+        是否删除用例：<span class="text-warning-6">{row.case_name}</span>
+      </div>
+    )
+    await fetchDeleteCase(row)
+    message.success('操作成功')
+    dialog.hide()
+    baseTableRef.value.getData = true
+  },
+}
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '执行',
+      value: 'play-circle',
+      theme: 'success',
+      onClick({ row }) {
+        record.value = row
+        executeDialogVisible.value = true
+      },
+    },
+    editBtn,
+    {
+      content: '日志',
+      value: 'file',
+      theme: 'warning',
+      async onClick({ row }) {
+        const resp = await fetchGetCaseLog({
+          execute_id: row.id,
+          execute_type: 'case',
+        })
+        caseLog.value = resp.case_logs
+        logDialogVisible.value = true
+      },
+    },
+    {
+      content: '复制',
+      value: 'file-copy',
+      theme: 'info',
+      onClick() {},
+    },
+    deleteBtn,
+  ]
+  if (props.hasAddBtn) {
+    return [
+      {
+        content: '加入',
+        value: 'add',
+        theme: 'success',
+        onClick({ row }) {
+          emit('add', row)
         },
-      })
-    },
-  },
-  {
-    content: '日志',
-    value: 'file',
-    theme: 'warning',
-    async onClick({ row }) {
-      const resp = await fetchGetCaseLog({
-        execute_id: row.id,
-        execute_type: 'case',
-      })
-      caseLog.value = resp.case_logs
-      logDialogVisible.value = true
-    },
-  },
-  {
-    content: '复制',
-    value: 'file-copy',
-    theme: 'info',
-    onClick() {},
-  },
-  {
-    content: '删除',
-    value: 'delete',
-    theme: 'danger',
-    async onClick({ row }) {
-      const dialog = await confirmDialog(
-        <div>
-          是否删除用例：<span class="text-warning-6">{row.case_name}</span>
-        </div>
-      )
-      await fetchDeleteCase(row)
-      message.success('操作成功')
-      dialog.hide()
-      baseTableRef.value.getData = true
-    },
-  },
-]
+      },
+      editBtn,
+      deleteBtn,
+    ]
+  }
+  return options
+})
 
-const columns = computed(() => [
-  {
-    colKey: 'id',
-    title: 'ID',
-    ellipsis: true,
-    width: 100,
-  },
-  {
-    colKey: 'case_name',
-    title: '用例名称',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'request_method',
-    title: '请求方式',
-    ellipsis: true,
-    width: 120,
-    render: (h, { row, type }) =>
-      type !== 'title' && (
-        <t-tag
-          theme={find(requestMethodList, { value: row.request_method })?.theme}
-          variant="light"
-        >
-          {row.request_method}
-        </t-tag>
-      ),
-  },
-  {
-    colKey: 'request_base_url',
-    title: '请求地址',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'request_url',
-    title: '接口',
-    ellipsis: true,
-    width: 140,
-  },
-  {
-    colKey: 'total_execution',
-    title: '执行次数',
-    ellipsis: true,
-    width: 120,
-  },
-  {
-    colKey: 'case_status',
-    title: '用例状态',
-    ellipsis: true,
-    width: 120,
-    render: (h, { row, type }) => {
-      if (type !== 'title') {
-        const status = find(caseStatusList, { value: row.case_status })
-        return (
-          status && (
-            <t-tag theme={status?.theme} variant="light">
-              {status.label}
-            </t-tag>
-          )
-        )
-      }
+const columns = computed(() =>
+  filter([
+    props.hasAddBtn
+      ? {
+          colKey: 'row-select',
+          type: 'multiple',
+          width: 50,
+          align: 'center',
+        }
+      : null,
+    {
+      colKey: 'id',
+      title: 'ID',
+      ellipsis: true,
+      width: 100,
     },
-  },
-  {
-    colKey: 'creator',
-    title: '创建者',
-    ellipsis: true,
-    width: 120,
-  },
-  {
-    colKey: 'create_time',
-    title: '创建时间',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'modifier',
-    title: '更新者',
-    ellipsis: true,
-    width: 120,
-  },
-  {
-    colKey: 'update_time',
-    title: '更新时间',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'remark',
-    title: '备注',
-    ellipsis: true,
-    width: 180,
-  },
-])
+    {
+      colKey: 'case_name',
+      title: '用例名称',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'request_method',
+      title: '请求方式',
+      ellipsis: true,
+      width: 120,
+      render: (h, { row, type }) =>
+        type !== 'title' && (
+          <t-tag
+            theme={find(requestMethodList, { value: row.request_method })?.theme}
+            variant="light"
+          >
+            {row.request_method}
+          </t-tag>
+        ),
+    },
+    {
+      colKey: 'request_base_url',
+      title: '请求地址',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'request_url',
+      title: '接口',
+      ellipsis: true,
+      width: 140,
+    },
+    {
+      colKey: 'total_execution',
+      title: '执行次数',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      colKey: 'case_status',
+      title: '用例状态',
+      ellipsis: true,
+      width: 120,
+      render: (h, { row, type }) => {
+        if (type !== 'title') {
+          const status = find(caseStatusList, { value: row.case_status })
+          return (
+            status && (
+              <t-tag theme={status?.theme} variant="light">
+                {status.label}
+              </t-tag>
+            )
+          )
+        }
+      },
+    },
+    {
+      colKey: 'creator',
+      title: '创建者',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      colKey: 'create_time',
+      title: '创建时间',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'modifier',
+      title: '更新者',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      colKey: 'update_time',
+      title: '更新时间',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'remark',
+      title: '备注',
+      ellipsis: true,
+      width: 180,
+    },
+  ])
+)
+
+const tableSelectChange = (...rest) => {
+  emit('select-change', ...rest)
+}
 </script>
 
 <style lang="scss" scoped></style>

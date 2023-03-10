@@ -15,14 +15,7 @@
       <slot name="formActions"></slot>
     </div>
     <div ref="tableRef">
-      <t-table bordered :data="tableData" :columns="_column" :max-height="height">
-        <!-- <template #empty>
-        <div class="flex-col-center">
-          <svg-icon icon="no-data" width="10em" height="10em" />
-          <div>暂无项目</div>
-        </div>
-      </template> -->
-      </t-table>
+      <t-table v-bind="$attrs" bordered :data="tableData" :columns="_column" :max-height="height" />
     </div>
     <div ref="paginationRef">
       <common-pagination

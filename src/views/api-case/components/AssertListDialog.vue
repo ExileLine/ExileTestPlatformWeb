@@ -1,5 +1,5 @@
 <template>
-  <div class="assert-list">
+  <div class="dialog-list">
     <t-dialog
       :visible="visible"
       :header="dialogTitle"
@@ -45,16 +45,6 @@ const dialogTitle = computed(() =>
 )
 const currentComponent = computed(() => componentObject[props.assertionType])
 </script>
-
 <style lang="scss" scoped>
-.assert-list {
-  ::v-deep(.t-card) {
-    border: none;
-    box-shadow: none;
-    min-height: 750px;
-    .t-card__body {
-      padding: 0;
-    }
-  }
-}
+@import './dialog.scss';
 </style>

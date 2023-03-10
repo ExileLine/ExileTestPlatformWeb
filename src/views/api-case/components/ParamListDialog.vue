@@ -1,5 +1,5 @@
 <template>
-  <div class="assert-list">
+  <div class="dialog-list">
     <t-dialog
       :visible="visible"
       header="添加参数"
@@ -26,14 +26,5 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-.assert-list {
-  ::v-deep(.t-card) {
-    border: none;
-    box-shadow: none;
-    min-height: 750px;
-    .t-card__body {
-      padding: 0;
-    }
-  }
-}
+@import './dialog.scss';
 </style>

@@ -22,8 +22,19 @@
             </t-tag>
           </div>
           <t-row :gutter="16">
-            <t-col v-for="(child, idx) in control.control_list" :key="idx" :span="6" class="mb-10">
-              <t-tag :theme="controlType[child.type]" class="block text-center ellipsis">
+            <t-col
+              v-for="(child, idx) in control.control_list"
+              :key="idx"
+              :span="6"
+              class="mb-10"
+              draggable
+            >
+              <t-tag
+                :theme="controlType[child.type]"
+                class="block text-center ellipsis"
+                draggable="true"
+                @dragend="() => uiTagDragEnd(child)"
+              >
                 {{ child.title }}
               </t-tag>
             </t-col>
@@ -43,6 +54,8 @@
           activable
           draggable
           :keys="treeKeys"
+          @drag-end="handleDragEnd"
+          @drag-over="handleDragOver"
         >
           <template #label="{ node }">
             <div class="tree-node-item wp-100 align-center">
@@ -87,7 +100,7 @@
 <script lang="jsx">
 import { inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { isArray, flattenDeep, map, filter, throttle } from 'lodash'
+import { isArray, flattenDeep, map, filter, throttle, join, includes } from 'lodash'
 import { confirmDialog } from '@/utils/business'
 import {
   fetchGetUiCase,
@@ -153,9 +166,11 @@ export default {
     )
     const switchLabel = ['是', '否']
 
+    const treeTargetNode = ref()
     return {
       treeRef,
       uiCaseFormRef,
+      treeTargetNode,
       treeKeys: { value: 'uuid', label: 'title', children: 'business_list' },
       metaDataKeys,
       controlList,
@@ -186,6 +201,7 @@ export default {
           type: 'master',
         })
       },
+
       async removeTreeNode(node) {
         const dialog = await confirmDialog(
           <div>
@@ -195,6 +211,31 @@ export default {
         )
         treeRef.value.remove(node.value)
         dialog.hide()
+      },
+      uiTagDragEnd(child) {
+        const targetNode = treeTargetNode.value
+        const treeNode = targetNode?.node
+        const classList = targetNode?.classList
+        if (treeNode) {
+          if (includes(classList, 't-tree__item--tip-highlight')) {
+            treeRef.value.appendTo(treeNode.value, child)
+          } else if (includes(classList, 't-tree__item--tip-top')) {
+            treeRef.value.insertBefore(treeNode.value, child)
+          } else if (includes(classList, 't-tree__item--tip-bottom')) {
+            treeRef.value.insertAfter(treeNode.value, child)
+          }
+        }
+        treeTargetNode.value = null
+      },
+      handleDragEnd() {
+        treeTargetNode.value = null
+      },
+      handleDragOver(context) {
+        const ele = window.event.currentTarget
+        treeTargetNode.value = {
+          ...context,
+          classList: join(ele.classList),
+        }
       },
 
       uiCaseForm,
@@ -273,7 +314,7 @@ export default {
           const data = {
             ...uiCaseForm.value,
             meta_data: map(
-              filter(treeRef.value.getItems(), i => !i.isLeaf()),
+              filter(treeRef.value.getItems(), i => i.getLevel() == 0),
               'data'
             ),
           }

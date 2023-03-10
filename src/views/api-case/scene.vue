@@ -37,12 +37,15 @@
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
+import { useRouter } from 'vue-router'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
+import { fetchDeleteCaseScenario } from '@/api/case-scenario'
 
 const message = inject('message')
+const router = useRouter()
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -107,7 +110,14 @@ const actionOptionList = [
     content: '编辑',
     value: 'edit',
     theme: 'primary',
-    onClick({ row }) {},
+    onClick({ row }) {
+      router.push({
+        path: '/api-case/edit-scene',
+        query: {
+          id: row.id,
+        },
+      })
+    },
   },
   {
     content: '日志',
@@ -132,6 +142,7 @@ const actionOptionList = [
           是否删除场景：<span class="text-warning-6">{row.scenario_title}</span>
         </div>
       )
+      await fetchDeleteCaseScenario(row)
       message.success('操作成功')
       dialog.hide()
       baseTableRef.value.getData = true
@@ -178,12 +189,12 @@ const columns = computed(() => [
   },
   {
     colKey: 'status',
-    title: '状态',
+    title: '公开使用',
     ellipsis: true,
     width: 100,
     render(h, { type, row }) {
       if (type === 'title') return
-      return <t-switch value={row.is_public} customValue={[0, 1]} label={['是', '否']}></t-switch>
+      return <t-switch value={row.is_public} customValue={[1, 0]} label={['是', '否']}></t-switch>
     },
   },
   {
