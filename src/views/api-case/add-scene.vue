@@ -1,7 +1,7 @@
 <template>
   <page-container class="hp-100 overflow-y">
     <t-row :gutter="20">
-      <t-col :md="4" :xs="12">
+      <t-col :lg="4" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10">场景信息</div>
         <common-form
           label-width="100px"
@@ -9,10 +9,11 @@
           :rules="rules"
           :field-list="fieldList"
           confirm-text="保存"
+          action-class="hide"
           @confirm="saveCaseScenario"
         />
       </t-col>
-      <t-col :md="8" :xs="12">
+      <t-col :lg="8" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10 flex-between">
           <span>场景-用例列表</span>
           <t-button theme="danger" @click="deleteSelectedCase">删除所选</t-button>
@@ -38,6 +39,11 @@
         />
       </t-col>
     </t-row>
+
+    <t-button class="case-btn" size="medium" @click="saveCaseScenario">
+      <template #icon><t-icon name="check" /></template>
+      提交
+    </t-button>
   </page-container>
 </template>
 
@@ -75,7 +81,7 @@ const rules = {
 const switchLabel = ['是', '否']
 
 const extraProps = {
-  class: 'w-200',
+  class: 'w-300',
 }
 const fieldList = [
   {
@@ -339,5 +345,12 @@ onMounted(async () => {
       flex: 1;
     }
   }
+}
+
+.case-btn {
+  position: fixed;
+  right: 40px;
+  bottom: 60px;
+  z-index: 100;
 }
 </style>
