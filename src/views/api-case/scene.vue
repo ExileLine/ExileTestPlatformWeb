@@ -7,9 +7,15 @@
       :columns="columns"
       :action-option-list="actionOptionList"
       url="/api/case_scenario_page"
+      @select-change="tableSelectChange"
     >
       <template #formActions>
-        <t-button theme="primary" @click="$router.push('/api-case/add-scene')">新增</t-button>
+        <t-button v-if="hasAddBtn" theme="primary" @click="$emit('add-selected')">
+          添加选中
+        </t-button>
+        <t-button v-else theme="primary" @click="$router.push('/api-case/add-scene')">
+          新增
+        </t-button>
       </template>
     </base-table>
 
@@ -38,6 +44,7 @@
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import { filter } from 'lodash'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchGetCaseLog } from '@/api/case-logs'
@@ -46,6 +53,14 @@ import { fetchDeleteCaseScenario } from '@/api/case-scenario'
 
 const message = inject('message')
 const router = useRouter()
+
+const props = defineProps({
+  hasAddBtn: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['add', 'add-selected', 'select-change'])
 
 const baseTableRef = ref()
 const formModel = ref({})
@@ -96,114 +111,151 @@ const caseLog = ref({})
 
 const executeDialogVisible = ref(false)
 const record = ref({})
-const actionOptionList = [
-  {
-    content: '执行',
-    value: 'play-circle',
-    theme: 'success',
-    onClick({ row }) {
-      record.value = row
-      executeDialogVisible.value = true
-    },
-  },
-  {
-    content: '编辑',
-    value: 'edit',
-    theme: 'primary',
-    onClick({ row }) {
-      router.push({
-        path: '/api-case/edit-scene',
-        query: {
-          id: row.id,
-        },
-      })
-    },
-  },
-  {
-    content: '日志',
-    value: 'file',
-    theme: 'warning',
-    async onClick({ row }) {
-      const resp = await fetchGetCaseLog({
-        execute_id: row.id,
-        execute_type: 'scenario',
-      })
-      caseLog.value = resp.scenario_logs
-      logDialogVisible.value = true
-    },
-  },
-  {
-    content: '删除',
-    value: 'delete',
-    theme: 'danger',
-    async onClick({ row }) {
-      const dialog = await confirmDialog(
-        <div>
-          是否删除场景：<span class="text-warning-6">{row.scenario_title}</span>
-        </div>
-      )
-      await fetchDeleteCaseScenario(row)
-      message.success('操作成功')
-      dialog.hide()
-      baseTableRef.value.getData = true
-    },
-  },
-]
 
-const columns = computed(() => [
-  {
-    colKey: 'id',
-    title: 'ID',
-    ellipsis: true,
-    width: 100,
+const editBtn = {
+  content: '编辑',
+  value: 'edit',
+  theme: 'primary',
+  onClick({ row }) {
+    router.push({
+      path: '/api-case/edit-scene',
+      query: {
+        id: row.id,
+      },
+    })
   },
-  {
-    colKey: 'scenario_title',
-    title: '场景名称',
-    ellipsis: true,
-    width: 200,
+}
+
+const deleteBtn = {
+  content: '删除',
+  value: 'delete',
+  theme: 'danger',
+  async onClick({ row }) {
+    const dialog = await confirmDialog(
+      <div>
+        是否删除场景：<span class="text-warning-6">{row.scenario_title}</span>
+      </div>
+    )
+    await fetchDeleteCaseScenario(row)
+    message.success('操作成功')
+    dialog.hide()
+    baseTableRef.value.getData = true
   },
-  {
-    colKey: 'creator',
-    title: '创建者',
-    ellipsis: true,
-    width: 120,
-  },
-  {
-    colKey: 'create_time',
-    title: '创建时间',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'modifier',
-    title: '更新者',
-    ellipsis: true,
-    width: 120,
-  },
-  {
-    colKey: 'update_time',
-    title: '更新时间',
-    ellipsis: true,
-    width: 200,
-  },
-  {
-    colKey: 'status',
-    title: '公开使用',
-    ellipsis: true,
-    width: 100,
-    render(h, { type, row }) {
-      if (type === 'title') return
-      return <t-switch value={row.is_public} customValue={[1, 0]} label={['是', '否']}></t-switch>
+}
+const actionOptionList = computed(() => {
+  const options = [
+    {
+      content: '执行',
+      value: 'play-circle',
+      theme: 'success',
+      onClick({ row }) {
+        record.value = row
+        executeDialogVisible.value = true
+      },
     },
-  },
-  {
-    colKey: 'remark',
-    title: '备注',
-    ellipsis: true,
-    width: 180,
-  },
-])
+    editBtn,
+    {
+      content: '日志',
+      value: 'file',
+      theme: 'warning',
+      async onClick({ row }) {
+        const resp = await fetchGetCaseLog({
+          execute_id: row.id,
+          execute_type: 'scenario',
+        })
+        caseLog.value = resp.scenario_logs
+        logDialogVisible.value = true
+      },
+    },
+    deleteBtn,
+  ]
+
+  if (props.hasAddBtn) {
+    return [
+      {
+        content: '加入',
+        value: 'add',
+        theme: 'success',
+        onClick({ row }) {
+          emit('add', row)
+        },
+      },
+      editBtn,
+      deleteBtn,
+    ]
+  }
+
+  return options
+})
+
+const columns = computed(() =>
+  filter([
+    props.hasAddBtn
+      ? {
+          colKey: 'row-select',
+          type: 'multiple',
+          width: 50,
+          align: 'center',
+        }
+      : null,
+    {
+      colKey: 'id',
+      title: 'ID',
+      ellipsis: true,
+      width: 100,
+    },
+    {
+      colKey: 'scenario_title',
+      title: '场景名称',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'creator',
+      title: '创建者',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      colKey: 'create_time',
+      title: '创建时间',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'modifier',
+      title: '更新者',
+      ellipsis: true,
+      width: 120,
+    },
+    {
+      colKey: 'update_time',
+      title: '更新时间',
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      colKey: 'status',
+      title: '公开使用',
+      ellipsis: true,
+      width: 100,
+      render(h, { type, row }) {
+        if (type === 'title') return
+        return <t-switch value={row.is_public} customValue={[1, 0]} label={['是', '否']}></t-switch>
+      },
+    },
+    {
+      colKey: 'remark',
+      title: '备注',
+      ellipsis: true,
+      width: 180,
+    },
+  ])
+)
+
+const tableSelectChange = (...rest) => {
+  emit('select-change', ...rest)
+}
 </script>
 
 <style lang="scss" scoped></style>

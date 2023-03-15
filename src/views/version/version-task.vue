@@ -9,7 +9,17 @@
       url="/api/version_task_page"
     >
       <template #formActions>
-        <t-button theme="primary" @click="envDialogVisible = true">新增</t-button>
+        <t-button
+          theme="primary"
+          @click="
+            $router.push({
+              path: '/version/add-task',
+              query: $route.query,
+            })
+          "
+        >
+          新增
+        </t-button>
       </template>
     </base-table>
 
@@ -24,12 +34,14 @@
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { versionTaskTypeList } from '@/config/variables'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import { confirmDialog } from '@/utils/business'
+import { fetchDeleteVersionTask } from '@/api/version-task'
 
 const route = useRoute()
+const router = useRouter()
 const baseTableRef = ref()
 const formModel = ref({
   version_id: route.query.version_id,
@@ -83,7 +95,15 @@ const actionOptionList = [
     content: '编辑',
     value: 'edit',
     theme: 'primary',
-    onClick({ row }) {},
+    onClick({ row }) {
+      router.push({
+        path: '/version/edit-task',
+        query: {
+          ...route.query,
+          id: row.id,
+        },
+      })
+    },
   },
   {
     content: '删除',
@@ -96,6 +116,7 @@ const actionOptionList = [
           <span class="text-warning-6">{row.task_name}</span>
         </div>
       )
+      await fetchDeleteVersionTask(row)
       dialog.hide()
       selectChange.change()
       message.success('操作成功')

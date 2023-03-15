@@ -29,6 +29,26 @@ const router = [
         component: () => import('@view/version/version-task.vue'),
       },
       {
+        name: 'AddVersionTask',
+        path: 'add-task',
+        meta: {
+          title: '添加任务',
+          hidden: true,
+          parentIndex: 1,
+        },
+        component: () => import('@view/version/add-version-task.vue'),
+      },
+      {
+        name: 'EditVersionTask',
+        path: 'edit-task',
+        meta: {
+          title: '编辑任务',
+          hidden: true,
+          parentIndex: 1,
+        },
+        component: () => import('@view/version/add-version-task.vue'),
+      },
+      {
         name: 'moduleList',
         path: 'module',
         meta: {
