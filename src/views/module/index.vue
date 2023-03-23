@@ -6,14 +6,14 @@
       :field-list="fieldList"
       :columns="columns"
       :action-option-list="actionOptionList"
-      url="/api/version_task_page"
+      url="/api/module_app_page"
     >
       <template #formActions>
         <t-button
           theme="primary"
           @click="
             $router.push({
-              path: '/version/add-task',
+              path: '/version/add-module',
               query: $route.query,
             })
           "
@@ -26,8 +26,8 @@
     <execute-dialog
       v-model:visible="executeDialogVisible"
       :info="record"
-      :execute-name="record.task_name"
-      execute-type="task"
+      :execute-name="record.module_name"
+      execute-type="module"
     />
   </page-container>
 </template>
@@ -35,10 +35,9 @@
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { versionTaskTypeList } from '@/config/variables'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import { confirmDialog } from '@/utils/business'
-import { fetchDeleteVersionTask } from '@/api/version-task'
+import { fetchDeleteModule } from '@/api/module'
 
 const route = useRoute()
 const router = useRouter()
@@ -56,16 +55,13 @@ const selectChange = {
 
 const fieldList = [
   {
-    label: '任务名称',
-    value: 'task_name',
+    label: '模块名称',
+    value: 'module_name',
   },
-  {
-    label: '任务类型',
-    value: 'task_type',
-    component: 't-select',
-    list: versionTaskTypeList,
-    on: selectChange,
-  },
+  // {
+  //   label: '模块编号',
+  //   value: 'module_code',
+  // },
   {
     label: '创建者',
     value: 'creator_id',
@@ -97,7 +93,7 @@ const actionOptionList = [
     theme: 'primary',
     onClick({ row }) {
       router.push({
-        path: '/version/edit-task',
+        path: '/version/edit-module',
         query: {
           ...route.query,
           id: row.id,
@@ -112,11 +108,11 @@ const actionOptionList = [
     async onClick({ row }) {
       const dialog = await confirmDialog(
         <div>
-          是否删除任务：
-          <span class="text-warning-6">{row.task_name}</span>
+          是否删除模块：
+          <span class="text-warning-6">{row.module_name}</span>
         </div>
       )
-      await fetchDeleteVersionTask(row)
+      await fetchDeleteModule(row)
       dialog.hide()
       selectChange.change()
       message.success('操作成功')
@@ -132,14 +128,14 @@ const columns = computed(() => [
     width: 100,
   },
   {
-    colKey: 'task_name',
-    title: '任务名称',
+    colKey: 'module_name',
+    title: '模块名称',
     ellipsis: true,
     width: 300,
   },
   {
-    colKey: 'task_type',
-    title: '任务类型',
+    colKey: 'module_code',
+    title: '模块编号',
     ellipsis: true,
     width: 200,
   },

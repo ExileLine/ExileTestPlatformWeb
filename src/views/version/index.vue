@@ -111,7 +111,7 @@
       v-model:visible="executeDialogVisible"
       :info="record"
       :execute-name="record.version_name"
-      execute-key="version"
+      execute-type="version"
     />
   </div>
 </template>

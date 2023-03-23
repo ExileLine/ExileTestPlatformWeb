@@ -12,7 +12,6 @@ export default defineConfig(configEnv => {
   const srcPath = getSrcPath()
 
   return {
-    base: viteEnv.VITE_BASE_URL,
     resolve: {
       alias: {
         '~': rootPath,

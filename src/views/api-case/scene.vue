@@ -36,7 +36,7 @@
       v-model:visible="executeDialogVisible"
       :info="record"
       :execute-name="record.scenario_title"
-      execute-key="scenario"
+      execute-type="scenario"
     />
   </page-container>
 </template>

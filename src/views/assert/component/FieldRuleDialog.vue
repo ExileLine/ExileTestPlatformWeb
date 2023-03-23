@@ -266,7 +266,7 @@ const columns = assert_field_list => [
                     <div>
                       <div class="mb-10 fw-600">{pythonExpressionTip}</div>
                       <div class="h-650">
-                        <JsonEditor v-model={pythonExpression} read-only mode="python" />
+                        <JsonEditor modelValue={pythonExpression} read-only mode="python" />
                       </div>
                     </div>,
                     '关于取值表达式'

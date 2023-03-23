@@ -54,7 +54,27 @@ const router = [
         meta: {
           title: '功能模块',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/module/index.vue'),
+      },
+      {
+        name: 'AddModule',
+        path: 'add-module',
+        meta: {
+          title: '添加模块',
+          hidden: true,
+          parentIndex: 4,
+        },
+        component: () => import('@view/module/add.vue'),
+      },
+      {
+        name: 'EditModule',
+        path: 'edit-module',
+        meta: {
+          title: '编辑模块',
+          hidden: true,
+          parentIndex: 4,
+        },
+        component: () => import('@view/module/add.vue'),
       },
     ],
   },

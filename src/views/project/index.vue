@@ -118,7 +118,7 @@
       v-model:visible="executeDialogVisible"
       :info="record"
       :execute-name="record.project_name"
-      execute-key="project"
+      execute-type="project"
     />
   </div>
 </template>

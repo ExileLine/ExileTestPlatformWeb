@@ -31,7 +31,7 @@ obj.get("user_list")[1].get("username")
 # 取"user_list"的第三个user的age表达式如下
 obj.get("user_list")[2].get("age")`
 
-export function helpDialog(body, header = '提示') {
+export const helpDialog = (body, header = '提示') => {
   const alertDia = DialogPlugin.alert({
     body,
     header,

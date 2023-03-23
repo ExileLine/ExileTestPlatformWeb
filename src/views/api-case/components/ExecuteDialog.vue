@@ -20,7 +20,7 @@
         @confirm="execute"
         @cancel="close"
       >
-        <template v-if="!includes(executeKeyList, executeKey)" #top>
+        <template v-if="!includes(executeTypeList, executeType)" #top>
           <t-form-item label="全部用例">
             <t-switch v-model="formModal.openCase" />
           </t-form-item>
@@ -51,7 +51,7 @@ const props = defineProps({
   executeName: {
     type: String,
   },
-  executeKey: {
+  executeType: {
     type: String,
     default: 'case',
   },
@@ -61,14 +61,14 @@ const message = inject('message')
 const formModal = reactive({
   request_timeout: 3,
 })
-const executeKeyList = ['case', 'scenario']
-const executeType = computed(() => {
+const executeTypeList = ['case', 'scenario']
+const executeKey = computed(() => {
   const { openCase, openScenario } = formModal
-  const executeKey = props.executeKey
-  if (includes(executeKeyList, executeKey)) return executeKey
-  if (openCase && openScenario) return `${executeKey}_all`
-  if (openCase) return `${executeKey}_case`
-  if (openScenario) return `${executeKey}_scenario`
+  const executeType = props.executeType
+  if (includes(executeTypeList, executeType)) return executeType
+  if (openCase && openScenario) return `${executeType}_all`
+  if (openCase) return `${executeType}_case`
+  if (openScenario) return `${executeType}_scenario`
 })
 
 const fieldList = computed(() => [
@@ -179,10 +179,10 @@ const close = () => {
   emit('update:visible', false)
 }
 const execute = async () => {
-  const { info, executeName, executeKey } = props
+  const { info, executeName, executeType } = props
   const { modify_request, request_timeout, openCase, openScenario, ...data } = formModal
 
-  if (!includes(executeKeyList, executeKey)) {
+  if (!includes(executeTypeList, executeType)) {
     if (!openCase && !openScenario) return message.warning('请先选择全部用例或全部场景')
   }
   await fetchExecute({
@@ -190,8 +190,8 @@ const execute = async () => {
     request_timeout: modify_request ? request_timeout : 3,
     execute_id: info.id,
     execute_name: executeName,
-    execute_key: executeKey,
-    execute_type: executeType.value,
+    execute_key: executeKey.value,
+    execute_type: executeType,
     execute_label: '',
     trigger_type: 'user_execute',
   })
