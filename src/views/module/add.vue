@@ -98,24 +98,13 @@ const extraProps = {
 }
 const fieldList = [
   {
-    label: '用户列表',
-    value: 'user_list',
-    component: 'remote-select',
-    extraProps: {
-      url: '/api/user_page',
-      labelKey: 'username',
-      multiple: true,
-      ...extraProps,
-    },
+    value: 'module_name',
+    label: '模块名称',
+    extraProps,
   },
   {
     label: '模块编号',
     value: 'module_code',
-    extraProps,
-  },
-  {
-    value: 'module_name',
-    label: '模块名称',
     extraProps,
   },
   {

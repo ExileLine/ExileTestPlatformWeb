@@ -13,7 +13,7 @@
           </div>
         </div>
         <footer class="copyright plr-20 flex-center">
-          Copyright @ 2020-2022 ExileLine. All Rights Reserved
+          Copyright @ 2020-2023 ExileLine. All Rights Reserved
         </footer>
       </div>
     </div>

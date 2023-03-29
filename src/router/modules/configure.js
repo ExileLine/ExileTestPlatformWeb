@@ -24,7 +24,7 @@ const router = [
         meta: {
           title: '钉钉配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/configure/dingding.vue'),
       },
       {
         name: 'mailList',
@@ -32,7 +32,7 @@ const router = [
         meta: {
           title: '邮件配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@/views/configure/email.vue'),
       },
       {
         name: 'dbList',
@@ -48,7 +48,7 @@ const router = [
         meta: {
           title: 'CI/CD配置',
         },
-        component: () => import('@view/about/index.vue'),
+        component: () => import('@view/maintenance/index.vue'),
       },
     ],
   },
