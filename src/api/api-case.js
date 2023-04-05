@@ -11,3 +11,4 @@ export const fetchBindCase = data => post('/api/case_bind', data)
 export const fetchSendCase = data => post('/api/case_send', data)
 
 export const fetchExecute = data => post('/api/case_execute', data)
+export const fetchCopyCase = data => post('/api/case_copy', data)

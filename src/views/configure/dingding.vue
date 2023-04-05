@@ -24,7 +24,7 @@
         :data="dingdingForm"
         :rules="dingdingRules"
         :field-list="dingdingFieldList"
-        label-width="4em"
+        label-width="8em"
         confirm-text="确定"
         cancel-text="取消"
         @confirm="saveDingDing"

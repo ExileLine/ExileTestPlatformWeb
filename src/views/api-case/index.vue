@@ -35,6 +35,20 @@
       :info="record"
       :execute-name="record.case_name"
     />
+
+    <t-dialog header="用例复制" :footer="null" v-model:visible="copyDialogVisible">
+      <common-form
+        dialog
+        label-width="6em"
+        :data="record"
+        :rules="copyRules"
+        :field-list="copyFieldList"
+        confirm-text="确定"
+        cancel-text="取消"
+        @confirm="copyCase"
+        @cancel="copyDialogVisible = false"
+      />
+    </t-dialog>
   </page-container>
 </template>
 
@@ -45,9 +59,10 @@ import { find, filter } from 'lodash'
 import { requestMethodList, caseStatusList } from '@/config/variables'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import ExecuteDialog from './components/ExecuteDialog.vue'
-import { fetchDeleteCase } from '@/api/api-case'
+import { fetchDeleteCase, fetchCopyCase } from '@/api/api-case'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
+import { validateRequired } from '@/components/validate'
 // import { caseLog } from '@/config/mock'
 
 const router = useRouter()
@@ -156,6 +171,8 @@ const deleteBtn = {
     baseTableRef.value.getData = true
   },
 }
+
+const copyDialogVisible = ref(false)
 const actionOptionList = computed(() => {
   const options = [
     {
@@ -185,7 +202,10 @@ const actionOptionList = computed(() => {
       content: '复制',
       value: 'file-copy',
       theme: 'info',
-      onClick() {},
+      onClick({ row }) {
+        record.value = row
+        copyDialogVisible.value = true
+      },
     },
     deleteBtn,
   ]
@@ -311,6 +331,42 @@ const columns = computed(() =>
     },
   ])
 )
+
+const copyFieldList = computed(() => [
+  {
+    value: 'is_cross',
+    label: '跨项目',
+    component: 't-switch',
+    extraProps: {
+      label: ['是', '否'],
+    },
+  },
+  {
+    value: 'cross_project_id',
+    label: '项目',
+    component: 'remote-select',
+    extraProps: {
+      url: '/api/project_page',
+      labelKey: 'project_name',
+      valueKey: 'id',
+      disabled: !record.value.is_cross,
+    },
+  },
+])
+
+const copyRules = computed(() =>
+  record.value.is_cross
+    ? {
+        cross_project_id: [validateRequired('请选择项目', 'change')],
+      }
+    : {}
+)
+const copyCase = async () => {
+  await fetchCopyCase(record.value)
+  message.success('操作成功')
+  copyDialogVisible.value = false
+  selectChange.change()
+}
 
 const tableSelectChange = (...rest) => {
   emit('select-change', ...rest)

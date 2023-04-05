@@ -32,7 +32,7 @@
               <t-tag
                 :theme="controlType[child.type]"
                 class="block text-center ellipsis"
-                draggable="true"
+                @click="showTreeDialog(child)"
                 @dragend="() => uiTagDragEnd(child)"
               >
                 {{ child.title }}
@@ -47,10 +47,10 @@
         </div>
         <t-tree
           ref="treeRef"
+          v-model:expanded="metaDataKeys"
           :data="uiCaseForm.meta_data"
           line
           hover
-          v-model:expanded="metaDataKeys"
           activable
           draggable
           :keys="treeKeys"
@@ -61,10 +61,16 @@
             <div class="tree-node-item wp-100 align-center">
               <t-tag :theme="controlType[node.data.type]" @click="showDialog(node)">
                 {{ node.data.title }}
+                <template v-if="node.data.function">({{ node.data.function }})</template>
               </t-tag>
 
               <div class="tree-btn-group pl-20">
-                <t-icon name="add" class="ml-10" @click="appendNode(node)"></t-icon>
+                <t-icon
+                  v-if="hasAddBtn(node)"
+                  name="add"
+                  class="ml-10"
+                  @click="appendNode(node)"
+                ></t-icon>
                 <t-icon name="close" class="ml-10" @click="removeTreeNode(node)"></t-icon>
               </div>
             </div>
@@ -79,34 +85,77 @@
       提交
     </t-button>
   </div>
+  <t-dialog v-model:visible="treeDialogVisible" header="添加控件" @confirm="addNodeToTree">
+    <t-tree
+      ref="ctrlsTree"
+      :data="uiCaseForm.meta_data"
+      line
+      hover
+      checkable
+      activable
+      expandAll
+      checkStrictly
+      :filter="filterParentNode"
+      :keys="treeKeys"
+    >
+      <template #label="{ node }">
+        <div class="tree-node-item wp-100 align-center">
+          <t-tag :theme="controlType[node.data.type]">
+            {{ node.data.title }}
+          </t-tag>
+        </div>
+      </template>
+    </t-tree>
+  </t-dialog>
 
-  <t-dialog v-model:visible="treeDialogVisible" header="URL配置">
+  <t-dialog
+    v-model:visible="formDialogVisible"
+    :close-btn="false"
+    :close-nn-overlay-click="false"
+    :close-on-esc-keydown="false"
+    :footer="null"
+    :header="dialogDetail._title"
+  >
     <div class="ptb-10">
-      <t-form :data="dialogDetail">
-        <t-form-item
-          v-if="dialogDetail.args && dialogDetail.args.url"
-          label="url"
-          name="args.url"
-          label-width="40px"
-          :rules="[{ required: true, message: '请输入url', type: 'error' }]"
-        >
-          <t-input v-model="dialogDetail.args.url" placeholder=" 请输入url" />
-        </t-form-item>
-      </t-form>
+      <common-form
+        v-bind="currentControlMap && currentControlMap.extra"
+        dialog
+        :data="dialogDetail"
+        :rules="currentControlMapRules"
+        :field-list="currentControlMapFieldList"
+        confirm-text="确定"
+        cancel-text="取消"
+        @confirm="updateCtrl"
+        @cancel="formDialogVisible = false"
+      />
     </div>
   </t-dialog>
 </template>
 
 <script lang="jsx">
-import { inject, onMounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { isArray, flattenDeep, map, filter, throttle, join, includes } from 'lodash'
+import {
+  isArray,
+  flattenDeep,
+  map,
+  filter,
+  throttle,
+  join,
+  includes,
+  forEach,
+  findIndex,
+  omit,
+  forIn,
+} from 'lodash'
+import { treeToObject } from '@/utils'
 import { confirmDialog } from '@/utils/business'
 import {
   fetchGetUiCase,
   fetchAddUiCase,
   fetchUpdateUiCase,
   fetchGetUiControlList,
+  fetchGetUiControlMap,
 } from '@api/ui-api-case'
 import { caseStatusList } from '@/config/variables'
 import { validateRequired } from '@/components/validate'
@@ -115,7 +164,9 @@ export default {
   setup() {
     const route = useRoute()
     const treeRef = ref()
+    const ctrlsTree = ref()
     const message = inject('message')
+    const formDialogVisible = ref(false)
     const treeDialogVisible = ref(false)
     const dialogDetail = ref({ args: {} })
 
@@ -124,6 +175,7 @@ export default {
     const uiCaseFormRef = ref()
     const affixContainerRef = ref(null)
     const controlList = ref([])
+    const controlMap = ref({})
     const getContainer = () => affixContainerRef.value
 
     const uiCaseForm = ref({
@@ -144,36 +196,72 @@ export default {
       ]
     }
 
-    const getAllTreeKey = () =>
+    const allTreeKey = computed(() =>
       filter(flattenDeep(map(uiCaseForm.value.meta_data, value => getValuesBy(value))))
+    )
+
+    const treeDataObject = computed(() => treeToObject({}, uiCaseForm.value.meta_data))
+
+    const currentControlMap = computed(() => controlMap.value[dialogDetail.value._function])
+    const currentControlMapFieldList = computed(() => [
+      {
+        value: 'title',
+        label: '描述',
+        component: 't-input',
+      },
+      ...(currentControlMap.value?.fieldList ?? []),
+    ])
+    const currentControlMapRules = computed(() => ({
+      title: [validateRequired('请输入描述')],
+      ...currentControlMap.value?.rules,
+    }))
+
+    const getUiControlList = async () => {
+      controlList.value = await fetchGetUiControlList()
+    }
+    const getUiControlMap = async () => {
+      controlMap.value = await fetchGetUiControlMap()
+    }
+
     onMounted(async () => {
       if (route.query.id) {
         uiCaseForm.value = await fetchGetUiCase(route.query.id)
         !uiCaseForm.value.version_list && (uiCaseForm.value.version_list = [])
         !uiCaseForm.value.module_list && (uiCaseForm.value.module_list = [])
-        metaDataKeys.value = getAllTreeKey()
+        metaDataKeys.value = allTreeKey.value
         document.title = '编辑UI用例-' + uiCaseForm.value.case_name
       } else {
         document.title = '新增UI用例'
       }
-      controlList.value = await fetchGetUiControlList()
+      getUiControlList()
+      getUiControlMap()
     })
     watch(
       () => expandAll.value,
       expandAll => {
-        metaDataKeys.value = expandAll ? getAllTreeKey() : []
+        metaDataKeys.value = expandAll ? allTreeKey.value : []
       }
     )
     const switchLabel = ['是', '否']
+    const parentTreeType = ['master']
 
     const treeTargetNode = ref()
+    const treeNode = ref({})
+
+    const hasAddBtn = node => includes(parentTreeType, node.data.type)
     return {
       treeRef,
+      ctrlsTree,
       uiCaseFormRef,
       treeTargetNode,
+      treeNode,
       treeKeys: { value: 'uuid', label: 'title', children: 'business_list' },
       metaDataKeys,
       controlList,
+      controlMap,
+      currentControlMap,
+      currentControlMapFieldList,
+      currentControlMapRules,
       controlType: {
         master: undefined,
         ui_control: 'primary',
@@ -189,14 +277,23 @@ export default {
       treeDialogVisible,
       affixContainerRef,
       getContainer,
+      formDialogVisible,
+      treeDataObject,
       showDialog(node) {
-        treeDialogVisible.value = true
-        dialogDetail.value = node.data
-        console.log(node.data)
+        const { args, title, function: _function, uuid } = node.data
+        dialogDetail.value = {
+          ...args,
+          _function,
+          title: title,
+          uuid,
+          _title: `${title}${_function ? '(' + _function + ')' : ''}`,
+        }
+        formDialogVisible.value = true
       },
       appendNode(node) {
+        treeDataObject.value[node.value].business_list.push(nodeData)
         treeRef.value.appendTo(node.value, {
-          uuid: Date.now(),
+          uuid: Date.now().toString(),
           title: '未命名业务',
           type: 'master',
         })
@@ -210,22 +307,26 @@ export default {
           </div>
         )
         treeRef.value.remove(node.value)
+        const { value } = node.getParent()
+        const currentBusinessList = treeDataObject.value[value].business_list
+        const idx = findIndex(currentBusinessList, { uuid: node.data.uuid })
+        currentBusinessList.splice(idx, 1)
         dialog.hide()
       },
       uiTagDragEnd(child) {
-        const targetNode = treeTargetNode.value
-        const treeNode = targetNode?.node
-        const classList = targetNode?.classList
-        if (treeNode) {
-          if (includes(classList, 't-tree__item--tip-highlight')) {
-            treeRef.value.appendTo(treeNode.value, child)
-          } else if (includes(classList, 't-tree__item--tip-top')) {
-            treeRef.value.insertBefore(treeNode.value, child)
-          } else if (includes(classList, 't-tree__item--tip-bottom')) {
-            treeRef.value.insertAfter(treeNode.value, child)
-          }
-        }
-        treeTargetNode.value = null
+        // const targetNode = treeTargetNode.value
+        // const treeNode = targetNode?.node
+        // const classList = targetNode?.classList
+        // if (treeNode) {
+        //   if (includes(classList, 't-tree__item--tip-highlight')) {
+        //     treeRef.value.appendTo(treeNode.value, child)
+        //   } else if (includes(classList, 't-tree__item--tip-top')) {
+        //     treeRef.value.insertBefore(treeNode.value, child)
+        //   } else if (includes(classList, 't-tree__item--tip-bottom')) {
+        //     treeRef.value.insertAfter(treeNode.value, child)
+        //   }
+        // }
+        // treeTargetNode.value = null
       },
       handleDragEnd() {
         treeTargetNode.value = null
@@ -309,15 +410,17 @@ export default {
 
       submitCase: throttle(async function () {
         const validateResult = await uiCaseFormRef.value.validate()
-
         if (validateResult === true) {
-          const data = {
-            ...uiCaseForm.value,
-            meta_data: map(
-              filter(treeRef.value.getItems(), i => i.getLevel() == 0),
-              'data'
-            ),
-          }
+          forIn(treeDataObject.value, (node, uuid) => {
+            node.index = treeRef.value.getItem(uuid).getIndex()
+          })
+          forIn(treeDataObject.value, node => {
+            const child = node.business_list
+            if (isArray(child)) {
+              child.sort((left, next) => left.index - next.index)
+            }
+          })
+          const data = uiCaseForm.value
           if (route.query.id) {
             await fetchUpdateUiCase(data)
           } else {
@@ -329,6 +432,38 @@ export default {
           message.success('操作成功')
         }
       }, 1000),
+
+      hasAddBtn,
+      filterParentNode(node) {
+        return hasAddBtn(node)
+      },
+      showTreeDialog(node) {
+        treeNode.value = node
+        treeDialogVisible.value = true
+      },
+      updateCtrl() {
+        const { uuid, title, ...rest } = dialogDetail.value
+        const data = omit(rest, ['_function', '_title'])
+        treeDataObject.value[uuid].args = data
+        treeDataObject.value[uuid].uuid = uuid
+        treeDataObject.value[uuid].title = title
+        formDialogVisible.value = false
+      },
+      addNodeToTree() {
+        forEach(
+          filter(ctrlsTree.value.getItems(), i => i.checked),
+          node => {
+            const nodeData = {
+              ...treeNode.value,
+              uuid: Date.now().toString(),
+            }
+            treeDataObject.value[node.value].business_list.push(nodeData)
+            treeRef.value.appendTo(node.value, nodeData)
+          }
+        )
+        message.success('操作成功')
+        treeDialogVisible.value = false
+      },
     }
   },
 }

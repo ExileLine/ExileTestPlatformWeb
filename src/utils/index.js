@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash'
+import { camelCase, forEach, isArray } from 'lodash'
 export const getScrollContainer = (el, isVertical) => {
   let parent = el
   while (parent) {
@@ -50,4 +50,15 @@ export const getOffsetTop = el => {
 
 export const getOffsetTopDistance = (el, containerEl) => {
   return Math.abs(getOffsetTop(el) - getOffsetTop(containerEl))
+}
+
+export const treeToObject = (res = {}, list, valueKey = 'uuid', childKey = 'business_list') => {
+  forEach(list, item => {
+    const child = item[childKey]
+    res[item[valueKey]] = item
+    if (isArray(child)) {
+      treeToObject(res, child)
+    }
+  })
+  return res
 }

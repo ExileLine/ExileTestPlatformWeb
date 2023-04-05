@@ -49,7 +49,7 @@ import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
 import LogTabsContainer from './components/LogTabsContainer.vue'
 import { fetchGetCaseLog } from '@/api/case-logs'
 import { confirmDialog } from '@/utils/business'
-import { fetchDeleteCaseScenario } from '@/api/case-scenario'
+import { fetchDeleteCaseScenario, fetchCopyCaseScenario } from '@/api/case-scenario'
 
 const message = inject('message')
 const router = useRouter()
@@ -165,6 +165,22 @@ const actionOptionList = computed(() => {
         })
         caseLog.value = resp.scenario_logs
         logDialogVisible.value = true
+      },
+    },
+    {
+      content: '复制',
+      value: 'file-copy',
+      theme: 'info',
+      async onClick({ row }) {
+        const dialog = await confirmDialog(
+          <div>
+            是否复制场景：<span class="text-warning-6">{row.scenario_title}</span>
+          </div>
+        )
+        await fetchCopyCaseScenario(row)
+        message.success('操作成功')
+        dialog.hide()
+        baseTableRef.value.getData = true
       },
     },
     deleteBtn,

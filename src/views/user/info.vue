@@ -87,19 +87,19 @@ const USER_INFO_LIST = [
   },
   {
     title: '座位',
-    content: 'T32F 012',
+    contentKey: 'seat',
   },
   {
     title: '管理主体',
-    content: 'XX集团',
+    contentKey: 'department',
   },
   {
     title: '直属上级',
-    content: '投资人',
+    contentKey: 'superior',
   },
   {
     title: '职位',
-    content: 'CEO',
+    contentKey: 'position',
   },
   {
     title: '入职时间',
