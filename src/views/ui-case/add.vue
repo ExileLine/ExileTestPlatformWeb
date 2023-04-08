@@ -1,20 +1,18 @@
 <template>
-  <div ref="affixContainerRef" class="hp-100 overflow-y narrow-scrollbar add-ui-contaienr">
-    <t-affix :container="getContainer">
-      <div class="ptb-20 bg-white">
-        <common-form
-          ref="uiCaseFormRef"
-          layout="inline"
-          :data="uiCaseForm"
-          :field-list="fieldList"
-          :rules="rules"
-          action-class="hide"
-        />
-      </div>
-    </t-affix>
+  <div ref="affixContainerRef" class="hp-100 flex-col add-ui-contaienr">
+    <div class="p-20 bg-white">
+      <common-form
+        ref="uiCaseFormRef"
+        layout="inline"
+        :data="uiCaseForm"
+        :field-list="fieldList"
+        :rules="rules"
+        action-class="hide"
+      />
+    </div>
 
-    <div class="flex">
-      <div class="flex-1 pr-30">
+    <div class="flex p-30 flex-1 overflow-hidden">
+      <t-card class="flex-1 pr-30 hp-100 overflow-y narrow-scrollbar" bordered shadow>
         <div v-for="control in controlList" class="mb-20">
           <div class="flex-center mb-10">
             <t-tag :theme="controlType[control.type]" variant="light">
@@ -40,10 +38,26 @@
             </t-col>
           </t-row>
         </div>
-      </div>
-      <div id="tree-container" class="flex-2">
-        <div class="justify-end">
-          <t-switch v-model="expandAll" :label="['折叠', '展开']"></t-switch>
+      </t-card>
+      <t-card
+        id="tree-container"
+        class="flex-1 mlr-20 hp-100 overflow-y narrow-scrollbar"
+        bordered
+        shadow
+      >
+        <div class="flex-between">
+          <div>业务流程</div>
+          <div>
+            <t-switch v-model="expandAll" :label="['折叠', '展开']"></t-switch>
+            <t-tooltip content="添加业务节点">
+              <t-icon
+                name="add-rectangle"
+                size="20px"
+                class="ml-30"
+                @click="addMasterNode"
+              ></t-icon>
+            </t-tooltip>
+          </div>
         </div>
         <t-tree
           ref="treeRef"
@@ -76,8 +90,13 @@
             </div>
           </template>
         </t-tree>
-      </div>
-      <div class="flex-2 pl-30">databases</div>
+      </t-card>
+      <t-card class="flex-2 pl-30 hp-100 overflow-y narrow-scrollbar" bordered shadow>
+        <div class="flex-between">
+          <span>数据驱动</span>
+          <t-button theme="success">使用帮助</t-button>
+        </div>
+      </t-card>
     </div>
 
     <t-button class="case-btn" size="medium" @click="submitCase">
@@ -85,7 +104,12 @@
       提交
     </t-button>
   </div>
-  <t-dialog v-model:visible="treeDialogVisible" header="添加控件" @confirm="addNodeToTree">
+  <t-dialog
+    v-model:visible="treeDialogVisible"
+    destroy-on-close
+    header="添加控件"
+    @confirm="addNodeToTree"
+  >
     <t-tree
       ref="ctrlsTree"
       :data="uiCaseForm.meta_data"
@@ -176,7 +200,6 @@ export default {
     const affixContainerRef = ref(null)
     const controlList = ref([])
     const controlMap = ref({})
-    const getContainer = () => affixContainerRef.value
 
     const uiCaseForm = ref({
       module_list: [],
@@ -249,9 +272,17 @@ export default {
     const treeNode = ref({})
 
     const hasAddBtn = node => includes(parentTreeType, node.data.type)
+
+    const genNodeData = () => ({
+      uuid: Date.now().toString(),
+      title: '未命名业务',
+      type: 'master',
+      business_list: [],
+    })
     return {
       treeRef,
       ctrlsTree,
+      uiCaseForm,
       uiCaseFormRef,
       treeTargetNode,
       treeNode,
@@ -276,7 +307,6 @@ export default {
       expandAll,
       treeDialogVisible,
       affixContainerRef,
-      getContainer,
       formDialogVisible,
       treeDataObject,
       showDialog(node) {
@@ -291,12 +321,9 @@ export default {
         formDialogVisible.value = true
       },
       appendNode(node) {
+        const nodeData = genNodeData()
         treeDataObject.value[node.value].business_list.push(nodeData)
-        treeRef.value.appendTo(node.value, {
-          uuid: Date.now().toString(),
-          title: '未命名业务',
-          type: 'master',
-        })
+        treeRef.value.appendTo(node.value, nodeData)
       },
 
       async removeTreeNode(node) {
@@ -464,6 +491,12 @@ export default {
         message.success('操作成功')
         treeDialogVisible.value = false
       },
+
+      addMasterNode() {
+        const nodeData = genNodeData()
+        uiCaseForm.value.meta_data.push(nodeData)
+        treeRef.value.appendTo('', nodeData)
+      },
     }
   },
 }
@@ -477,8 +510,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 200;
-  background: white;
-  padding: 0 30px;
+  background: var(--td-bg-color-page);
 
   ::v-deep {
     .t-form-inline .t-form__item {
@@ -541,7 +573,7 @@ export default {
 .case-btn {
   position: fixed;
   right: 40px;
-  bottom: 60px;
+  bottom: 40px;
   z-index: 100;
 }
 </style>

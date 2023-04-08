@@ -14,3 +14,5 @@ export const fetchExecute = data => post('/api/ui_case_execute', data)
 
 export const fetchGetUiControlList = () => post('/api/ui_control_dict_api')
 export const fetchGetUiControlMap = () => get('/api/ui_control_map_api')
+
+export const fetchUiExecute = data => post('/api/ui_case_execute', data)

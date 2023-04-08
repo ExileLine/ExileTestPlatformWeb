@@ -22,16 +22,24 @@
       destroy-on-close
     >
       <div class="p-5">
-        <log-tabs-container :execute-log="caseLog" />
+        <log-tabs-container is-ui-case :execute-log="caseLog" />
       </div>
     </t-dialog>
+
+    <ui-execute-dialog
+      v-model:visible="executeDialogVisible"
+      :info="record"
+      :execute-name="record.case_name"
+    />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { find } from 'lodash'
+import { find, map } from 'lodash'
+import LogTabsContainer from '@view/api-case/components/LogTabsContainer.vue'
+import UiExecuteDialog from './components/UiExecuteDialog.vue'
 import { caseStatusList } from '@/config/variables'
 import { fetchDeleteUiCase } from '@/api/ui-api-case'
 import { fetchGetCaseLog } from '@/api/case-logs'
@@ -95,7 +103,7 @@ const fieldList = [
 const logDialogVisible = ref(false)
 const record = ref({})
 const executeDialogVisible = ref(false)
-const caseLog = ref({})
+const caseLog = ref([])
 
 const openAddPage = () => {
   window.open('/ui-case/add', '_blank')
@@ -129,11 +137,14 @@ const actionOptionList = [
     value: 'file',
     theme: 'warning',
     async onClick({ row }) {
-      const resp = await fetchGetCaseLog({
+      const logs = await fetchGetCaseLog({
         execute_id: row.id,
-        execute_type: 'case',
+        execute_type: 'ui_case',
       })
-      caseLog.value = resp.case_logs
+      caseLog.value = map(logs, i => ({
+        ...i,
+        flag: !i.result_summary.execute_fail,
+      }))
       logDialogVisible.value = true
     },
   },
