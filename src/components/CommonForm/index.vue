@@ -58,7 +58,7 @@
               'dialog-actions': dialog,
             }"
           >
-            <t-button type="submit" class="ml-10">
+            <t-button v-show="!hiddenSumbit" type="submit" class="ml-10">
               {{ confirmText }}
             </t-button>
             <t-button v-show="!hiddenCancel" theme="default" @click="cancel">
@@ -130,6 +130,9 @@ const props = defineProps({
     type: Boolean,
   },
   hiddenCancel: {
+    type: Boolean,
+  },
+  hiddenSumbit: {
     type: Boolean,
   },
   actionClass: {

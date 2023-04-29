@@ -6,24 +6,24 @@
       :field-list="fieldList"
       :columns="columns"
       :action-option-list="actionOptionList"
-      url="/api/mail_conf_page"
+      url="/api/ui_pc_conf_page"
     >
       <template #formActions>
-        <t-button theme="primary" @click="mailDialogVisible = true">新增</t-button>
+        <t-button theme="primary" @click="envDialogVisible = true">新增</t-button>
       </template>
     </base-table>
 
-    <t-dialog v-model:visible="mailDialogVisible" :footer="false" :header="title" @close="close">
+    <t-dialog v-model:visible="envDialogVisible" :footer="false" :header="title" @close="close">
       <common-form
         dialog
-        :data="mailForm"
-        :rules="mailRules"
-        :field-list="mailFieldList"
-        label-width="4em"
+        :data="envForm"
+        :rules="envRules"
+        :field-list="envFieldList"
+        label-width="6em"
         confirm-text="确定"
         cancel-text="取消"
-        @confirm="saveMail"
-        @cancel="mailDialogVisible = false"
+        @confirm="saveUiPcConf"
+        @cancel="envDialogVisible = false"
       />
     </t-dialog>
   </page-container>
@@ -32,7 +32,7 @@
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
 import { cloneDeep } from 'lodash'
-import { fetchAddMail, fetchUpdateMail, fetchDeleteMail } from '@/api/mail'
+import { fetchAddUiPcConf, fetchUpdateUiPcConf, fetchDeleteUiPcConf } from '@/api/ui-pc-conf'
 import { validateRequired } from '@/components/validate'
 import { confirmDialog } from '@/utils/business'
 
@@ -48,12 +48,12 @@ const selectChange = {
 
 const fieldList = [
   {
-    label: '邮箱',
-    value: 'mail',
+    label: '远端名称',
+    value: 'ui_pc_name',
   },
   {
-    label: '用户',
-    value: 'mail_user',
+    label: '远端ip',
+    value: 'ui_pc_ip',
   },
   {
     label: '创建者',
@@ -67,18 +67,18 @@ const fieldList = [
   },
 ]
 
-const mailDialogVisible = ref(false)
-const mailForm = ref({})
-const mailFieldList = fieldList.slice(0, 2).concat({
+const envDialogVisible = ref(false)
+const envForm = ref({})
+const envFieldList = fieldList.slice(0, 2).concat({
   label: '备注',
   value: 'remark',
 })
-const mailRules = {
-  mail: [validateRequired('请输入邮箱')],
-  mail_user: [validateRequired('请输入用户')],
+const envRules = {
+  ui_pc_name: [validateRequired('请输入远端名称')],
+  ui_pc_ip: [validateRequired('请输入远端ip')],
 }
 
-const title = computed(() => (mailForm.value.id ? '编辑邮箱' : '新增邮箱'))
+const title = computed(() => (envForm.value.id ? '编辑PC远端配置' : '新增PC远端配置'))
 
 const actionOptionList = [
   {
@@ -86,10 +86,26 @@ const actionOptionList = [
     value: 'edit',
     theme: 'primary',
     onClick({ row }) {
-      mailForm.value = cloneDeep(row)
-      mailDialogVisible.value = true
+      envForm.value = cloneDeep(row)
+      envDialogVisible.value = true
     },
   },
+  // {
+  //   content: '禁用',
+  //   value: 'error-circle',
+  //   theme: 'warning',
+  //   async onClick({ row }) {
+  //     const dialog = await confirmDialog(
+  //       <div>
+  //         是否删除用户：<span class="text-warning-6">{row.username}</span>
+  //       </div>
+  //     )
+  //     await fetchDeleteUser(row)
+  //     baseTableRef.value.getData = true
+  //     dialog.hide()
+  //     message.success('操作成功')
+  //   },
+  // },
   {
     content: '删除',
     value: 'delete',
@@ -97,13 +113,13 @@ const actionOptionList = [
     async onClick({ row }) {
       const dialog = await confirmDialog(
         <div>
-          是否删除邮箱：
+          是否删除UI远端配置：
           <span class="text-warning-6">
-            {row.name}：{row.mail}
+            {row.name}：{row.ui_pc_ip}
           </span>
         </div>
       )
-      await fetchDeleteMail(row)
+      await fetchDeleteUiPcConf(row)
       dialog.hide()
       selectChange.change()
       message.success('操作成功')
@@ -119,16 +135,16 @@ const columns = computed(() => [
     width: 100,
   },
   {
-    colKey: 'mail',
-    title: '邮箱',
-    ellipsis: true,
-    width: 300,
-  },
-  {
-    colKey: 'mail_user',
-    title: '用户',
+    colKey: 'ui_pc_name',
+    title: '名称',
     ellipsis: true,
     width: 200,
+  },
+  {
+    colKey: 'ui_pc_ip',
+    title: '地址',
+    ellipsis: true,
+    width: 300,
   },
   {
     colKey: 'creator',
@@ -151,16 +167,16 @@ const columns = computed(() => [
 ])
 
 function close() {
-  mailForm.value = {}
+  envForm.value = {}
 }
-const saveMail = async () => {
-  const data = mailForm.value
+const saveUiPcConf = async () => {
+  const data = envForm.value
   if (data.id) {
-    await fetchUpdateMail(data)
+    await fetchUpdateUiPcConf(data)
   } else {
-    await fetchAddMail({ mail_list: [data] })
+    await fetchAddUiPcConf(data)
   }
-  mailDialogVisible.value = false
+  envDialogVisible.value = false
   close()
   selectChange.change()
   message.success('操作成功')

@@ -123,14 +123,14 @@ const fieldList = [
       label: switchLabel,
     },
   },
-  {
-    value: 'is_shared',
-    label: '公开执行',
-    component: 't-switch',
-    extraProps: {
-      label: switchLabel,
-    },
-  },
+  // {
+  //   value: 'is_shared',
+  //   label: '公开执行',
+  //   component: 't-switch',
+  //   extraProps: {
+  //     label: switchLabel,
+  //   },
+  // },
   {
     value: 'remark',
     label: '备注',

@@ -205,7 +205,7 @@ export default {
       module_list: [],
       version_list: [],
       case_name: '',
-      is_shared: true,
+      // is_shared: true,
       is_public: true,
       case_status: '',
       remark: '',
@@ -334,8 +334,14 @@ export default {
           </div>
         )
         treeRef.value.remove(node.value)
-        const { value } = node.getParent()
-        const currentBusinessList = treeDataObject.value[value].business_list
+        const parent = node.getParent()
+        let currentBusinessList
+        if (parent) {
+          const { value } = node.getParent()
+          currentBusinessList = treeDataObject.value[value].business_list
+        } else {
+          currentBusinessList = uiCaseForm.value.meta_data
+        }
         const idx = findIndex(currentBusinessList, { uuid: node.data.uuid })
         currentBusinessList.splice(idx, 1)
         dialog.hide()
@@ -421,14 +427,14 @@ export default {
             label: switchLabel,
           },
         },
-        {
-          value: 'is_shared',
-          label: '公开执行',
-          component: 't-switch',
-          extraProps: {
-            label: switchLabel,
-          },
-        },
+        // {
+        //   value: 'is_shared',
+        //   label: '公开执行',
+        //   component: 't-switch',
+        //   extraProps: {
+        //     label: switchLabel,
+        //   },
+        // },
       ],
       rules: {
         case_name: [validateRequired('请输入用例名称')],

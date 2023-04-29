@@ -63,8 +63,8 @@ const fieldList = computed(() => [
     value: 'client',
     component: 'remote-select',
     extraProps: {
-      url: '/api/case_env_page',
-      labelKey: ({ env_name, env_url }) => `${env_url}(${env_name})`,
+      url: '/api/ui_pc_conf_page',
+      labelKey: ({ ui_pc_name, ui_pc_ip }) => `${ui_pc_name}(${ui_pc_ip})`,
       valueKey: 'id',
       disabled: !formModal.use_client,
       multiple: true,

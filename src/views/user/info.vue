@@ -4,7 +4,7 @@
       <div class="user-left-greeting">
         <div>
           Hi，{{ info.username }}
-          <span class="regular">下午好，今天是你加入嘴炮思维的第 {{ joinDay }} 天～</span>
+          <span class="regular">下午好，今天是你加入 ExileLine 的第 {{ joinDay }} 天～</span>
         </div>
         <img src="@/assets/new_logo.png" class="logo" />
       </div>

@@ -50,6 +50,14 @@ const router = [
         },
         component: () => import('@view/maintenance/index.vue'),
       },
+      {
+        name: 'uiPcConf',
+        path: 'ui-pc-conf',
+        meta: {
+          title: 'UI远端配置',
+        },
+        component: () => import('@view/configure/ui-pc-conf.vue'),
+      },
     ],
   },
 ]
