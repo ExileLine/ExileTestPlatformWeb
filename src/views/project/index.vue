@@ -182,14 +182,14 @@ const projectDropdownOptions = [
       projectDialogVisible.value = true
     },
   },
-  {
-    name: '执行',
-    icon: 'play-circle',
-    handle(project) {
-      record.value = project
-      executeDialogVisible.value = true
-    },
-  },
+  // {
+  //   name: '执行',
+  //   icon: 'play-circle',
+  //   handle(project) {
+  //     record.value = project
+  //     executeDialogVisible.value = true
+  //   },
+  // },
 ]
 
 const gotoHome = project => {

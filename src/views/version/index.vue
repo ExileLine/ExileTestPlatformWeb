@@ -57,7 +57,7 @@
                 </div>
               </div>
 
-              <t-dropdown trigger="click">
+              <t-dropdown trigger="click" max-column-width="200">
                 <div class="setting-icon" @click.stop>
                   <t-icon name="setting" size="30px" />
                 </div>
@@ -103,7 +103,7 @@
         confirm-text="确定"
         cancel-text="取消"
         @confirm="updateVersion"
-        @cancel="versionDialogVisible = false"
+        @cancel="close"
       />
     </t-dialog>
 
@@ -112,6 +112,13 @@
       :info="record"
       :execute-name="record.version_name"
       execute-type="version"
+    />
+    <ui-execute-dialog
+      v-model:visible="uiExecuteDialogVisible"
+      :info="record"
+      :execute-name="record.version_name"
+      execute-key="ui_version_all"
+      execute-type="ui_version_all"
     />
   </div>
 </template>
@@ -124,6 +131,7 @@ import { SearchIcon, AddIcon } from 'tdesign-icons-vue-next'
 import { keys, cloneDeep } from 'lodash'
 import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
+import UiExecuteDialog from '@view/ui-case/components/UiExecuteDialog.vue'
 import { post } from '@util/request'
 import { validateRequired } from '@/components/validate'
 import { fetchAddVersion, fetchUpdateVersion } from '@/api/project'
@@ -143,6 +151,7 @@ const colSpan = {
 }
 
 const versionDialogVisible = ref(false)
+const uiExecuteDialogVisible = ref(false)
 const versionForm = ref({})
 const versionFieldList = [
   {
@@ -177,11 +186,19 @@ const versionDropdownOptions = [
     },
   },
   {
-    name: '执行',
+    name: '执行API用例',
     icon: 'play-circle',
     handle(version) {
       record.value = version
       executeDialogVisible.value = true
+    },
+  },
+  {
+    name: '执行UI用例',
+    icon: 'play-circle',
+    handle(version) {
+      record.value = version
+      uiExecuteDialogVisible.value = true
     },
   },
 ]
@@ -234,6 +251,7 @@ const renderSearchIcon = () => <SearchIcon onClick={() => search()} />
 const renderAddBtnIcon = () => <AddIcon />
 
 function close() {
+  versionDialogVisible.value = false
   versionForm.value = {}
 }
 

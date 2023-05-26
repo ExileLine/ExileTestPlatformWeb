@@ -12,8 +12,8 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, inject, computed } from 'vue'
-import { find } from 'lodash'
+import { ref, inject } from 'vue'
+import { find, flatMap } from 'lodash'
 import { executeTypeList, triggerTypeList, executeStatusList } from '@/config/variables'
 import { fetchGetReport } from '@/api/report'
 import { downloadFile } from '@/utils/download'
@@ -35,7 +35,7 @@ const fieldList = [
     label: '执行类型',
     component: 't-select',
     list: executeTypeList,
-    value: 'execute_type',
+    value: 'execute_key',
     on: selectChange,
   },
   {
@@ -85,6 +85,8 @@ const actionOptionList = [
   },
 ]
 
+const executeTypeIdList = flatMap(executeTypeList, i => i.children)
+
 const columns = [
   {
     colKey: 'id',
@@ -100,15 +102,21 @@ const columns = [
   },
   {
     colKey: 'execute_type',
-    title: '类型',
+    title: '执行类型',
     ellipsis: true,
     width: 100,
+    render: (h, { row }) => {
+      return find(executeTypeIdList, { value: row.execute_key })?.label
+    },
   },
   {
     colKey: 'trigger_type',
     title: '触发类型',
     ellipsis: true,
     width: 100,
+    render: (h, { row }) => {
+      return find(triggerTypeList, { value: row.trigger_type })?.label
+    },
   },
   {
     colKey: 'execute_status',

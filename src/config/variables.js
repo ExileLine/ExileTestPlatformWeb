@@ -194,20 +194,50 @@ export const variableTypeList = [
 
 // 日志相关
 export const executeTypeList = [
-  { value: 'case', label: '用例(单个)' },
-  { value: 'scenario', label: '场景(单个)' },
-  { value: 'project_all', label: '项目(全部)' },
-  { value: 'project_case', label: '项目(用例)' },
-  { value: 'project_scenario', label: '项目(场景)' },
-  { value: 'version_all', label: '迭代(全部)' },
-  { value: 'version_case', label: '迭代(用例)' },
-  { value: 'version_scenario', label: '迭代(场景)' },
-  { value: 'task_all', label: '任务(全部)' },
-  { value: 'task_case', label: '任务(用例)' },
-  { value: 'task_scenario', label: '任务(场景)' },
-  { value: 'module_all', label: '模块(全部)' },
-  { value: 'module_case', label: '模块(用例)' },
-  { value: 'module_scenario', label: '模块(场景)' },
+  {
+    group: '单个',
+    children: [
+      { value: 'case', label: 'API用例' },
+      { value: 'scenario', label: 'API场景' },
+      { value: 'ui_case', label: 'UI用例' },
+    ],
+  },
+  // {
+  //   group: '项目',
+  //   children: [
+  //     { value: 'project_all', label: '项目API用例场景' },
+  //     { value: 'project_case', label: '项目API用例' },
+  //     { value: 'project_scenario', label: '项目API场景' },
+  //     { value: 'ui_project_all', label: '项目UI用例' },
+  //   ],
+  // },
+  {
+    group: '迭代',
+    children: [
+      { value: 'version_all', label: '迭代API用例场景' },
+      { value: 'version_case', label: '迭代API用例' },
+      { value: 'version_scenario', label: '迭代API场景' },
+      { value: 'ui_version_all', label: '迭代UI用例' },
+    ],
+  },
+  {
+    group: '任务',
+    children: [
+      { value: 'task_all', label: '任务API用例+场景' },
+      { value: 'task_case', label: '任务API用例' },
+      { value: 'task_scenario', label: '任务API场景' },
+      { value: 'ui_task_all', label: '任务UI用例' },
+    ],
+  },
+  {
+    group: '模块',
+    children: [
+      { value: 'module_all', label: '模块API用例+场景' },
+      { value: 'module_case', label: '模块API用例' },
+      { value: 'module_scenario', label: '模块API场景' },
+      { value: 'ui_module_all', label: '模块UI用例' },
+    ],
+  },
 ]
 
 export const triggerTypeList = [
@@ -268,19 +298,19 @@ export const dbTypeList = [
 
 export const versionTaskTypeList = [
   {
-    value: 'API自动化测试',
+    value: 'api_case',
     label: 'API自动化测试',
   },
   {
-    value: 'UI自动化测试',
+    value: 'ui_case',
     label: 'UI自动化测试',
   },
   {
-    value: '性能测试',
+    value: 'performance_case',
     label: '性能测试',
   },
   {
-    value: '安全测试',
+    value: 'safe_case',
     label: '安全测试',
   },
 ]

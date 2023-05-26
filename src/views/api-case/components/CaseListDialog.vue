@@ -22,9 +22,10 @@
 
 <script setup>
 import { computed } from 'vue'
-import { includes } from 'lodash'
+import { includes, lowerCase } from 'lodash'
 import CaseList from '@/views/api-case/index.vue'
 import SceneList from '@/views/api-case/scene.vue'
+import UiCaseList from '@/views/ui-case/index.vue'
 
 const props = defineProps({
   visible: {
@@ -38,16 +39,16 @@ const props = defineProps({
 })
 
 const componentObject = {
-  CaseList: CaseList,
-  SceneList: SceneList,
+  CaseList,
+  SceneList,
+  UiCaseList,
   'case-list': CaseList,
   'scene-list': SceneList,
+  'ui-case-list': UiCaseList,
 }
 
-const caseListCompNameList = ['CaseList', 'case-list']
-
 const header = computed(() =>
-  includes(caseListCompNameList, props.componentName) ? '添加用例' : '添加场景'
+  includes(lowerCase(props.componentName), 'case') ? '添加用例' : '添加场景'
 )
 </script>
 

@@ -13,41 +13,67 @@
           @confirm="saveCaseScenario"
         />
       </t-col>
-      <t-col :lg="4" :xs="6">
+      <template v-if="formModal.task_type == 'api_case'">
+        <t-col :lg="4" :xs="6">
+          <div class="mb-20 fs-20 fw-600 mt-10 flex-between">
+            <span>用例列表</span>
+            <t-button theme="danger" @click="deleteSelectedCase('case_list')">删除所选</t-button>
+          </div>
+          <t-table
+            row-key="id"
+            :columns="genColumns('case_name')"
+            bordered
+            :data="filterCaseList"
+            :maxHeight="600"
+            :selected-row-keys="deleteSelectedCaseList.case_list"
+            :filter-value="componentObj.case_name.value"
+            @filter-change="filters => filterChange('case_name', filters)"
+            @select-change="idList => deleteSelectedCaseChange('case_list', idList)"
+          />
+        </t-col>
+        <t-col :lg="4" :xs="6">
+          <div class="mb-20 fs-20 fw-600 mt-10 flex-between">
+            <span>场景列表</span>
+            <t-button theme="danger" @click="deleteSelectedCase('scenario_list')">
+              删除所选
+            </t-button>
+          </div>
+
+          <t-table
+            row-key="id"
+            :columns="genColumns('scenario_title')"
+            bordered
+            :data="filterSceneList"
+            :maxHeight="600"
+            :selected-row-keys="deleteSelectedCaseList.scenario_list"
+            :filter-value="componentObj.scenario_title.value"
+            @filter-change="filters => filterChange('scenario_title', filters)"
+            @select-change="idList => deleteSelectedCaseChange('scenario_list', idList)"
+          />
+        </t-col>
+      </template>
+      <t-col v-else-if="formModal.task_type == 'ui_case'" :lg="8" :xs="12">
         <div class="mb-20 fs-20 fw-600 mt-10 flex-between">
-          <span>用例列表</span>
-          <t-button theme="danger" @click="deleteSelectedCase('case_list')">删除所选</t-button>
+          <span>UI用例列表</span>
+          <t-button theme="danger" @click="deleteSelectedCase('ui_case_list')">删除所选</t-button>
         </div>
 
         <t-table
           row-key="id"
-          :columns="genColumns('case_name')"
+          :columns="genColumns('ui_case_name')"
           bordered
-          :data="filterCaseList"
+          :data="filterUiCaseList"
           :maxHeight="600"
-          :selected-row-keys="deleteSelectedCaseList.case_list"
-          :filter-value="filterCaseValue.case_name"
-          @filter-change="filters => filterChange('case_name', filters)"
-          @select-change="idList => deleteSelectedCaseChange('case_list', idList)"
+          :selected-row-keys="deleteSelectedCaseList.ui_case_list"
+          :filter-value="componentObj.ui_case_name.value"
+          @filter-change="filters => filterChange('ui_case_name', filters)"
+          @select-change="idList => deleteSelectedCaseChange('ui_case_list', idList)"
         />
       </t-col>
-      <t-col :lg="4" :xs="6">
-        <div class="mb-20 fs-20 fw-600 mt-10 flex-between">
-          <span>场景列表</span>
-          <t-button theme="danger" @click="deleteSelectedCase('scenario_list')">删除所选</t-button>
+      <t-col v-else :lg="8" :xs="12">
+        <div class="h-600 flex-col-center">
+          <base-empty />
         </div>
-
-        <t-table
-          row-key="id"
-          :columns="genColumns('scenario_title')"
-          bordered
-          :data="filterSceneList"
-          :maxHeight="600"
-          :selected-row-keys="deleteSelectedCaseList.scenario_list"
-          :filter-value="filterCaseValue.scenario_title"
-          @filter-change="filters => filterChange('scenario_title', filters)"
-          @select-change="idList => deleteSelectedCaseChange('scenario_list', idList)"
-        />
       </t-col>
     </t-row>
     <case-list-dialog
@@ -70,8 +96,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { filter, includes, find, some, map } from 'lodash'
 import CaseListDialog from '@/views/api-case/components/CaseListDialog.vue'
+import BaseEmpty from '@/components/BaseEmpty/index.vue'
 import { renderAction } from '@/composables/renderTableAction'
-
 import { validateRequired } from '@/components/validate'
 import {
   fetchAddVersionTask,
@@ -92,6 +118,7 @@ const formModal = ref({
   task_type: '',
   case_list: [],
   scenario_list: [],
+  ui_case_list: [],
 })
 
 const rules = {
@@ -99,7 +126,7 @@ const rules = {
 }
 
 const extraProps = {
-  class: 'w-300',
+  class: 'wp-100',
 }
 const fieldList = [
   {
@@ -133,42 +160,63 @@ const fieldList = [
   },
 ]
 
-const componentName = ref('case-list')
-const renderAddAction = isCase => (
+const componentObj = ref({
+  case_name: {
+    listKey: 'case_list',
+    compKey: 'case-list',
+    tableKey: 'case_name',
+    title: '用例名称',
+    value: '', // 用于table筛选
+  },
+  scenario_title: {
+    listKey: 'scenario_list',
+    compKey: 'scene-list',
+    tableKey: 'scenario_title',
+    title: '场景名称',
+    value: '',
+  },
+  ui_case_name: {
+    listKey: 'ui_case_list',
+    compKey: 'ui-case-list',
+    tableKey: 'case_name',
+    title: '用例名称',
+    value: '',
+  },
+})
+const taskType = ref('case_name')
+const currentComp = computed(() => componentObj.value[taskType.value])
+const componentName = computed(() => currentComp.value.compKey)
+
+const renderAddAction = tableType => (
   <t-button
     theme="primary"
     variant="text"
     onClick={() => {
       caseListDialogVisible.value = true
-      componentName.value = isCase ? 'case-list' : 'scene-list'
+      taskType.value = tableType
     }}
   >
     <t-icon name="add" />
   </t-button>
 )
 const caseListDialogVisible = ref(false)
-const isCase = computed(() => componentName.value === 'case-list')
-const dataList = computed(() =>
-  isCase.value ? formModal.value.case_list : formModal.value.scenario_list
-)
-const actionOptionList = isCase => [
+const dataName = computed(() => currentComp.value.listKey)
+const dataList = computed(() => formModal.value[dataName.value])
+
+const actionOptionList = taskType => [
   {
     content: '移除',
     value: 'close',
     theme: 'danger',
     onClick({ rowIndex }) {
-      if (isCase) {
-        formModal.value.case_list.splice(rowIndex, 1)
-      } else {
-        formModal.value.scenario_list.splice(rowIndex, 1)
-      }
+      const listKey = componentObj.value[taskType].listKey
+      formModal.value[listKey].splice(rowIndex, 1)
     },
   },
 ]
 
-const genColumns = type => {
-  const isCase = type === 'case_name'
-  const title = isCase ? '用例名称' : '场景名称'
+const genColumns = taskType => {
+  const { title, tableKey } = componentObj.value[taskType]
   return [
     {
       colKey: 'row-select',
@@ -184,7 +232,7 @@ const genColumns = type => {
       align: 'center',
     },
     {
-      colKey: type,
+      colKey: tableKey,
       title,
       ellipsis: true,
       minWidth: 200,
@@ -204,7 +252,9 @@ const genColumns = type => {
       width: 80,
       align: 'center',
       render: (h, { type, ...rest }) =>
-        type == 'title' ? renderAddAction(isCase) : renderAction(actionOptionList(isCase), rest),
+        type == 'title'
+          ? renderAddAction(taskType)
+          : renderAction(actionOptionList(taskType), rest),
       fixed: 'right',
     },
   ]
@@ -236,6 +286,7 @@ const addSelectedCase = (value, isSingle) => {
 const deleteSelectedCaseList = reactive({
   case_list: [],
   scenario_list: [],
+  ui_case_list: [],
 })
 const deleteSelectedCaseChange = (key, idList) => {
   deleteSelectedCaseList[key] = idList
@@ -252,29 +303,29 @@ const selectChange = (keys, { selectedRowData }) => {
   selectedCase.value = selectedRowData
 }
 
-const filterCaseValue = reactive({
-  case_name: '',
-  scenario_title: '',
-})
 const filterChange = (key, filters) => {
-  filterCaseValue[key] = filters[key]
+  componentObj.value[key].value = filters[componentObj.value[key].tableKey]
 }
 
-const filterKey = key => (key == 'case_list' ? 'case_name' : 'scenario_title')
-function filterForKey(key) {
-  return filter(formModal.value[key], i =>
-    includes(i[filterKey(key)], filterCaseValue[filterKey(key)] || '')
+function filterForKey(listKey, key) {
+  return filter(formModal.value[listKey], i =>
+    includes(i[componentObj.value[key].tableKey], componentObj.value[key].value || '')
   )
 }
-const filterCaseList = computed(() => filterForKey('case_list'))
-const filterSceneList = computed(() => filterForKey('scenario_list'))
+
+const filterCaseList = computed(() => filterForKey('case_list', 'case_name'))
+const filterSceneList = computed(() => filterForKey('scenario_list', 'scenario_title'))
+const filterUiCaseList = computed(() => filterForKey('ui_case_list', 'ui_case_name'))
 
 const saveCaseScenario = async () => {
   const data = {
     ...formModal.value,
     version_id,
-    case_list: map(formModal.value.case_list, 'id'),
-    scenario_list: map(formModal.value.scenario_list, 'id'),
+    case_list: formModal.value.task_type == 'api_case' ? map(formModal.value.case_list, 'id') : [],
+    scenario_list:
+      formModal.value.task_type == 'api_case' ? map(formModal.value.scenario_list, 'id') : [],
+    ui_case_list:
+      formModal.value.task_type == 'ui_case' ? map(formModal.value.ui_case_list, 'id') : [],
   }
   if (id) {
     await fetchUpdateVersionTask(data)

@@ -61,6 +61,7 @@ import {
   fetchUpdateCaseScenario,
 } from '@/api/case-scenario'
 import { validateRequired } from '@/components/validate'
+import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
 
 const route = useRoute()
 const router = useRouter()
@@ -294,19 +295,21 @@ const filterCaseList = computed(() =>
 )
 
 const saveCaseScenario = async () => {
-  const data = {
-    ...formModal.value,
-    case_list: map(
-      formModal.value.case_list,
-      ({ case_id, case_name, is_active, sleep, index }) => ({
-        case_id,
-        case_name,
-        is_active,
-        sleep,
-        index: isNumber(index) ? index : case_id,
-      })
-    ),
-  }
+  const data = addVersionList(
+    addModuleList({
+      ...formModal.value,
+      case_list: map(
+        formModal.value.case_list,
+        ({ case_id, case_name, is_active, sleep, index }) => ({
+          case_id,
+          case_name,
+          is_active,
+          sleep,
+          index: isNumber(index) ? index : case_id,
+        })
+      ),
+    })
+  )
   if (id) {
     await fetchUpdateCaseScenario(data)
   } else {
@@ -330,6 +333,8 @@ onMounted(async () => {
     forEach(formModal.value.case_list, i => {
       i.uuid = ++uuid
     })
+    formModal.value.version_list = toSelectList(formModal.value.version_list, 'version_name')
+    formModal.value.module_list = toSelectList(formModal.value.module_list, 'module_name')
   }
 })
 </script>

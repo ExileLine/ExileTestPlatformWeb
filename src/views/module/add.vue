@@ -87,6 +87,7 @@ const formModal = ref({
   module_code: '',
   case_list: [],
   scenario_list: [],
+  ui_case_list: [],
 })
 
 const rules = {
@@ -256,17 +257,15 @@ const saveCaseScenario = async () => {
     ...formModal.value,
     case_list: map(formModal.value.case_list, 'id'),
     scenario_list: map(formModal.value.scenario_list, 'id'),
+    ui_case_list: [],
   }
   if (id) {
     await fetchUpdateModule(data)
   } else {
     await fetchAddModule(data)
   }
+  selectChange.change()
   message.success('操作成功')
-  store.commit('app/delTag', route.fullPath)
-  router.push({
-    path: '/version/module',
-  })
 }
 
 watch(

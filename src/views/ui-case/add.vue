@@ -183,6 +183,7 @@ import {
 } from '@api/ui-api-case'
 import { caseStatusList } from '@/config/variables'
 import { validateRequired } from '@/components/validate'
+import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
 
 export default {
   setup() {
@@ -251,6 +252,8 @@ export default {
         uiCaseForm.value = await fetchGetUiCase(route.query.id)
         !uiCaseForm.value.version_list && (uiCaseForm.value.version_list = [])
         !uiCaseForm.value.module_list && (uiCaseForm.value.module_list = [])
+        uiCaseForm.value.version_list = toSelectList(uiCaseForm.value.version_list, 'version_name')
+        uiCaseForm.value.module_list = toSelectList(uiCaseForm.value.module_list, 'module_name')
         metaDataKeys.value = allTreeKey.value
         document.title = '编辑UI用例-' + uiCaseForm.value.case_name
       } else {
@@ -453,7 +456,7 @@ export default {
               child.sort((left, next) => left.index - next.index)
             }
           })
-          const data = uiCaseForm.value
+          const data = addVersionList(addModuleList(uiCaseForm.value))
           if (route.query.id) {
             await fetchUpdateUiCase(data)
           } else {

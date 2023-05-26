@@ -1,7 +1,5 @@
-import { getRootPath } from '../utils'
 import path from 'path'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-getRootPath
 
 export default createSvgIconsPlugin({
   // 指定需要缓存的图标文件夹

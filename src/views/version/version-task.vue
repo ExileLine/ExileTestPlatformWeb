@@ -29,14 +29,23 @@
       :execute-name="record.task_name"
       execute-type="task"
     />
+    <ui-execute-dialog
+      v-model:visible="uiExecuteDialogVisible"
+      :info="record"
+      :execute-name="record.task_name"
+      execute-key="ui_task_all"
+      execute-type="ui_task_all"
+    />
   </page-container>
 </template>
 
 <script setup lang="jsx">
 import { ref, computed, inject } from 'vue'
+import { find } from 'lodash'
 import { useRoute, useRouter } from 'vue-router'
 import { versionTaskTypeList } from '@/config/variables'
 import ExecuteDialog from '@view/api-case/components/ExecuteDialog.vue'
+import UiExecuteDialog from '@view/ui-case/components/UiExecuteDialog.vue'
 import { confirmDialog } from '@/utils/business'
 import { fetchDeleteVersionTask } from '@/api/version-task'
 
@@ -79,6 +88,7 @@ const fieldList = [
 ]
 
 const executeDialogVisible = ref(false)
+const uiExecuteDialogVisible = ref(false)
 const record = ref({})
 
 const actionOptionList = [
@@ -88,7 +98,16 @@ const actionOptionList = [
     theme: 'success',
     onClick({ row }) {
       record.value = row
-      executeDialogVisible.value = true
+      const { task_type } = row
+      if (task_type === versionTaskTypeList[0].value) {
+        executeDialogVisible.value = true
+      } else if (task_type === versionTaskTypeList[1].value) {
+        uiExecuteDialogVisible.value = true
+      } else {
+        message.warning(
+          '暂无 "' + find(versionTaskTypeList, { value: row.task_type })?.label + '" 执行'
+        )
+      }
     },
   },
   {
@@ -142,6 +161,9 @@ const columns = computed(() => [
     title: '任务类型',
     ellipsis: true,
     width: 200,
+    render: (h, { row }) => {
+      return find(versionTaskTypeList, { value: row.task_type })?.label
+    },
   },
   {
     colKey: 'creator',

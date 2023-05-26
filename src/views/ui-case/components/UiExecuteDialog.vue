@@ -2,7 +2,7 @@
   <div>
     <t-dialog
       :visible="visible"
-      header="执行条件"
+      header="执行UI用例条件"
       width="700px"
       destroy-on-close
       placement="center"
@@ -43,7 +43,11 @@ const props = defineProps({
   },
   executeType: {
     type: String,
-    default: 'case',
+    default: 'ui_case',
+  },
+  executeKey: {
+    type: String,
+    default: 'ui_case',
   },
 })
 const emit = defineEmits(['update:visible'])
@@ -149,8 +153,8 @@ const execute = async () => {
     ...formModal,
     execute_id: info.id,
     execute_name: executeName,
-    execute_key: 'ui_case',
-    execute_type: 'ui_case',
+    execute_key: props.executeKey,
+    execute_type: props.executeType,
     execute_label: '',
     trigger_type: 'user_execute',
   })
