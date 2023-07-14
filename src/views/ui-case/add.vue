@@ -94,7 +94,7 @@
       <t-card class="flex-2 pl-30 hp-100 overflow-y narrow-scrollbar" bordered shadow>
         <div class="flex-between">
           <span>数据驱动</span>
-          <t-button theme="success">使用帮助</t-button>
+          <t-button theme="success" @click="showHelpDialog">使用帮助</t-button>
         </div>
       </t-card>
     </div>
@@ -184,6 +184,10 @@ import {
 import { caseStatusList } from '@/config/variables'
 import { validateRequired } from '@/components/validate'
 import { toSelectList, addVersionList, addModuleList } from '@/utils/business'
+import add_ui_case from '@/assets/add_ui_case.png'
+import add_ui_case1 from '@/assets/add_ui_case1.png'
+import add_ui_case2 from '@/assets/add_ui_case2.png'
+import { helpDialog } from '@/utils/helpDialog'
 
 export default {
   setup() {
@@ -282,7 +286,24 @@ export default {
       type: 'master',
       business_list: [],
     })
+
+    const showHelpDialog = () => {
+      helpDialog(
+        <div>
+          <p>1.新增业务节点</p>
+          <p>2.将控件添加到节点中</p>
+          <p>3.点击节点中的控件进行配置</p>
+          <p>PS.目前仅常规控件，需要更丰富的控件自行获取源码后增加，或者联系我们。</p>
+          <img src={add_ui_case} class="wp-100" />
+          <img src={add_ui_case1} class="wp-100" />
+          <img src={add_ui_case2} class="wp-100" />
+        </div>,
+        'UI测试使用说明',
+        1000
+      )
+    }
     return {
+      showHelpDialog,
       treeRef,
       ctrlsTree,
       uiCaseForm,

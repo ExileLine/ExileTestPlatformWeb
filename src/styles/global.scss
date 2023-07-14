@@ -161,3 +161,8 @@ input:-internal-autofill-selected {
 .hide {
   display: none !important;
 }
+
+.t-dialog__body {
+  max-height: 80vh;
+  overflow-y: auto;
+}

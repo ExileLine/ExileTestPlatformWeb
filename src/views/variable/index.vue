@@ -10,7 +10,7 @@
     >
       <template v-if="!hasAddBtn" #formActions>
         <t-button theme="primary" @click="$router.push('/variable/add')">新增</t-button>
-        <t-button theme="success">使用帮助</t-button>
+        <t-button theme="success" @click="showHelpDialog">使用帮助</t-button>
       </template>
     </base-table>
 
@@ -26,6 +26,14 @@ import JsonEditorDialog from '@/components/JsonEditorDialog/index.vue'
 import { confirmDialog } from '@/utils/business'
 import { varSourceList, variableTypeList } from '@/config/variables'
 import { fetchDeleteVariable } from '@/api/case-variable'
+import add_var from '@/assets/add_var.png'
+import use_var1 from '@/assets/use_var1.png'
+import use_var2 from '@/assets/use_var2.png'
+import set_var1 from '@/assets/set_var1.png'
+import set_var2 from '@/assets/set_var2.png'
+import use_set_var1 from '@/assets/use_set_var1.png'
+import use_set_var2 from '@/assets/use_set_var2.png'
+import { helpDialog } from '@/utils/helpDialog'
 
 const props = defineProps({
   hasAddBtn: {
@@ -207,6 +215,51 @@ const columns = computed(() => [
   },
 ])
 
+const demoJson = `{
+    "user_count": 99,
+    "user_list": [
+        {
+            "username": "alex",
+            "age": 18
+        },
+        {
+            "username": "kim",
+            "age": 22
+        },
+        {
+            "username": "test",
+            "age": 24
+        }
+    ]
+}`
+
+const showHelpDialog = () => {
+  helpDialog(
+    <div>
+      <p>1.新增一个变量：a，值为：123，如图</p>
+      <img src={add_var} class="wp-100" />
+      <p>2.引用方式：$+花括号的形式引用，如图</p>
+      <img src={use_var1} class="wp-100" />
+      <img src={use_var2} class="wp-100" />
+      <p>
+        3.动态获取：即使用接口的`响应值`或`响应头`的某个值，赋值在该变量上，如果这个值的key不在第一层则需要使用表达式进行获取，
+        <div>
+          例如：{demoJson} 取值99，那么填写user_count即可，否则需要使用表达式进行获取对应的值。
+        </div>
+        如图
+      </p>
+      <img src={set_var1} class="wp-100" />
+      <img src={set_var2} class="wp-100" />
+      <img src={use_set_var1} class="wp-100" />
+      <img src={use_set_var2} class="wp-100" />
+      <p>
+        4.动态变更：在场景中，一个用例执行后可能会对某个变量的值进行重新赋值（例如：A用例执行后将变量x的值从1变为2），此时如果后面的用例需要使用新的变量值即：x=2，那么需要把`动态变更`开启，否则后面用例引用x的值为1。
+      </p>
+    </div>,
+    '变量使用说明',
+    1000
+  )
+}
 //
 </script>
 
